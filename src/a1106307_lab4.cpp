@@ -1,7 +1,7 @@
 #include <string>
 #include <cstddef>
 #include <iostream>
-#include "./lib/tinyxml2.h"
+#include "./lib/tinyxml2/tinyxml2.h"
 
 bool checkXMLResult( tinyxml2::XMLError xmlResult )
 {
@@ -27,25 +27,19 @@ bool loadXML(std::string filename)
 	
 	tinyxml2::XMLElement* xmlElement = xmlRoot->FirstChildElement("IntValue");
 	// now Element IntValue provided
-	if ( !pElement )
-		return false;
-	
-	int iOutInt;
-	xmlResult = xmlElement->QueryIntText(&iOutInt);
-	XMLCheckResult(xmlResult);
+	//~ if ( !pElement )
+		//~ return false;
+	//~ 
+	//~ int iOutInt;
+	//~ xmlResult = xmlElement->QueryIntText(&iOutInt);
+	//~ XMLCheckResult(xmlResult);
 	
 	
 		
 	return true;
-		
-	
-	
-	
 }
 
 int main()
 {
 	loadXML("example.xml");
-	
 }
-
