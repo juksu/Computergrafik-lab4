@@ -1,5 +1,5 @@
 CXX	:= g++
-CXXFLAGS := $(CXXFLAGS) -O3 -Wall
+CXXFLAGS := $(CXXFLAGS) -O3 -Wall -std=c++11
 
 SOURCEDIR := ./src
 OBJECTDIR := ./obj
@@ -11,7 +11,7 @@ OBJECT_FILES := $(subst $(SOURCEDIR)/, $(OBJECTDIR)/, $(SOURCE_FILES:.cpp=.o))
 #~ DEPS := $(OBJECT_FILES)
 DEPS := $(OBJECT_FILES:.o=.d)
 
-.PHONY: all clean
+.PHONY: all run clean
 
 all: $(BINDIR)/$(TARGET)
 -include $(DEPS)
@@ -27,7 +27,10 @@ $(OBJECTDIR)/%.o: $(SOURCEDIR)/%.cpp
 
 $(BINDIR)/$(TARGET): $(SOURCE_FILES)
 	mkdir -p $(BINDIR)
-	$(CXX) -o $@ $^
+	$(CXX) $(CXXFLAGS) -o $@ $^
+
+run:
+	bin/$(TARGET) xml/example1.xml
 
 clean:
 	-@rm -r obj
