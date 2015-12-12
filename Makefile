@@ -6,7 +6,7 @@ OBJECTDIR := ./obj
 BINDIR := ./bin
 TARGET := a1106307_lab4
 
-SOURCE_FILES := $(wildcard $(SOURCEDIR)/*.cpp) $(wildcard $(SOURCEDIR)/lib/tinyxml2/*.cpp)
+SOURCE_FILES := $(wildcard $(SOURCEDIR)/*.cpp) $(wildcard $(SOURCEDIR)/lib/tinyxml2/*.cpp) $(wildcard $(SOURCEDIR)/io/*.cpp)
 OBJECT_FILES := $(subst $(SOURCEDIR)/, $(OBJECTDIR)/, $(SOURCE_FILES:.cpp=.o))
 DEPS := $(OBJECT_FILES:.o=.d)
 
@@ -33,5 +33,9 @@ run:
 	bin/$(TARGET) xml/example1.xml
 
 clean:
-	-@rm -r obj
-	-@rm -r bin
+	-@rm -f -r $(OBJECTDIR)
+	-@rm -f -r $(BINDIR)
+	-@rm -f $(SOURCEDIR)/*.o
+	-@rm -f $(SOURCEDIR)/io/*.o
+	-@rm -f $(SOURCEDIR)/lib/tinyxml2/*.o
+	-@rm -f *.ppm
