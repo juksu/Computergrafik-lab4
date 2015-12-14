@@ -2,10 +2,10 @@
 #include <cstdlib>
 #include <cstdio>
 
-void PPMWriter::setDimensions( int xdim, int ydim )
+void PPMWriter::setResolution( int horizontal, int vertical )
 {
-	this->xdim = xdim;
-	this->ydim = ydim;
+	this->horizontal = horizontal;
+	this->vertical = vertical;
 }
 
 void PPMWriter::setFilename( std::string filename )
@@ -19,12 +19,12 @@ void PPMWriter::writePPM()		/// TODO: array with color
 	//~ int i, j;
 	//~ FILE *fp = fopen(filename.c_str(), "wb"); /* b - binary mode */
 	FILE *fp = fopen(filename.c_str(), "w"); /* b - binary mode */
-	//~ (void) fprintf(fp, "P6\n%d %d\n255\n", xdim, ydim);
-	//~ fprintf(fp, "P6\n%d %d\n255\n", xdim, ydim);
-	fprintf(fp, "P3\n%d %d\n255\n", xdim, ydim);	// header of ppm ASCII
-	for( int j = 0; j < ydim; ++j )
+	//~ (void) fprintf(fp, "P6\n%d %d\n255\n", horizontal, vertical);
+	//~ fprintf(fp, "P6\n%d %d\n255\n", horizontal, vertical);
+	fprintf(fp, "P3\n%d %d\n255\n", horizontal, vertical);	// header of ppm ASCII
+	for( int i = 0; i < vertical; ++i )
 	{
-		for( int i = 0; i < xdim; ++i )
+		for( int j = 0; j < horizontal; ++j )
 		{
 			//~ static unsigned char color[3];
 			int color[3];
@@ -34,6 +34,25 @@ void PPMWriter::writePPM()		/// TODO: array with color
 			color[2] = (i * j) % 256;  /* blue */
 			fprintf( fp, "%3d %3d %3d \t", color[0], color[1], color[2] );
 			//~ fprintf( fp, "%d %d %d \t", color[0], color[1], color[2] );
+		}
+		fprintf( fp, "\n" );
+	}
+	fclose(fp);
+}
+
+
+void PPMWriter::writePPM( glm::vec3* image )		/// TODO: array with color
+{
+	FILE *fp = fopen(filename.c_str(), "w");
+	fprintf(fp, "P3\n%d %d\n255\n", horizontal, vertical);	// header of ppm ASCII
+	for( int i = 0; i < vertical; i++ )
+	{
+		for( int j = 0; j < horizontal; j++ )
+		{
+
+			fprintf( fp, "%3d %3d %3d \t", 
+					(int)image[j*horizontal+i][0], (int)image[j*horizontal+i][1], (int)image[j*horizontal+i][2] );
+			
 		}
 		fprintf( fp, "\n" );
 	}

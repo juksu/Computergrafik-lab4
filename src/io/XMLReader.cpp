@@ -18,6 +18,9 @@ bool XMLReader::loadFile( std::string filename )
 	return true;
 }
 
+/*
+ * basic
+ */
 std::string XMLReader::getOutputFilename()
 {
 	// get output filename
@@ -39,7 +42,105 @@ std::string XMLReader::getOutputFilename()
 	return "out.ppm";
 }
 
-void XMLReader::readxml()
+glm::vec3 XMLReader::getBackgroundColor()
+{
+	XMLElement* xmlElement = xmlDocument.FirstChildElement("scene")
+			->FirstChildElement("background_color");
+		
+	glm::vec3 backgroundColor = glm::vec3(
+			xmlElement->DoubleAttribute("r"),
+			xmlElement->DoubleAttribute("g"),
+			xmlElement->DoubleAttribute("b") );
+	
+	return backgroundColor;
+}
+/*
+ * basic END
+ */
+
+/*
+ * camera
+ */
+glm::vec3 XMLReader::getCameraPosition()
+{
+	XMLElement* xmlElement = xmlDocument.FirstChildElement("scene")
+			->FirstChildElement("camera")->FirstChildElement("position");
+	
+	glm::vec3 cameraPosition = glm::vec3(
+			xmlElement->DoubleAttribute("x"),
+			xmlElement->DoubleAttribute("y"),
+			xmlElement->DoubleAttribute("z") );
+			
+	return cameraPosition;
+}
+
+glm::vec3 XMLReader::getLookAt()
+{
+	XMLElement* xmlElement = xmlDocument.FirstChildElement("scene")
+			->FirstChildElement("camera")->FirstChildElement("lookat");
+	
+	glm::vec3 lookAt = glm::vec3(
+			xmlElement->DoubleAttribute("x"),
+			xmlElement->DoubleAttribute("y"),
+			xmlElement->DoubleAttribute("z") );
+	
+	return lookAt;
+}
+
+glm::vec3 XMLReader::getCameraUp()
+{
+	XMLElement* xmlElement = xmlDocument.FirstChildElement("scene")
+			->FirstChildElement("camera")->FirstChildElement("up");
+	
+	glm::vec3 up = glm::vec3(
+			xmlElement->DoubleAttribute("x"),
+			xmlElement->DoubleAttribute("y"),
+			xmlElement->DoubleAttribute("z") );
+	
+	return up;
+}
+
+double XMLReader::getHorizontalFOV()
+{
+	XMLElement* xmlElement = xmlDocument.FirstChildElement("scene")
+			->FirstChildElement("camera")->FirstChildElement("horizontal_fov");
+	
+	return xmlElement->DoubleAttribute( "angle" );
+}
+
+int XMLReader::getHorizontalResolution()
+{
+	XMLElement* xmlElement = xmlDocument.FirstChildElement("scene")
+			->FirstChildElement("camera")->FirstChildElement("resolution");
+			
+	return xmlElement->IntAttribute("horizontal");		
+}
+
+int XMLReader::getVerticalResolution()
+{
+	XMLElement* xmlElement = xmlDocument.FirstChildElement("scene")
+			->FirstChildElement("camera")->FirstChildElement("resolution");
+			
+	return xmlElement->IntAttribute("vertical");
+}
+
+int XMLReader::getMaxBounces()
+{
+	XMLElement* xmlElement = xmlDocument.FirstChildElement("scene")
+			->FirstChildElement("camera")->FirstChildElement("max_bounces");
+			
+	return xmlElement->IntAttribute("n");
+}
+/*
+ * camera END
+ */
+ 
+ 
+
+/*
+ * print xml
+ */
+void XMLReader::printxml()
 {
 
 	// pointer to root node

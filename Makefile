@@ -6,7 +6,10 @@ OBJECTDIR := ./obj
 BINDIR := ./bin
 TARGET := a1106307_lab4
 
-SOURCE_FILES := $(wildcard $(SOURCEDIR)/*.cpp) $(wildcard $(SOURCEDIR)/lib/tinyxml2/*.cpp) $(wildcard $(SOURCEDIR)/io/*.cpp)
+SOURCE_FILES := $(wildcard $(SOURCEDIR)/*.cpp) \
+		$(wildcard $(SOURCEDIR)/lib/tinyxml2/*.cpp) \
+		$(wildcard $(SOURCEDIR)/io/*.cpp) \
+		$(wildcard $(SOURCEDIR)/graphics/*.cpp)
 OBJECT_FILES := $(subst $(SOURCEDIR)/, $(OBJECTDIR)/, $(SOURCE_FILES:.cpp=.o))
 DEPS := $(OBJECT_FILES:.o=.d)
 
@@ -35,7 +38,8 @@ run:
 clean:
 	-@rm -f -r $(OBJECTDIR)
 	-@rm -f -r $(BINDIR)
-	-@rm -f $(SOURCEDIR)/*.o
-	-@rm -f $(SOURCEDIR)/io/*.o
 	-@rm -f $(SOURCEDIR)/lib/tinyxml2/*.o
+	-@rm -f $(SOURCEDIR)/*.o $(SOURCEDIR)/*.gch
+	-@rm -f $(SOURCEDIR)/io/*.o $(SOURCEDIR)/io/*.gch
+	-@rm -f $(SOURCEDIR)/graphics/*.o $(SOURCEDIR)/graphics/*.gch
 	-@rm -f *.ppm
