@@ -70,12 +70,25 @@ void Raytracer::render()
 			// this assumes the camera is in the center with y-axis being up
 			/// TODO need to transform ray? Or maybe World?
 			
+			
 			// for debuging
-			vec3 color = vec3(abs(x), 0, abs(y));
-			color = normalize(color);
+			double r = 0;
+			double g = 0;
+			double b = 0;
+			
+			if( u > horizontal/2 - 1 )
+				r = x;
+			if( v > vertical/2 - 1 )
+				g = y;
+			if( u > horizontal/2 - 1 && v > vertical/2 - 1 )
+				b = x+y;
+				
+			vec3 color = vec3(abs(r), abs(g), abs(b));
+			//~ color = normalize(color);
 			color = vec3(color[0]*256, color[1]*256, color[2]*256);
 			
-			image[u * horizontal + v] = color;
+			// need to swap picture, otherwise it will be upside down
+			image[u * horizontal + (vertical - 1 - v)] = color;
 			
 		}
 }
