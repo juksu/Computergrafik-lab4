@@ -2,6 +2,8 @@
 #define RAYTRACER_H
 
 #include "../lib/glm/glm.hpp"
+//~ #include "../lib/glm/vec3.hpp"
+//~ #include "../lib/glm/mat4x4.hpp"
 //~ using namespace glm;
 
 class Raytracer
@@ -12,7 +14,7 @@ class Raytracer
 		glm::vec3 backgroundColor;
 		
 		glm::vec3 camera;
-		glm::vec3 lookAt;
+		glm::vec3 center;
 		glm::vec3 up;
 		double fov;
 		int horizontal;
@@ -28,7 +30,7 @@ class Raytracer
 		void setBackgroundColor( glm::vec3 backgroundColor );
 		// camera
 		void setCameraPosition( glm::vec3 camera );
-		void setLookAt( glm::vec3 lookAt );
+		void setLookAt( glm::vec3 center );
 		void setCameraUp( glm::vec3 up );
 		void setHorizontalFOV( double fov );
 		void setResolution( int horizontal, int vertical );

@@ -51,7 +51,7 @@ void PPMWriter::writePPM( glm::vec3* image )		/// TODO: array with color
 		{
 
 			fprintf( fp, "%3d %3d %3d \t", 
-					(int)image[j*horizontal+i][0], (int)image[j*horizontal+i][1], (int)image[j*horizontal+i][2] );
+					(int)image[i*horizontal+j][0], (int)image[i*horizontal+j][1], (int)image[i*horizontal+j][2] );
 			
 		}
 		fprintf( fp, "\n" );
