@@ -2,8 +2,14 @@
 #define XMLREADER_H
 
 #include <string>
+#include <vector>
 #include "../lib/tinyxml2/tinyxml2.h"
 #include "../lib/glm/glm.hpp"
+
+#include "../graphics/Surfaces.hpp"
+#include "../graphics/Material.hpp"
+#include "../graphics/MaterialSolid.hpp"
+#include "../graphics/MaterialTextured.hpp"
 
 class XMLReader
 {
@@ -32,9 +38,16 @@ class XMLReader
 		
 		
 		// Surface/Geometry
+		std::vector<Surfaces> getSurfaces();
+		
+		void getPhong( tinyxml2::XMLElement* xmlElement, Material* material );
 		
 		// Material
-		
+		MaterialSolid getMaterialSolid( tinyxml2::XMLElement* xmlMaterialElement );
+		MaterialTextured getMaterialTextured( tinyxml2::XMLElement* xmlMaterialElement );
+		void getPhong( tinyxml2::XMLElement xmlMaterialElement, Material* material );
+		void getTransformations( tinyxml2::XMLElement* xmlTransformElement, Surfaces* surface );
+
 		// Transformation
 		
 		

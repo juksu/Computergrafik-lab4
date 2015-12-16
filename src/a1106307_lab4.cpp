@@ -1,11 +1,16 @@
 #include <string>
 #include <cstddef>
 #include <iostream>
-#include "./lib/tinyxml2/tinyxml2.h"
+#include <vector>
+//~ #include "./lib/tinyxml2/tinyxml2.h"
 #include "./lib/glm/glm.hpp"
-#include "./io/PPMWriter.h"
-#include "./io/XMLReader.h"
-#include "./graphics/Raytracer.h"
+#include "./io/PPMWriter.hpp"
+#include "./io/XMLReader.hpp"
+#include "./graphics/Raytracer.hpp"
+
+//~ #include "./graphics/Surfaces.hpp"
+//~ #include "./graphics/Sphere.hpp"
+//~ #include "./graphics/Material.hpp"
 
 
 using namespace std;
@@ -30,15 +35,12 @@ int main( int argc, char* argv[] )
 		std::cin >> xmlFilename;
 	}
 	
-	int horizontal;
-	int vertical;
-	
 	// load xml
 	XMLReader xmlReader;
 	xmlReader.loadFile( xmlFilename );
-	horizontal = xmlReader.getHorizontalResolution();
-	vertical = xmlReader.getVerticalResolution();
-	xmlReader.printxml();
+	//~ horizontal = xmlReader.getHorizontalResolution();
+	//~ vertical = xmlReader.getVerticalResolution();
+	//~ xmlReader.printxml();
 	
 	// set up raytracer
 	Raytracer raytracer;
@@ -52,13 +54,21 @@ int main( int argc, char* argv[] )
 	raytracer.setResolution( xmlReader.getHorizontalResolution(), xmlReader.getVerticalResolution() );
 	raytracer.setMaxBounces( xmlReader.getMaxBounces() );
 	
+	vector<Surfaces> surfaceArray;
+	// get all spheres
+	xmlReader.getSurfaces();
+	
+	// get all 
+	
+	
+	
 	//~ raytracer.setupViewPlane();
 	
-	glm::vec3 camera = xmlReader.getCameraPosition();
-	cout << "camera ";
-	for( int i = 0; i < 3; i++ )
-		cout << camera[i] << " ";
-	cout << endl;
+	//~ glm::vec3 camera = xmlReader.getCameraPosition();
+	//~ cout << "camera ";
+	//~ for( int i = 0; i < 3; i++ )
+		//~ cout << camera[i] << " ";
+	//~ cout << endl;
 	
 	//~ glm::vec3* image = new glm::vec3[horizontal*vertical];		
 	//~ for( int i = 0; i < vertical; ++i )

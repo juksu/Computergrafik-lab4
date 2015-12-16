@@ -1,43 +1,55 @@
-#include "Raytracer.h"
+#include "Raytracer.hpp"
 #include <cmath>
 #include "../lib/glm/gtc/matrix_transform.hpp"
 
 #include <iostream>
 using namespace glm;
 
-void Raytracer::setBackgroundColor( vec3 backgroundColor )
+vec3 Raytracer::trace( vec4 ray )
 {
-	this->backgroundColor = backgroundColor;
+	vec3 color;
+	
+	/// TODO: iterate through objects and find possible interaction
+	/// if no interaction return backgroundcolor
+	
+	color = backgroundColor;
+	
+	return color;
 }
 
-void Raytracer::setCameraPosition( vec3 camera )
-{
-	this->camera = camera;
-}
-
-void Raytracer::setLookAt( vec3 center )
-{
-	this->center = center;
-}
-
-void Raytracer::setCameraUp( vec3 up )
-{
-	this->up = up;
-}
-void Raytracer::setHorizontalFOV( double fov )
-{
-	this->fov = fov;
-}
-void Raytracer::setResolution( int horizontal, int vertical )
-{
-	this->horizontal = horizontal;
-	this->vertical = vertical;
-}
-
-void Raytracer::setMaxBounces( int maxBounces )
-{
-	this->maxBounces = maxBounces;
-}
+//~ void Raytracer::setBackgroundColor( vec3 backgroundColor )
+//~ {
+	//~ this->backgroundColor = backgroundColor;
+//~ }
+//~ 
+//~ void Raytracer::setCameraPosition( vec3 camera )
+//~ {
+	//~ this->camera = camera;
+//~ }
+//~ 
+//~ void Raytracer::setLookAt( vec3 center )
+//~ {
+	//~ this->center = center;
+//~ }
+//~ 
+//~ void Raytracer::setCameraUp( vec3 up )
+//~ {
+	//~ this->up = up;
+//~ }
+//~ void Raytracer::setHorizontalFOV( double fov )
+//~ {
+	//~ this->fov = fov;
+//~ }
+//~ void Raytracer::setResolution( int horizontal, int vertical )
+//~ {
+	//~ this->horizontal = horizontal;
+	//~ this->vertical = vertical;
+//~ }
+//~ 
+//~ void Raytracer::setMaxBounces( int maxBounces )
+//~ {
+	//~ this->maxBounces = maxBounces;
+//~ }
 
 
 //~ void Raytracer::setupViewPlane()
@@ -45,10 +57,10 @@ void Raytracer::setMaxBounces( int maxBounces )
 	//~ /// TODO
 //~ }
 
-vec3* Raytracer::getImage()
-{
-	return image;
-}
+//~ vec3* Raytracer::getImage()
+//~ {
+	//~ return image;
+//~ }
 
 void Raytracer::render()
 {
@@ -58,29 +70,31 @@ void Raytracer::render()
 	// calculate the tan values for x and y using radian
 	double tanX = tan( fov * M_PI / 180 );
 	double tanY = tan( ((double)vertical / horizontal) * (fov * M_PI / 180) );
-	std::cout << "vertical = " << vertical << " horizontal = " << horizontal << std::endl;
-	std::cout << (double)vertical/ horizontal << std::endl;
-	std::cout << "tanx = " << tanX << ", tanY = " << tanY  << std::endl;
+	//~ std::cout << "vertical = " << vertical << " horizontal = " << horizontal << std::endl;
+	//~ std::cout << (double)vertical/ horizontal << std::endl;
+	//~ std::cout << "tanx = " << tanX << ", tanY = " << tanY  << std::endl;
 	
 	// traverse through every pixel
 	for( int u = 0; u < horizontal; u++  )
 		for( int v = 0; v < vertical; v++ )
 		{		
 			// calculate ray;
-			/// TODO: irgendwie komische vektoren -> doppelter winkel? tanX passt aber vielleicht hier?
-			double x = (2*u - (horizontal-1))*tanX;
-			double y = (2*v - (vertical-1))*tanY;
+			/// TODO: the question is really does fov give the angle to the edge of the outermost pixel or to the middle of it
+			/// if edge: (horizontal-1)/horizontal, else (horizontal-1)/(horizontal-1)
+			/// the same for vertical
+			double x = (double)(2*u - (horizontal-1))/(horizontal-1)*tanX;
+			double y = (double)(2*v - (vertical-1))/(vertical-1)*tanY;
 			double z = 0;
 			// this assumes the camera is in the center with y-axis being up and viewplane at z = -1;
 			
 			
-			std::cout << "blaNOTrans " << x << ", " << y << ", " << z << ", " << 0 << std::endl;
+			//~ std::cout << "blaNOTrans " << x << ", " << y << ", " << z << ", " << 0 << std::endl;
 			/// TODO need to transform ray? Or maybe World?
 			mat4 lookAtTransformation = lookAt( camera, center, up );
 
 			vec4 bla = lookAtTransformation * vec4(x,y,z,1);
 			
-			std::cout << "blaTrans " << bla[0] << ", " << bla[1] << ", " << bla[2] << ", " << bla[3] << std::endl;
+			//~ std::cout << "blaTrans " << bla[0] << ", " << bla[1] << ", " << bla[2] << ", " << bla[3] << std::endl;
 			
 			
 
@@ -106,7 +120,7 @@ void Raytracer::render()
 			vec3 color = vec3(abs(r), abs(g), abs(b));
 			//~ if( !( color[0] == 0 && color[1] == 0 && color[2] == 0 ) )
 				//~ color = normalize(color);
-			//~ color = vec3(color[0]*255, color[1]*255, color[2]*255);
+			color = vec3(color[0]*255, color[1]*255, color[2]*255);
 			
 			// need to swap picture, otherwise it will be upside down
 			image[ (vertical-1-v)*horizontal + u ] = color;

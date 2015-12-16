@@ -1,5 +1,8 @@
-#include "XMLReader.h"
+#include "XMLReader.hpp"
 #include <iostream>
+#include <string>
+
+#include "../graphics/Sphere.hpp"
 
 using namespace tinyxml2;
 
@@ -135,10 +138,142 @@ int XMLReader::getMaxBounces()
  * camera END
  */
  
- 
+ /*
+  * Lights
+  */
 
 /*
- * print xml
+ * Surfaces
+ */
+std::vector<Surfaces> XMLReader::getSurfaces()
+{
+	std::vector<Surfaces> surfaceArray;
+	
+	XMLElement* xmlSurfaceElement = xmlDocument.FirstChildElement("scene")
+			->FirstChildElement("surfaces")->FirstChildElement();
+	
+	XMLElement* xmlElement;
+	//~ XMLElement* xmlMaterialElement;
+	
+	while( xmlSurfaceElement != nullptr )
+	{
+		std::string type = xmlSurfaceElement->Value();
+		
+		if( type.compare("sphere") == 0 )
+		{
+			Sphere sphere;
+			sphere.setRadius( xmlSurfaceElement->DoubleAttribute("radius") );
+			
+			xmlElement = xmlSurfaceElement->FirstChildElement("position");
+			
+			glm::vec3 position = glm::vec3( xmlElement->DoubleAttribute("x"), 
+					xmlElement->DoubleAttribute("y"), xmlElement->DoubleAttribute("z") );
+			sphere.setPosition( position );
+			
+			/// TODO from here it is for all surfaces the same -> change code
+			xmlElement = xmlSurfaceElement->FirstChildElement("material_solid");
+			if( xmlElement != nullptr )
+				sphere.setMaterial( getMaterialSolid( xmlElement ) );
+			
+			xmlElement = xmlSurfaceElement->FirstChildElement("material_textured");
+			if( xmlElement != nullptr )
+				sphere.setMaterial( getMaterialTextured( xmlElement ) );
+			
+			xmlElement = xmlSurfaceElement->FirstChildElement("transform");
+			if( xmlElement != nullptr )	// in case no transformations exist
+				getTransformations( xmlElement, &sphere );
+			
+			
+			/// TODO continue
+			
+			//~ surfaceArray.push_back
+			
+		}
+	
+		std::cout << xmlSurfaceElement->Value() << std::endl;
+		xmlSurfaceElement = xmlSurfaceElement->NextSiblingElement();
+	}
+	return surfaceArray;
+}
+
+MaterialSolid XMLReader::getMaterialSolid( XMLElement* xmlMaterialElement )
+{
+	MaterialSolid material;
+	
+	XMLElement* xmlElement = xmlMaterialElement->FirstChildElement("color");
+	glm::vec3 color = glm::vec3( xmlElement->DoubleAttribute("x"), 
+			xmlElement->DoubleAttribute("y"), xmlElement->DoubleAttribute("z") );
+	material.setColor( color );
+	
+	getPhong( xmlMaterialElement, &material );
+	
+	xmlElement = xmlMaterialElement->FirstChildElement("reflectance");
+	material.setReflactance( xmlElement->DoubleAttribute("r") );
+	
+	xmlElement = xmlMaterialElement->FirstChildElement("transmittance");
+	material.setTransmittance( xmlElement->DoubleAttribute("t") );
+	
+	xmlElement = xmlMaterialElement->FirstChildElement("refraction");
+	material.setTransmittance( xmlElement->DoubleAttribute("iof") );
+	
+	return material;
+}
+
+MaterialTextured XMLReader::getMaterialTextured( XMLElement* xmlMaterialElement )
+{
+	MaterialTextured material;
+	/// TODO
+	return material;
+}
+
+//~ void XMLReader::getPhong( XMLElement* xmlElement, Material* material )
+void XMLReader::getPhong( XMLElement* xmlMaterialElement, Material* material )
+{
+	XMLElement* xmlElement = xmlMaterialElement->FirstChildElement("phong");
+	material->setPhong( xmlElement->DoubleAttribute("ka"), xmlElement->DoubleAttribute("kd"),
+			xmlElement->DoubleAttribute("ks"), xmlElement->IntAttribute("exponent") );
+}
+
+void XMLReader::getTransformations( XMLElement* xmlTransformElement, Surfaces* surface )
+{
+	XMLElement* xmlElement = xmlTransformElement->FirstChildElement();
+	while( xmlElement != nullptr )
+	{
+		std::cout << "I make a transformation" << std::endl;
+		std::string type = xmlElement->Value();
+		if( type.compare("translate") == 0 )
+		{
+			glm::vec3 translate = glm::vec3( xmlElement->DoubleAttribute("x"), 
+					xmlElement->DoubleAttribute("y"), xmlElement->DoubleAttribute("z") );
+			surface->translate( translate );
+		}
+		else if( type.compare("scale") == 0 )
+		{
+			glm::vec3 scale = glm::vec3( xmlElement->DoubleAttribute("x"), 
+					xmlElement->DoubleAttribute("y"), xmlElement->DoubleAttribute("z") );
+			surface->scale( scale );
+		}
+		else if( type.compare("rotateX") == 0 )
+		{
+			surface->rotateX( xmlElement->DoubleAttribute("theta") );
+		}
+		else if( type.compare("rotateY") == 0 )
+		{
+			surface->rotateY( xmlElement->DoubleAttribute("theta") );
+		}
+		else if( type.compare("rotateZ") == 0 )
+		{
+			surface->rotateZ( xmlElement->DoubleAttribute("theta") );
+		}
+		/// TODO: Ask if there will be also shear.
+		
+		xmlElement->NextSiblingElement();
+	}
+	std::cout << surface->printTransformationMatrix() << std::endl;
+}
+
+/*
+ * print xml (only part of it)
  */
 void XMLReader::printxml()
 {
