@@ -1,5 +1,5 @@
-#ifndef SURFACES_H
-#define SURFACES_H
+#ifndef SURFACE_H
+#define SURFACE_H
 
 #include "../../lib/glm/glm.hpp"
 #include "../material/Material.hpp"
@@ -60,4 +60,4 @@ class Surface
 };		
 
 
-#endif // SURFACES_H
+#endif // SURFACE_H

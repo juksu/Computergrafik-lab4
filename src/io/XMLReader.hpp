@@ -10,6 +10,7 @@
 //~ #include "../graphics/Material.hpp"
 #include "../graphics/material/MaterialSolid.hpp"
 #include "../graphics/material/MaterialTextured.hpp"
+#include "../graphics/light/Light.hpp"
 
 class XMLReader
 {
@@ -35,7 +36,7 @@ class XMLReader
 		int getMaxBounces();
 		
 		// light
-		
+		std::vector<Light*> getLights();
 		
 		// Surface/Geometry
 		std::vector<Surface*> getSurfaces();

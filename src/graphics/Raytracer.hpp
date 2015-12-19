@@ -3,6 +3,7 @@
 
 #include "../lib/glm/glm.hpp"
 #include "./surface/Surface.hpp"
+#include "./light/Light.hpp"
 #include "vector"
 //~ #include "../lib/glm/vec3.hpp"
 //~ #include "../lib/glm/mat4x4.hpp"
@@ -25,8 +26,11 @@ class Raytracer
 		int vertical;
 		int maxBounces;
 		
-		// Objectlist
-		std::vector<Surface*> surfaceVector;
+		// objectlist
+		std::vector<Surface*> surfaceArray;
+		
+		// lightlist
+		std::vector<Light*> lightArray;
 		
 		// private functions
 		glm::vec3 trace( glm::vec3 point, glm::vec3 ray, int step );
@@ -42,15 +46,19 @@ class Raytracer
 		void setResolution( int horizontal, int vertical );
 		void setMaxBounces( int maxBounces ){ this->maxBounces = maxBounces; }
 		
-		// surfaces
-		void setSurfaceVector( std::vector<Surface*> surfaceVector ){ this->surfaceVector = surfaceVector; }
+		// lights
+		void setLightArray( std::vector<Light*> lightArray ){ this->lightArray = lightArray; }
 		
+		// surfaces
+		void setSurfaceArray( std::vector<Surface*> surfaceArray ){ this->surfaceArray = surfaceArray; }
+		
+		void render();
 		
 		glm::vec3* getImage(){ return image; }
 		
 		//~ void setupViewPlane();
 		
-		void render();
+		
 };
 
 inline void Raytracer::setResolution( int horizontal, int vertical )

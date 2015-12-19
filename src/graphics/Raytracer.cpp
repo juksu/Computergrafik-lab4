@@ -15,12 +15,12 @@ vec3 Raytracer::trace( vec3 point, vec3 ray, int step )
 	//~ vec4 test;
 	//~ 
 	vec3 color = backgroundColor;
-	for( size_t i = 0; i < surfaceVector.size(); i++ )
+	for( size_t i = 0; i < surfaceArray.size(); i++ )
 	{
-		if( surfaceVector.at(i)->intersect( point, ray ) )
+		if( surfaceArray.at(i)->intersect( point, ray ) )
 		{
-			color = surfaceVector.at(i)->getMaterial()->getColor();
-			//~ std::cout << "trace color " << to_string(surfaceVector.at(i)->getMaterial()->getColor()) << std::endl;
+			color = surfaceArray.at(i)->getMaterial()->getColor();
+			//~ std::cout << "trace color " << to_string(surfaceArray.at(i)->getMaterial()->getColor()) << std::endl;
 			//~ /// TODO no depth test yet
 			break;
 		}

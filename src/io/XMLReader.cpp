@@ -2,8 +2,13 @@
 #include <iostream>
 #include <string>
 
+#include "../graphics/light/AmbientLight.hpp"
+#include "../graphics/light/PointLight.hpp"
+#include "../graphics/light/ParallelLight.hpp"
+#include "../graphics/light/SpotLight.hpp"
 #include "../graphics/surface/Sphere.hpp"
 #include "../lib/glm/gtx/string_cast.hpp"
+
 
 using namespace tinyxml2;
 
@@ -140,11 +145,88 @@ int XMLReader::getMaxBounces()
  */
  
  /*
-  * Lights
+  * lights
   */
+std::vector<Light*> XMLReader::getLights()
+{
+	std::vector<Light*> lightArray;
+	
+	XMLElement* xmlLightElement = xmlDocument.FirstChildElement("scene")
+			->FirstChildElement("lights")->FirstChildElement();
+	
+	XMLElement* xmlElement;
+	
+	while( xmlLightElement != nullptr )
+	{
+		std::string type = xmlLightElement->Value();
+		
+		if( type.compare("ambient_light") == 0 )
+		{
+			AmbientLight* light = new AmbientLight();
+			lightArray.push_back(light);
+		}
+		
+		if( type.compare("point_light") == 0 )
+		{
+			PointLight* light = new PointLight();
+			
+			xmlElement = xmlLightElement->FirstChildElement("position");
+			glm::vec3 position = glm::vec3( xmlElement->DoubleAttribute("x"), 
+					xmlElement->DoubleAttribute("y"), xmlElement->DoubleAttribute("z") );
+			light->setPosition( position );
+			
+			lightArray.push_back(light);
+		}
+		
+		if( type.compare("parallel_light") == 0 )
+		{
+			ParallelLight* light = new ParallelLight();
+			
+			xmlElement = xmlLightElement->FirstChildElement("direction");
+			glm::vec3 direction = glm::vec3( xmlElement->DoubleAttribute("x"), 
+					xmlElement->DoubleAttribute("y"), xmlElement->DoubleAttribute("z") );
+			light->setDirection( direction );
+			
+			lightArray.push_back(light);
+		}
+		
+		if( type.compare("spot_light") == 0 )
+		{
+			SpotLight* light = new SpotLight();
+			
+			xmlElement = xmlLightElement->FirstChildElement("position");
+			glm::vec3 position = glm::vec3( xmlElement->DoubleAttribute("x"), 
+					xmlElement->DoubleAttribute("y"), xmlElement->DoubleAttribute("z") );
+			light->setPosition( position );
+			
+			xmlElement = xmlLightElement->FirstChildElement("direction");
+			glm::vec3 direction = glm::vec3( xmlElement->DoubleAttribute("x"), 
+					xmlElement->DoubleAttribute("y"), xmlElement->DoubleAttribute("z") );
+			light->setDirection( direction );
+			
+			xmlElement = xmlLightElement->FirstChildElement("falloff");
+			light->setFalloffAlpha1( xmlElement->DoubleAttribute("alpha1") ); 
+			light->setFalloffAlpha2( xmlElement->DoubleAttribute("alpha2") ); 
+			
+			lightArray.push_back(light);
+		}
+		
+		// set color
+		xmlElement = xmlLightElement->FirstChildElement("color");
+		glm::vec3 color = glm::vec3( xmlElement->DoubleAttribute("r"), 
+				xmlElement->DoubleAttribute("g"), xmlElement->DoubleAttribute("b") );
+		lightArray.back()->setColor( color );
+		
+		xmlLightElement = xmlLightElement->NextSiblingElement();
+	}
+	return lightArray;
+}
+/*
+ * lights END
+ */
 
 /*
- * Surfaces
+ * surfaces
  */
 std::vector<Surface*> XMLReader::getSurfaces()
 {
@@ -154,7 +236,6 @@ std::vector<Surface*> XMLReader::getSurfaces()
 			->FirstChildElement("surfaces")->FirstChildElement();
 	
 	XMLElement* xmlElement;
-	//~ XMLElement* xmlMaterialElement;
 	
 	while( xmlSurfaceElement != nullptr )
 	{
@@ -274,6 +355,9 @@ void XMLReader::getTransformations( XMLElement* xmlTransformElement, Surface* su
 	}
 	std::cout << surface->transformationMatrixString() << std::endl;
 }
+/*
+ * surfaces END
+ */
 
 /*
  * print xml (only part of it)

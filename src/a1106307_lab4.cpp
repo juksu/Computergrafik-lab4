@@ -54,12 +54,13 @@ int main( int argc, char* argv[] )
 	raytracer.setResolution( xmlReader.getHorizontalResolution(), xmlReader.getVerticalResolution() );
 	raytracer.setMaxBounces( xmlReader.getMaxBounces() );
 	
-	//~ vector<Surface*> surfaceVector;
+	//~ vector<Surface*> surfaceArray;
 	// get all surfaces
-	//~ surfaceVector = xmlReader.getSurfaces();
-	raytracer.setSurfaceVector( xmlReader.getSurfaces() );
+	//~ surfaceArray = xmlReader.getSurfaces();
+	raytracer.setSurfaceArray( xmlReader.getSurfaces() );
 	
-	// get all 
+	// get all lights
+	raytracer.setLightArray( xmlReader.getLights() );
 	
 	
 	
