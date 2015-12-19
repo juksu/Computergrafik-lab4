@@ -6,10 +6,10 @@
 #include "../lib/tinyxml2/tinyxml2.h"
 #include "../lib/glm/glm.hpp"
 
-#include "../graphics/Surfaces.hpp"
-#include "../graphics/Material.hpp"
-#include "../graphics/MaterialSolid.hpp"
-#include "../graphics/MaterialTextured.hpp"
+#include "../graphics/surface/Surface.hpp"
+//~ #include "../graphics/Material.hpp"
+#include "../graphics/material/MaterialSolid.hpp"
+#include "../graphics/material/MaterialTextured.hpp"
 
 class XMLReader
 {
@@ -38,15 +38,15 @@ class XMLReader
 		
 		
 		// Surface/Geometry
-		std::vector<Surfaces> getSurfaces();
+		std::vector<Surface*> getSurfaces();
 		
 		void getPhong( tinyxml2::XMLElement* xmlElement, Material* material );
 		
 		// Material
-		MaterialSolid getMaterialSolid( tinyxml2::XMLElement* xmlMaterialElement );
-		MaterialTextured getMaterialTextured( tinyxml2::XMLElement* xmlMaterialElement );
+		MaterialSolid* getMaterialSolid( tinyxml2::XMLElement* xmlMaterialElement );
+		MaterialTextured* getMaterialTextured( tinyxml2::XMLElement* xmlMaterialElement );
 		void getPhong( tinyxml2::XMLElement xmlMaterialElement, Material* material );
-		void getTransformations( tinyxml2::XMLElement* xmlTransformElement, Surfaces* surface );
+		void getTransformations( tinyxml2::XMLElement* xmlTransformElement, Surface* surface );
 
 		// Transformation
 		

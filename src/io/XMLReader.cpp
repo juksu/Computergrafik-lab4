@@ -2,7 +2,8 @@
 #include <iostream>
 #include <string>
 
-#include "../graphics/Sphere.hpp"
+#include "../graphics/surface/Sphere.hpp"
+#include "../lib/glm/gtx/string_cast.hpp"
 
 using namespace tinyxml2;
 
@@ -145,9 +146,9 @@ int XMLReader::getMaxBounces()
 /*
  * Surfaces
  */
-std::vector<Surfaces> XMLReader::getSurfaces()
+std::vector<Surface*> XMLReader::getSurfaces()
 {
-	std::vector<Surfaces> surfaceArray;
+	std::vector<Surface*> surfaceArray;
 	
 	XMLElement* xmlSurfaceElement = xmlDocument.FirstChildElement("scene")
 			->FirstChildElement("surfaces")->FirstChildElement();
@@ -161,67 +162,69 @@ std::vector<Surfaces> XMLReader::getSurfaces()
 		
 		if( type.compare("sphere") == 0 )
 		{
-			Sphere sphere;
-			sphere.setRadius( xmlSurfaceElement->DoubleAttribute("radius") );
+			Sphere* sphere = new Sphere();
+			sphere->setRadius( xmlSurfaceElement->DoubleAttribute("radius") );
+			//~ std::cout << "radius " << sphere->getRadius() << std::endl;
 			
 			xmlElement = xmlSurfaceElement->FirstChildElement("position");
 			
 			glm::vec3 position = glm::vec3( xmlElement->DoubleAttribute("x"), 
 					xmlElement->DoubleAttribute("y"), xmlElement->DoubleAttribute("z") );
-			sphere.setPosition( position );
+			sphere->setPosition( position );
 			
 			/// TODO from here it is for all surfaces the same -> change code
 			xmlElement = xmlSurfaceElement->FirstChildElement("material_solid");
 			if( xmlElement != nullptr )
-				sphere.setMaterial( getMaterialSolid( xmlElement ) );
+				sphere->setMaterial( getMaterialSolid( xmlElement ) );
 			
 			xmlElement = xmlSurfaceElement->FirstChildElement("material_textured");
 			if( xmlElement != nullptr )
-				sphere.setMaterial( getMaterialTextured( xmlElement ) );
+				sphere->setMaterial( getMaterialTextured( xmlElement ) );
 			
 			xmlElement = xmlSurfaceElement->FirstChildElement("transform");
 			if( xmlElement != nullptr )	// in case no transformations exist
-				getTransformations( xmlElement, &sphere );
+				getTransformations( xmlElement, sphere );
 			
 			
 			/// TODO continue
 			
-			//~ surfaceArray.push_back
+			surfaceArray.push_back(sphere);
 			
 		}
 	
-		std::cout << xmlSurfaceElement->Value() << std::endl;
+		//~ std::cout << xmlSurfaceElement->Value() << std::endl;
 		xmlSurfaceElement = xmlSurfaceElement->NextSiblingElement();
 	}
 	return surfaceArray;
 }
 
-MaterialSolid XMLReader::getMaterialSolid( XMLElement* xmlMaterialElement )
+MaterialSolid* XMLReader::getMaterialSolid( XMLElement* xmlMaterialElement )
 {
-	MaterialSolid material;
+	MaterialSolid* material = new MaterialSolid();
+	//~ std::cout << xmlMaterialElement->Value() << std::endl;
 	
 	XMLElement* xmlElement = xmlMaterialElement->FirstChildElement("color");
-	glm::vec3 color = glm::vec3( xmlElement->DoubleAttribute("x"), 
-			xmlElement->DoubleAttribute("y"), xmlElement->DoubleAttribute("z") );
-	material.setColor( color );
+	glm::vec3 color = glm::vec3( xmlElement->DoubleAttribute("r"), 
+			xmlElement->DoubleAttribute("g"), xmlElement->DoubleAttribute("b") );
+	material->setColor( color );
 	
-	getPhong( xmlMaterialElement, &material );
+	getPhong( xmlMaterialElement, material );
 	
 	xmlElement = xmlMaterialElement->FirstChildElement("reflectance");
-	material.setReflactance( xmlElement->DoubleAttribute("r") );
+	material->setReflactance( xmlElement->DoubleAttribute("r") );
 	
 	xmlElement = xmlMaterialElement->FirstChildElement("transmittance");
-	material.setTransmittance( xmlElement->DoubleAttribute("t") );
+	material->setTransmittance( xmlElement->DoubleAttribute("t") );
 	
 	xmlElement = xmlMaterialElement->FirstChildElement("refraction");
-	material.setTransmittance( xmlElement->DoubleAttribute("iof") );
+	material->setTransmittance( xmlElement->DoubleAttribute("iof") );
 	
 	return material;
 }
 
-MaterialTextured XMLReader::getMaterialTextured( XMLElement* xmlMaterialElement )
+MaterialTextured* XMLReader::getMaterialTextured( XMLElement* xmlMaterialElement )
 {
-	MaterialTextured material;
+	MaterialTextured* material = new MaterialTextured();
 	/// TODO
 	return material;
 }
@@ -234,12 +237,12 @@ void XMLReader::getPhong( XMLElement* xmlMaterialElement, Material* material )
 			xmlElement->DoubleAttribute("ks"), xmlElement->IntAttribute("exponent") );
 }
 
-void XMLReader::getTransformations( XMLElement* xmlTransformElement, Surfaces* surface )
+void XMLReader::getTransformations( XMLElement* xmlTransformElement, Surface* surface )
 {
 	XMLElement* xmlElement = xmlTransformElement->FirstChildElement();
 	while( xmlElement != nullptr )
 	{
-		std::cout << "I make a transformation" << std::endl;
+		//~ std::cout << "I make a transformation" << std::endl;
 		std::string type = xmlElement->Value();
 		if( type.compare("translate") == 0 )
 		{
@@ -269,7 +272,7 @@ void XMLReader::getTransformations( XMLElement* xmlTransformElement, Surfaces* s
 		
 		xmlElement->NextSiblingElement();
 	}
-	std::cout << surface->printTransformationMatrix() << std::endl;
+	std::cout << surface->transformationMatrixString() << std::endl;
 }
 
 /*

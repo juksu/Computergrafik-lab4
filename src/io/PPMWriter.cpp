@@ -2,17 +2,6 @@
 #include <cstdlib>
 #include <cstdio>
 
-void PPMWriter::setResolution( int horizontal, int vertical )
-{
-	this->horizontal = horizontal;
-	this->vertical = vertical;
-}
-
-void PPMWriter::setFilename( std::string filename )
-{
-	this->filename = filename;
-}
-
 void PPMWriter::writePPM( glm::vec3* image )
 {
 	FILE *fp = fopen(filename.c_str(), "w");
@@ -23,7 +12,9 @@ void PPMWriter::writePPM( glm::vec3* image )
 		{
 
 			fprintf( fp, "%3d %3d %3d \t", 
-					(int)image[i*horizontal+j][0], (int)image[i*horizontal+j][1], (int)image[i*horizontal+j][2] );
+					(int)(image[i*horizontal+j][0]*255), 
+					(int)(image[i*horizontal+j][1]*255),
+					(int)(image[i*horizontal+j][2]*255) );
 			
 		}
 		fprintf( fp, "\n" );

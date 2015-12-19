@@ -8,7 +8,7 @@
 #include "./io/XMLReader.hpp"
 #include "./graphics/Raytracer.hpp"
 
-//~ #include "./graphics/Surfaces.hpp"
+#include "./graphics/surface/Surface.hpp"
 //~ #include "./graphics/Sphere.hpp"
 //~ #include "./graphics/Material.hpp"
 
@@ -26,13 +26,13 @@ int main( int argc, char* argv[] )
 	if( argc > 1 )
 	{
 		xmlFilename = argv[1];
-		std::cout << xmlFilename << std::endl;
+		//~ std::cout << xmlFilename << std::endl;
 		
 	}
 	else
 	{
-		std::cout << "provide xml file" << std::endl;
-		std::cin >> xmlFilename;
+		std::cout << "provide xml file as command line argument" << std::endl;
+		return 0;
 	}
 	
 	// load xml
@@ -54,9 +54,10 @@ int main( int argc, char* argv[] )
 	raytracer.setResolution( xmlReader.getHorizontalResolution(), xmlReader.getVerticalResolution() );
 	raytracer.setMaxBounces( xmlReader.getMaxBounces() );
 	
-	vector<Surfaces> surfaceArray;
-	// get all spheres
-	xmlReader.getSurfaces();
+	//~ vector<Surface*> surfaceVector;
+	// get all surfaces
+	//~ surfaceVector = xmlReader.getSurfaces();
+	raytracer.setSurfaceVector( xmlReader.getSurfaces() );
 	
 	// get all 
 	

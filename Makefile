@@ -9,7 +9,10 @@ TARGET := a1106307_lab4
 SOURCE_FILES := $(wildcard $(SOURCEDIR)/*.cpp) \
 		$(wildcard $(SOURCEDIR)/lib/tinyxml2/*.cpp) \
 		$(wildcard $(SOURCEDIR)/io/*.cpp) \
-		$(wildcard $(SOURCEDIR)/graphics/*.cpp)
+		$(wildcard $(SOURCEDIR)/graphics/*.cpp) \
+		$(wildcard $(SOURCEDIR)/graphics/light/*.cpp) \
+		$(wildcard $(SOURCEDIR)/graphics/material/*.cpp) \
+		$(wildcard $(SOURCEDIR)/graphics/surface/*.cpp)
 OBJECT_FILES := $(subst $(SOURCEDIR)/, $(OBJECTDIR)/, $(SOURCE_FILES:.cpp=.o))
 DEPS := $(OBJECT_FILES:.o=.d)
 
@@ -42,4 +45,7 @@ clean:
 	-@rm -f $(SOURCEDIR)/*.o $(SOURCEDIR)/*.gch
 	-@rm -f $(SOURCEDIR)/io/*.o $(SOURCEDIR)/io/*.gch
 	-@rm -f $(SOURCEDIR)/graphics/*.o $(SOURCEDIR)/graphics/*.gch
+	-@rm -f $(SOURCEDIR)/graphics/light/*.o $(SOURCEDIR)/graphics/light/*.gch
+	-@rm -f $(SOURCEDIR)/graphics/material/*.o $(SOURCEDIR)/graphics/material/*.gch
+	-@rm -f $(SOURCEDIR)/graphics/surface/*.o $(SOURCEDIR)/graphics/surface.gch
 	-@rm -f *.ppm

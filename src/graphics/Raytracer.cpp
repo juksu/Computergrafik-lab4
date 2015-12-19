@@ -1,18 +1,49 @@
 #include "Raytracer.hpp"
 #include <cmath>
 #include "../lib/glm/gtc/matrix_transform.hpp"
+//~ #include "../lib/glm/gtc/matrix_inverse.hpp"
+#include "../lib/glm/gtx/string_cast.hpp"
 
 #include <iostream>
 using namespace glm;
 
-vec3 Raytracer::trace( vec4 ray )
+vec3 Raytracer::trace( vec3 point, vec3 ray, int step )
 {
-	vec3 color;
+	if( step > maxBounces )
+		return backgroundColor;
+	//~ 
+	//~ vec4 test;
+	//~ 
+	vec3 color = backgroundColor;
+	for( size_t i = 0; i < surfaceVector.size(); i++ )
+	{
+		if( surfaceVector.at(i)->intersect( point, ray ) )
+		{
+			color = surfaceVector.at(i)->getMaterial()->getColor();
+			//~ std::cout << "trace color " << to_string(surfaceVector.at(i)->getMaterial()->getColor()) << std::endl;
+			//~ /// TODO no depth test yet
+			break;
+		}
+	}
+	
+	/// iterate through objects
+	/// call for every object the intersect function
+	/// in intersect transform the ray and point with the inverse of transformation matrix
+	/// and not the object itself
+	
+	
+	
+	//~ vec3 color = vec3(ray[0], ray[1], ray[2]);
+			//~ if( !( color[0] == 0 && color[1] == 0 && color[2] == 0 ) )
+				//~ color = normalize(color);
+	//~ color = vec3(abs(ray[0]*255), abs(ray[1]*255), abs(ray[2]*255));
+	//~ vec3 color = ray;
 	
 	/// TODO: iterate through objects and find possible interaction
 	/// if no interaction return backgroundcolor
 	
-	color = backgroundColor;
+	//~ color = backgroundColor;
+	
 	
 	return color;
 }
@@ -78,49 +109,64 @@ void Raytracer::render()
 	for( int u = 0; u < horizontal; u++  )
 		for( int v = 0; v < vertical; v++ )
 		{		
-			// calculate ray;
+			// calculate the view plane point, assuming that the view plane is at z = -1;
 			/// TODO: the question is really does fov give the angle to the edge of the outermost pixel or to the middle of it
 			/// if edge: (horizontal-1)/horizontal, else (horizontal-1)/(horizontal-1)
 			/// the same for vertical
 			double x = (double)(2*u - (horizontal-1))/(horizontal-1)*tanX;
 			double y = (double)(2*v - (vertical-1))/(vertical-1)*tanY;
-			double z = 0;
-			// this assumes the camera is in the center with y-axis being up and viewplane at z = -1;
+			//~ double z = camera[2] - 1;
+			double z = -1;
+			
+			vec3 ray = normalize(vec3(x,y,z));
+			
+			/// TODO: do something about lookat, up and so on
 			
 			
-			//~ std::cout << "blaNOTrans " << x << ", " << y << ", " << z << ", " << 0 << std::endl;
-			/// TODO need to transform ray? Or maybe World?
-			mat4 lookAtTransformation = lookAt( camera, center, up );
+			// this assumes the camera is in the center with y-axis being up and viewplane at z = 1;
+			// to get the ray calculate viewplane - cameraposition
+			
+			//~ vec3 ray = vec3(x,y,z) - camera;
+			//~ std::cout << "xyz " << x << ", " << y << ", " << z << ", " << std::endl;
+			
+			//~ std::cout << "ray " << ray[0] << ", " << ray[1] << ", " << ray[2] << std::endl;
+			// normalize
+			//~ ray = normalize(ray);
+			//~ std::cout << "ray " << ray[0] << ", " << ray[1] << ", " << ray[2] << std::endl;
+			
+			/// TODO, no that does not work, inverse or not
+			// construct lookAtTransformation takin care about up and center and stuff
+			//~ mat4 lookAtTransformation = lookAt( camera, center, up );
+			//~ vec4 magdalena = affineInverse(lookAtTransformation) * vec4(ray[0],ray[1],ray[2],0);		// i told you
+			//~ std::cout << "magdalena " << magdalena[0] << ", " << magdalena[1] << ", " 
+					//~ << magdalena[2] << std::endl;	
+					
+			vec3 color = trace( camera, ray, 0 );
 
-			vec4 bla = lookAtTransformation * vec4(x,y,z,1);
-			
-			//~ std::cout << "blaTrans " << bla[0] << ", " << bla[1] << ", " << bla[2] << ", " << bla[3] << std::endl;
-			
-			
 
 			// for debuging
-			double r = 0;
-			double g = 0;
-			double b = 0;
+			//~ double r = 0;
+			//~ double g = 0;
+			//~ double b = 0;
 			
-			if( u > horizontal/2 - 1 )
+			//~ if( u > horizontal/2 - 1 )
 				//~ r = x;
-				r = bla[0];
-			if( v > vertical/2 - 1 )
+				//~ r = bla[0];
+			//~ if( v > vertical/2 - 1 )
 				//~ g = y;
-				g = bla[1];
+				//~ g = bla[1];
 			
 			//~ r = x;
 			//~ g = y;
 			//~ if( u > horizontal/2 - 1 && v > vertical/2 - 1 )
 				//~ b = x+y;
 			//~ b = z;
-			b = bla[2];
+			//~ b = bla[2];
 			
-			vec3 color = vec3(abs(r), abs(g), abs(b));
+			//~ vec3 color = vec3(abs(r), abs(g), abs(b));
 			//~ if( !( color[0] == 0 && color[1] == 0 && color[2] == 0 ) )
 				//~ color = normalize(color);
-			color = vec3(color[0]*255, color[1]*255, color[2]*255);
+			//~ color = vec3(color[0]*255, color[1]*255, color[2]*255);
 			
 			// need to swap picture, otherwise it will be upside down
 			image[ (vertical-1-v)*horizontal + u ] = color;

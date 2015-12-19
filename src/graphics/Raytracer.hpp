@@ -2,7 +2,8 @@
 #define RAYTRACER_H
 
 #include "../lib/glm/glm.hpp"
-#include "Surfaces.hpp"
+#include "./surface/Surface.hpp"
+#include "vector"
 //~ #include "../lib/glm/vec3.hpp"
 //~ #include "../lib/glm/mat4x4.hpp"
 //~ using namespace glm;
@@ -25,10 +26,10 @@ class Raytracer
 		int maxBounces;
 		
 		// Objectlist
-		Surfaces* surfaceList;
+		std::vector<Surface*> surfaceVector;
 		
 		// private functions
-		glm::vec3 trace( glm::vec4 ray );
+		glm::vec3 trace( glm::vec3 point, glm::vec3 ray, int step );
 		
 	public:
 		
@@ -40,6 +41,10 @@ class Raytracer
 		void setHorizontalFOV( double fov ){ this->fov = fov; }
 		void setResolution( int horizontal, int vertical );
 		void setMaxBounces( int maxBounces ){ this->maxBounces = maxBounces; }
+		
+		// surfaces
+		void setSurfaceVector( std::vector<Surface*> surfaceVector ){ this->surfaceVector = surfaceVector; }
+		
 		
 		glm::vec3* getImage(){ return image; }
 		
