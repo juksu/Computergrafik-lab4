@@ -2,7 +2,7 @@
 #include <cstdlib>
 #include <cstdio>
 
-void PPMWriter::writePPM( glm::vec3* image )
+void PPMWriter::writePPM( glm::dvec3* image )
 {
 	FILE *fp = fopen(filename.c_str(), "w");
 	fprintf(fp, "P3\n%d %d\n255\n", horizontal, vertical);	// header of ppm ASCII

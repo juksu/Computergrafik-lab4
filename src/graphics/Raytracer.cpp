@@ -1,35 +1,79 @@
 #include "Raytracer.hpp"
-#include <cmath>
+
 #include "../lib/glm/gtc/matrix_transform.hpp"
 //~ #include "../lib/glm/gtc/matrix_inverse.hpp"
 #include "../lib/glm/gtx/string_cast.hpp"
 
 #include <iostream>
+#include <limits>
+//~ #include <cmath>
+
 using namespace glm;
 
-vec3 Raytracer::trace( vec3 point, vec3 ray, int step )
+dvec3 Raytracer::shade( IntersectionResult intersectionResult, Surface* surface )
 {
-	if( step > maxBounces )
-		return backgroundColor;
-	//~ 
-	//~ vec4 test;
-	//~ 
-	vec3 color = backgroundColor;
-	for( size_t i = 0; i < surfaceArray.size(); i++ )
+	IntersectionResult shadowRayIntersection;
+	shadowRayIntersection.setIntersection( false );
+	
+	dvec3 color = surface->getMaterial()->getColor();
+	
+	for( size_t i = 0; i < lightArray.size(); i++ )
 	{
-		if( surfaceArray.at(i)->intersect( point, ray ) )
+		//~ pd = dynamic_cast<AmbientLight*>(lightArray.at(i))
+		
+		for( size_t j = 0; j < surfaceArray.size(); j++ )
 		{
-			color = surfaceArray.at(i)->getMaterial()->getColor();
-			//~ std::cout << "trace color " << to_string(surfaceArray.at(i)->getMaterial()->getColor()) << std::endl;
-			//~ /// TODO no depth test yet
-			break;
+			
+			
+			//~ shadowRayIntersection = 
+		
 		}
 	}
 	
-	/// iterate through objects
-	/// call for every object the intersect function
-	/// in intersect transform the ray and point with the inverse of transformation matrix
-	/// and not the object itself
+	return vec3(0,0,0);
+}
+
+
+dvec3 Raytracer::trace( dvec3 point, dvec3 ray, int step )
+{
+	if( step > maxBounces )
+		return backgroundColor;
+
+	dvec3 color = backgroundColor;
+	
+	IntersectionResult closestIntersection;
+	closestIntersection.setIntersection( false );
+	closestIntersection.setAlpha( std::numeric_limits<double>::max() );
+	size_t closestObject;
+	//~ double alphaMin = std::numeric_limits<double>::max();
+	
+	for( size_t i = 0; i < surfaceArray.size(); i++ )
+	{
+		IntersectionResult intersect = surfaceArray.at(i)->intersect( point, ray );
+		
+		/// TODO here is probably room for optimization
+		if( intersect.isIntersection() )
+		{
+			if( closestIntersection.getAlpha() > intersect.getAlpha() )
+			{
+				closestIntersection = intersect;
+				closestObject = i;
+			}
+		}
+	}
+	
+	if( closestIntersection.isIntersection() )
+	{	
+		surfaceArray.at(closestObject)->getIntersectionInformation( 
+				point, ray, &closestIntersection );
+		
+		color = shade( closestIntersection, surfaceArray.at(closestObject) );
+		
+		
+		//~ color = intersectionResult.getSurfaceColor();
+		//~ color = abs(closestIntersection.getNormal());
+		
+	}
 	
 	
 	
@@ -48,55 +92,10 @@ vec3 Raytracer::trace( vec3 point, vec3 ray, int step )
 	return color;
 }
 
-//~ void Raytracer::setBackgroundColor( vec3 backgroundColor )
-//~ {
-	//~ this->backgroundColor = backgroundColor;
-//~ }
-//~ 
-//~ void Raytracer::setCameraPosition( vec3 camera )
-//~ {
-	//~ this->camera = camera;
-//~ }
-//~ 
-//~ void Raytracer::setLookAt( vec3 center )
-//~ {
-	//~ this->center = center;
-//~ }
-//~ 
-//~ void Raytracer::setCameraUp( vec3 up )
-//~ {
-	//~ this->up = up;
-//~ }
-//~ void Raytracer::setHorizontalFOV( double fov )
-//~ {
-	//~ this->fov = fov;
-//~ }
-//~ void Raytracer::setResolution( int horizontal, int vertical )
-//~ {
-	//~ this->horizontal = horizontal;
-	//~ this->vertical = vertical;
-//~ }
-//~ 
-//~ void Raytracer::setMaxBounces( int maxBounces )
-//~ {
-	//~ this->maxBounces = maxBounces;
-//~ }
-
-
-//~ void Raytracer::setupViewPlane()
-//~ {
-	//~ /// TODO
-//~ }
-
-//~ vec3* Raytracer::getImage()
-//~ {
-	//~ return image;
-//~ }
-
 void Raytracer::render()
 {
 	/// TODO all the graphics processing
-	image = new vec3[horizontal*vertical];		
+	image = new dvec3[horizontal*vertical];		
 	
 	// calculate the tan values for x and y using radian
 	double tanX = tan( fov * M_PI / 180 );
@@ -118,7 +117,7 @@ void Raytracer::render()
 			//~ double z = camera[2] - 1;
 			double z = -1;
 			
-			vec3 ray = normalize(vec3(x,y,z));
+			dvec3 ray = normalize(dvec3(x,y,z));
 			
 			/// TODO: do something about lookat, up and so on
 			
@@ -141,7 +140,7 @@ void Raytracer::render()
 			//~ std::cout << "magdalena " << magdalena[0] << ", " << magdalena[1] << ", " 
 					//~ << magdalena[2] << std::endl;	
 					
-			vec3 color = trace( camera, ray, 0 );
+			dvec3 color = trace( camera, ray, 0 );
 
 
 			// for debuging

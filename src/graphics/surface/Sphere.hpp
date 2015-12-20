@@ -8,14 +8,16 @@ class Sphere : public Surface
 {
 	private:
 		double radius;
-		glm::vec3 position;
+		glm::dvec3 position;
 		
 	public:
 		void setRadius( double radius ){ this->radius = radius; }
 		double getRadius(){ return radius; }
-		void setPosition( glm::vec3 position ){ this->position = position; }
-		glm::vec3 getPosition(){ return position; }
-		virtual bool intersect( glm::vec3 point, glm::vec3 ray );
+		void setPosition( glm::dvec3 position ){ this->position = position; }
+		glm::dvec3 getPosition(){ return position; }
+		virtual IntersectionResult intersect( glm::dvec3 point, glm::dvec3 ray );
+		virtual void getIntersectionInformation( glm::dvec3 point, glm::dvec3 ray, 
+				IntersectionResult* intersectionResult );
 		//~ bool intersect( glm::vec3 point, glm::vec3 ray );
 
 };

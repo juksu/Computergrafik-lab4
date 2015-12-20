@@ -51,12 +51,12 @@ std::string XMLReader::getOutputFilename()
 	return "out.ppm";
 }
 
-glm::vec3 XMLReader::getBackgroundColor()
+glm::dvec3 XMLReader::getBackgroundColor()
 {
 	XMLElement* xmlElement = xmlDocument.FirstChildElement("scene")
 			->FirstChildElement("background_color");
 		
-	glm::vec3 backgroundColor = glm::vec3(
+	glm::dvec3 backgroundColor = glm::dvec3(
 			xmlElement->DoubleAttribute("r"),
 			xmlElement->DoubleAttribute("g"),
 			xmlElement->DoubleAttribute("b") );
@@ -70,12 +70,12 @@ glm::vec3 XMLReader::getBackgroundColor()
 /*
  * camera
  */
-glm::vec3 XMLReader::getCameraPosition()
+glm::dvec3 XMLReader::getCameraPosition()
 {
 	XMLElement* xmlElement = xmlDocument.FirstChildElement("scene")
 			->FirstChildElement("camera")->FirstChildElement("position");
 	
-	glm::vec3 cameraPosition = glm::vec3(
+	glm::dvec3 cameraPosition = glm::dvec3(
 			xmlElement->DoubleAttribute("x"),
 			xmlElement->DoubleAttribute("y"),
 			xmlElement->DoubleAttribute("z") );
@@ -83,12 +83,12 @@ glm::vec3 XMLReader::getCameraPosition()
 	return cameraPosition;
 }
 
-glm::vec3 XMLReader::getLookAt()
+glm::dvec3 XMLReader::getLookAt()
 {
 	XMLElement* xmlElement = xmlDocument.FirstChildElement("scene")
 			->FirstChildElement("camera")->FirstChildElement("lookat");
 	
-	glm::vec3 lookAt = glm::vec3(
+	glm::dvec3 lookAt = glm::dvec3(
 			xmlElement->DoubleAttribute("x"),
 			xmlElement->DoubleAttribute("y"),
 			xmlElement->DoubleAttribute("z") );
@@ -96,12 +96,12 @@ glm::vec3 XMLReader::getLookAt()
 	return lookAt;
 }
 
-glm::vec3 XMLReader::getCameraUp()
+glm::dvec3 XMLReader::getCameraUp()
 {
 	XMLElement* xmlElement = xmlDocument.FirstChildElement("scene")
 			->FirstChildElement("camera")->FirstChildElement("up");
 	
-	glm::vec3 up = glm::vec3(
+	glm::dvec3 up = glm::dvec3(
 			xmlElement->DoubleAttribute("x"),
 			xmlElement->DoubleAttribute("y"),
 			xmlElement->DoubleAttribute("z") );
@@ -171,7 +171,7 @@ std::vector<Light*> XMLReader::getLights()
 			PointLight* light = new PointLight();
 			
 			xmlElement = xmlLightElement->FirstChildElement("position");
-			glm::vec3 position = glm::vec3( xmlElement->DoubleAttribute("x"), 
+			glm::dvec3 position = glm::dvec3( xmlElement->DoubleAttribute("x"), 
 					xmlElement->DoubleAttribute("y"), xmlElement->DoubleAttribute("z") );
 			light->setPosition( position );
 			
@@ -183,7 +183,7 @@ std::vector<Light*> XMLReader::getLights()
 			ParallelLight* light = new ParallelLight();
 			
 			xmlElement = xmlLightElement->FirstChildElement("direction");
-			glm::vec3 direction = glm::vec3( xmlElement->DoubleAttribute("x"), 
+			glm::dvec3 direction = glm::dvec3( xmlElement->DoubleAttribute("x"), 
 					xmlElement->DoubleAttribute("y"), xmlElement->DoubleAttribute("z") );
 			light->setDirection( direction );
 			
@@ -195,12 +195,12 @@ std::vector<Light*> XMLReader::getLights()
 			SpotLight* light = new SpotLight();
 			
 			xmlElement = xmlLightElement->FirstChildElement("position");
-			glm::vec3 position = glm::vec3( xmlElement->DoubleAttribute("x"), 
+			glm::dvec3 position = glm::dvec3( xmlElement->DoubleAttribute("x"), 
 					xmlElement->DoubleAttribute("y"), xmlElement->DoubleAttribute("z") );
 			light->setPosition( position );
 			
 			xmlElement = xmlLightElement->FirstChildElement("direction");
-			glm::vec3 direction = glm::vec3( xmlElement->DoubleAttribute("x"), 
+			glm::dvec3 direction = glm::dvec3( xmlElement->DoubleAttribute("x"), 
 					xmlElement->DoubleAttribute("y"), xmlElement->DoubleAttribute("z") );
 			light->setDirection( direction );
 			
@@ -213,7 +213,7 @@ std::vector<Light*> XMLReader::getLights()
 		
 		// set color
 		xmlElement = xmlLightElement->FirstChildElement("color");
-		glm::vec3 color = glm::vec3( xmlElement->DoubleAttribute("r"), 
+		glm::dvec3 color = glm::dvec3( xmlElement->DoubleAttribute("r"), 
 				xmlElement->DoubleAttribute("g"), xmlElement->DoubleAttribute("b") );
 		lightArray.back()->setColor( color );
 		
@@ -249,7 +249,7 @@ std::vector<Surface*> XMLReader::getSurfaces()
 			
 			xmlElement = xmlSurfaceElement->FirstChildElement("position");
 			
-			glm::vec3 position = glm::vec3( xmlElement->DoubleAttribute("x"), 
+			glm::dvec3 position = glm::dvec3( xmlElement->DoubleAttribute("x"), 
 					xmlElement->DoubleAttribute("y"), xmlElement->DoubleAttribute("z") );
 			sphere->setPosition( position );
 			
@@ -285,7 +285,7 @@ MaterialSolid* XMLReader::getMaterialSolid( XMLElement* xmlMaterialElement )
 	//~ std::cout << xmlMaterialElement->Value() << std::endl;
 	
 	XMLElement* xmlElement = xmlMaterialElement->FirstChildElement("color");
-	glm::vec3 color = glm::vec3( xmlElement->DoubleAttribute("r"), 
+	glm::dvec3 color = glm::dvec3( xmlElement->DoubleAttribute("r"), 
 			xmlElement->DoubleAttribute("g"), xmlElement->DoubleAttribute("b") );
 	material->setColor( color );
 	
@@ -327,13 +327,13 @@ void XMLReader::getTransformations( XMLElement* xmlTransformElement, Surface* su
 		std::string type = xmlElement->Value();
 		if( type.compare("translate") == 0 )
 		{
-			glm::vec3 translate = glm::vec3( xmlElement->DoubleAttribute("x"), 
+			glm::dvec3 translate = glm::dvec3( xmlElement->DoubleAttribute("x"), 
 					xmlElement->DoubleAttribute("y"), xmlElement->DoubleAttribute("z") );
 			surface->translate( translate );
 		}
 		else if( type.compare("scale") == 0 )
 		{
-			glm::vec3 scale = glm::vec3( xmlElement->DoubleAttribute("x"), 
+			glm::dvec3 scale = glm::dvec3( xmlElement->DoubleAttribute("x"), 
 					xmlElement->DoubleAttribute("y"), xmlElement->DoubleAttribute("z") );
 			surface->scale( scale );
 		}

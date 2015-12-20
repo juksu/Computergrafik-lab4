@@ -1,15 +1,16 @@
 #ifndef PARALLELLIGHT_H
 #define PARALLELLIGHT_H
 
+#include "Light.hpp"
 #include "../../lib/glm/glm.hpp"
 
 class ParallelLight : public Light
 {
 	private:
-		glm::vec3 direction;
+		glm::dvec3 direction;
 	public:
-		void setDirection( glm::vec3 direction ){ this->direction = direction; }
-		glm::vec3 getDirection(){ return direction; }
+		void setDirection( glm::dvec3 direction ){ this->direction = direction; }
+		glm::dvec3 getDirection(){ return direction; }
 };
 
 #endif // PARALLELLIGHT_H

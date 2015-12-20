@@ -41,11 +41,7 @@ run:
 clean:
 	-@rm -f -r $(OBJECTDIR)
 	-@rm -f -r $(BINDIR)
-	-@rm -f $(SOURCEDIR)/lib/tinyxml2/*.o
-	-@rm -f $(SOURCEDIR)/*.o $(SOURCEDIR)/*.gch
-	-@rm -f $(SOURCEDIR)/io/*.o $(SOURCEDIR)/io/*.gch
-	-@rm -f $(SOURCEDIR)/graphics/*.o $(SOURCEDIR)/graphics/*.gch
-	-@rm -f $(SOURCEDIR)/graphics/light/*.o $(SOURCEDIR)/graphics/light/*.gch
-	-@rm -f $(SOURCEDIR)/graphics/material/*.o $(SOURCEDIR)/graphics/material/*.gch
-	-@rm -f $(SOURCEDIR)/graphics/surface/*.o $(SOURCEDIR)/graphics/surface.gch
+	-@rm -f $(SOURCE_FILES:.cpp=.o)
+	-@rm -f -r $(SOURCEDIR)/*.gch
+	-@rm -f $(SOURCE_FILES:.cpp=.hpp.gch)
 	-@rm -f *.ppm

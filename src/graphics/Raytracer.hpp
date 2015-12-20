@@ -1,10 +1,12 @@
 #ifndef RAYTRACER_H
 #define RAYTRACER_H
 
-#include "../lib/glm/glm.hpp"
-#include "./surface/Surface.hpp"
+#include "IntersectionResult.hpp"
 #include "./light/Light.hpp"
-#include "vector"
+#include "./surface/Surface.hpp"
+#include "../lib/glm/glm.hpp"
+#include <vector>
+
 //~ #include "../lib/glm/vec3.hpp"
 //~ #include "../lib/glm/mat4x4.hpp"
 //~ using namespace glm;
@@ -13,14 +15,14 @@ class Raytracer
 {
 	private:
 		// array where the color information is stored
-		glm::vec3* image;
+		glm::dvec3* image;
 		
-		glm::vec3 backgroundColor;
+		glm::dvec3 backgroundColor;
 		
 		// all the camera stuff
-		glm::vec3 camera;
-		glm::vec3 center;
-		glm::vec3 up;
+		glm::dvec3 camera;
+		glm::dvec3 center;
+		glm::dvec3 up;
 		double fov;
 		int horizontal;
 		int vertical;
@@ -33,15 +35,16 @@ class Raytracer
 		std::vector<Light*> lightArray;
 		
 		// private functions
-		glm::vec3 trace( glm::vec3 point, glm::vec3 ray, int step );
+		glm::dvec3 shade( IntersectionResult intersection, Surface* objectNumber );
+		glm::dvec3 trace( glm::dvec3 point, glm::dvec3 ray, int step );
 		
 	public:
 		
-		void setBackgroundColor( glm::vec3 backgroundColor ){ this->backgroundColor = backgroundColor; }
+		void setBackgroundColor( glm::dvec3 backgroundColor ){ this->backgroundColor = backgroundColor; }
 		// camera
-		void setCameraPosition( glm::vec3 camera ){ this->camera = camera; }
-		void setLookAt( glm::vec3 center ){ this->center = center; }
-		void setCameraUp( glm::vec3 up ){ this->up = up; }
+		void setCameraPosition( glm::dvec3 camera ){ this->camera = camera; }
+		void setLookAt( glm::dvec3 center ){ this->center = center; }
+		void setCameraUp( glm::dvec3 up ){ this->up = up; }
 		void setHorizontalFOV( double fov ){ this->fov = fov; }
 		void setResolution( int horizontal, int vertical );
 		void setMaxBounces( int maxBounces ){ this->maxBounces = maxBounces; }
@@ -54,7 +57,7 @@ class Raytracer
 		
 		void render();
 		
-		glm::vec3* getImage(){ return image; }
+		glm::dvec3* getImage(){ return image; }
 		
 		//~ void setupViewPlane();
 		

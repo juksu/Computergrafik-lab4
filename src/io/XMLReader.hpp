@@ -24,12 +24,12 @@ class XMLReader
 		
 		// basic
 		std::string getOutputFilename();
-		glm::vec3 getBackgroundColor();
+		glm::dvec3 getBackgroundColor();
 		
 		// camera
-		glm::vec3 getCameraPosition();
-		glm::vec3 getLookAt();
-		glm::vec3 getCameraUp();
+		glm::dvec3 getCameraPosition();
+		glm::dvec3 getLookAt();
+		glm::dvec3 getCameraUp();
 		double getHorizontalFOV();
 		int getHorizontalResolution();
 		int getVerticalResolution();

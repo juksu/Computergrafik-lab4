@@ -6,11 +6,11 @@
 class Light
 {
 	private:
-		glm::vec3 color;
+		glm::dvec3 color;
 	
 	public:
-		void setColor( glm::vec3 color ){ this->color = color; }
-		glm::vec3 getColor(){ return color; }
+		void setColor( glm::dvec3 color ){ this->color = color; }
+		virtual glm::dvec3 getColor(){ return color; }
 };
 
 #endif // LIGHT_H

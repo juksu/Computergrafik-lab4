@@ -1,6 +1,8 @@
 #ifndef MATERIAL_H
 #define MATERIAL_H
 
+#include "../../lib/glm/glm.hpp"
+
 class Material
 {
 	private:
@@ -18,7 +20,7 @@ class Material
 		void setTransmittance( double transmittance ) { this->transmittance = transmittance; }
 		void setRefraction( double refraction ) {this->refraction = refraction; }
 		
-		virtual glm::vec3 getColor() = 0;
+		virtual glm::dvec3 getColor() = 0;
 };
 
 inline void Material::setPhong( double ka, double kd, double ks, int exponent )

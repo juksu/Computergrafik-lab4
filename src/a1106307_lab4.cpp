@@ -4,6 +4,7 @@
 #include <vector>
 //~ #include "./lib/tinyxml2/tinyxml2.h"
 #include "./lib/glm/glm.hpp"
+#include "./lib/glm/gtx/string_cast.hpp"
 #include "./io/PPMWriter.hpp"
 #include "./io/XMLReader.hpp"
 #include "./graphics/Raytracer.hpp"
@@ -63,6 +64,9 @@ int main( int argc, char* argv[] )
 	raytracer.setLightArray( xmlReader.getLights() );
 	
 	
+	glm::dvec3 test = glm::dvec3(1,2,3);
+	test = test * 2.0;
+	cout << glm::to_string( glm::dvec3(2,2,2) + test) << endl;
 	
 	//~ raytracer.setupViewPlane();
 	
