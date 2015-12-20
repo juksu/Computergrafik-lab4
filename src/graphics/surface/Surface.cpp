@@ -13,7 +13,7 @@ void Surface::scale( glm::dvec3 scale )
 	transformations = glm::scale( transformations, scale );
 }
 
-// important glm::rotate uses degrees and only accepts float
+// important: glm::rotate uses degrees
 void Surface::rotateX( double rotateX )
 {
 	transformations = glm::rotate( transformations, rotateX, glm::dvec3(1,0,0) );

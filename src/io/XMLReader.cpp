@@ -147,9 +147,12 @@ int XMLReader::getMaxBounces()
  /*
   * lights
   */
-std::vector<Light*> XMLReader::getLights()
+//~ std::vector<Light*> XMLReader::getLights()
+LightContainer XMLReader::getLights()
 {
-	std::vector<Light*> lightArray;
+	//~ std::vector<Light*> lightArray;
+	
+	LightContainer lights;
 	
 	XMLElement* xmlLightElement = xmlDocument.FirstChildElement("scene")
 			->FirstChildElement("lights")->FirstChildElement();
@@ -163,36 +166,60 @@ std::vector<Light*> XMLReader::getLights()
 		if( type.compare("ambient_light") == 0 )
 		{
 			AmbientLight* light = new AmbientLight();
-			lightArray.push_back(light);
+			
+			xmlElement = xmlLightElement->FirstChildElement("color");
+			glm::dvec3 color = glm::dvec3( xmlElement->DoubleAttribute("r"), 
+					xmlElement->DoubleAttribute("g"), xmlElement->DoubleAttribute("b") );
+			light->setColor( color );
+			
+			lights.addAmbientLight( light );
+			//~ lightArray.push_back(light);
 		}
 		
 		if( type.compare("point_light") == 0 )
 		{
 			PointLight* light = new PointLight();
 			
+			xmlElement = xmlLightElement->FirstChildElement("color");
+			glm::dvec3 color = glm::dvec3( xmlElement->DoubleAttribute("r"), 
+					xmlElement->DoubleAttribute("g"), xmlElement->DoubleAttribute("b") );
+			light->setColor( color );
+			
 			xmlElement = xmlLightElement->FirstChildElement("position");
 			glm::dvec3 position = glm::dvec3( xmlElement->DoubleAttribute("x"), 
 					xmlElement->DoubleAttribute("y"), xmlElement->DoubleAttribute("z") );
 			light->setPosition( position );
 			
-			lightArray.push_back(light);
+			//~ lightArray.push_back(light);
+			lights.addPointLight( light );
 		}
 		
 		if( type.compare("parallel_light") == 0 )
 		{
 			ParallelLight* light = new ParallelLight();
 			
+			xmlElement = xmlLightElement->FirstChildElement("color");
+			glm::dvec3 color = glm::dvec3( xmlElement->DoubleAttribute("r"), 
+					xmlElement->DoubleAttribute("g"), xmlElement->DoubleAttribute("b") );
+			light->setColor( color );
+			
 			xmlElement = xmlLightElement->FirstChildElement("direction");
 			glm::dvec3 direction = glm::dvec3( xmlElement->DoubleAttribute("x"), 
 					xmlElement->DoubleAttribute("y"), xmlElement->DoubleAttribute("z") );
 			light->setDirection( direction );
 			
-			lightArray.push_back(light);
+			//~ lightArray.push_back(light);
+			lights.addParallelLight( light );
 		}
 		
 		if( type.compare("spot_light") == 0 )
 		{
 			SpotLight* light = new SpotLight();
+			
+			xmlElement = xmlLightElement->FirstChildElement("color");
+			glm::dvec3 color = glm::dvec3( xmlElement->DoubleAttribute("r"), 
+					xmlElement->DoubleAttribute("g"), xmlElement->DoubleAttribute("b") );
+			light->setColor( color );
 			
 			xmlElement = xmlLightElement->FirstChildElement("position");
 			glm::dvec3 position = glm::dvec3( xmlElement->DoubleAttribute("x"), 
@@ -208,18 +235,19 @@ std::vector<Light*> XMLReader::getLights()
 			light->setFalloffAlpha1( xmlElement->DoubleAttribute("alpha1") ); 
 			light->setFalloffAlpha2( xmlElement->DoubleAttribute("alpha2") ); 
 			
-			lightArray.push_back(light);
+			//~ lightArray.push_back(light);
+			lights.addSpotlLight( light );
 		}
 		
-		// set color
-		xmlElement = xmlLightElement->FirstChildElement("color");
-		glm::dvec3 color = glm::dvec3( xmlElement->DoubleAttribute("r"), 
-				xmlElement->DoubleAttribute("g"), xmlElement->DoubleAttribute("b") );
-		lightArray.back()->setColor( color );
+		//~ // set color
+		//~ xmlElement = xmlLightElement->FirstChildElement("color");
+		//~ glm::dvec3 color = glm::dvec3( xmlElement->DoubleAttribute("r"), 
+				//~ xmlElement->DoubleAttribute("g"), xmlElement->DoubleAttribute("b") );
+		//~ lightArray.back()->setColor( color );
 		
 		xmlLightElement = xmlLightElement->NextSiblingElement();
 	}
-	return lightArray;
+	return lights;
 }
 /*
  * lights END

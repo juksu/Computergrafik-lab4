@@ -18,7 +18,6 @@ class Sphere : public Surface
 		virtual IntersectionResult intersect( glm::dvec3 point, glm::dvec3 ray );
 		virtual void getIntersectionInformation( glm::dvec3 point, glm::dvec3 ray, 
 				IntersectionResult* intersectionResult );
-		//~ bool intersect( glm::vec3 point, glm::vec3 ray );
 
 };
 

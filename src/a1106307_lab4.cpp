@@ -28,7 +28,6 @@ int main( int argc, char* argv[] )
 	{
 		xmlFilename = argv[1];
 		//~ std::cout << xmlFilename << std::endl;
-		
 	}
 	else
 	{
@@ -61,25 +60,7 @@ int main( int argc, char* argv[] )
 	raytracer.setSurfaceArray( xmlReader.getSurfaces() );
 	
 	// get all lights
-	raytracer.setLightArray( xmlReader.getLights() );
-	
-	
-	glm::dvec3 test = glm::dvec3(1,2,3);
-	test = test * 2.0;
-	cout << glm::to_string( glm::dvec3(2,2,2) + test) << endl;
-	
-	//~ raytracer.setupViewPlane();
-	
-	//~ glm::vec3 camera = xmlReader.getCameraPosition();
-	//~ cout << "camera ";
-	//~ for( int i = 0; i < 3; i++ )
-		//~ cout << camera[i] << " ";
-	//~ cout << endl;
-	
-	//~ glm::vec3* image = new glm::vec3[horizontal*vertical];		
-	//~ for( int i = 0; i < vertical; ++i )
-		//~ for( int j = 0; j < horizontal; ++j )			
-			//~ image[ i*horizontal + j ] = glm::vec3( i % 256, j % 256, (i * j) % 256 );
+	raytracer.setLightContainer( xmlReader.getLights() );
 	
 	raytracer.render();
 	

@@ -13,24 +13,46 @@ using namespace glm;
 dvec3 Raytracer::shade( IntersectionResult intersectionResult, Surface* surface )
 {
 	IntersectionResult shadowRayIntersection;
-	shadowRayIntersection.setIntersection( false );
+	
 	
 	dvec3 color = surface->getMaterial()->getColor();
+	//~ dvec3 color = backgroundColor;
 	
-	for( size_t i = 0; i < lightArray.size(); i++ )
-	{
-		//~ pd = dynamic_cast<AmbientLight*>(lightArray.at(i))
-		
-		for( size_t j = 0; j < surfaceArray.size(); j++ )
-		{
-			
-			
-			//~ shadowRayIntersection = 
-		
-		}
-	}
+	//~ std::cout << "shade" << std::endl;
 	
-	return vec3(0,0,0);
+	std::vector<ParallelLight*> parallelLights = lightContainer.getParallelLights();
+	
+	
+	/// TODO some error
+	//~ shadowRayIntersection.setIntersection( false );
+	//~ for( size_t i = 0; i < parallelLights.size(); i++ )
+	//~ {
+		//~ for( size_t j = 0; j < surfaceArray.size(); j++ )
+		//~ {
+			//~ std::cout << "testing shadowray intersection" << std::endl;
+			//~ shadowRayIntersection = surfaceArray.at(i)->intersect( 
+					//~ intersectionResult.getIntersectionPoint(), 
+					//~ normalize( -(parallelLights.at(i)->getDirection()) ) );
+			//~ 
+			//~ if( shadowRayIntersection.isIntersection() )
+			//~ {
+				//~ std::cout << "intersection" << std::endl;
+				//~ break;
+			//~ }
+		//~ }
+		//~ if( !shadowRayIntersection.isIntersection() )
+		//~ {
+			//~ 
+			//~ std::cout << "no intersection" << std::endl;
+			//~ /// TODO something very wrong:
+			//~ /// example1.xml -> it thinks left is completly in shadow, the other completely in light
+			//~ color = surface->getMaterial()->getColor();
+		//~ }
+	//~ }
+	
+	//~ parallelLights.at(0)->getDirection();
+	
+	return color;
 }
 
 
@@ -54,6 +76,7 @@ dvec3 Raytracer::trace( dvec3 point, dvec3 ray, int step )
 		/// TODO here is probably room for optimization
 		if( intersect.isIntersection() )
 		{
+			//~ std::cout << "surface intersection" << std::endl;
 			if( closestIntersection.getAlpha() > intersect.getAlpha() )
 			{
 				closestIntersection = intersect;
@@ -70,24 +93,22 @@ dvec3 Raytracer::trace( dvec3 point, dvec3 ray, int step )
 		color = shade( closestIntersection, surfaceArray.at(closestObject) );
 		
 		
-		//~ color = intersectionResult.getSurfaceColor();
-		//~ color = abs(closestIntersection.getNormal());
+		/// for debugging
+		//~ color = surfaceArray.at(closestObject)->getMaterial()->getColor();
+		//~ color = closestIntersection.getIntersectionPoint();
+		//~ color = closestIntersection.getNormal();
+		//~ color = normalize(color);
+		//~ if( color[0] < 0 )
+			//~ color[0] = 0;
+		//~ if( color[1] < 0 )
+			//~ color[1] = 0;
+		//~ if( color[2] < 0 )
+			//~ color[2] = 0;
+		
+		//~ color = abs(color);
+		
 		
 	}
-	
-	
-	
-	//~ vec3 color = vec3(ray[0], ray[1], ray[2]);
-			//~ if( !( color[0] == 0 && color[1] == 0 && color[2] == 0 ) )
-				//~ color = normalize(color);
-	//~ color = vec3(abs(ray[0]*255), abs(ray[1]*255), abs(ray[2]*255));
-	//~ vec3 color = ray;
-	
-	/// TODO: iterate through objects and find possible interaction
-	/// if no interaction return backgroundcolor
-	
-	//~ color = backgroundColor;
-	
 	
 	return color;
 }
@@ -120,8 +141,7 @@ void Raytracer::render()
 			dvec3 ray = normalize(dvec3(x,y,z));
 			
 			/// TODO: do something about lookat, up and so on
-			
-			
+
 			// this assumes the camera is in the center with y-axis being up and viewplane at z = 1;
 			// to get the ray calculate viewplane - cameraposition
 			
@@ -141,53 +161,9 @@ void Raytracer::render()
 					//~ << magdalena[2] << std::endl;	
 					
 			dvec3 color = trace( camera, ray, 0 );
-
-
-			// for debuging
-			//~ double r = 0;
-			//~ double g = 0;
-			//~ double b = 0;
-			
-			//~ if( u > horizontal/2 - 1 )
-				//~ r = x;
-				//~ r = bla[0];
-			//~ if( v > vertical/2 - 1 )
-				//~ g = y;
-				//~ g = bla[1];
-			
-			//~ r = x;
-			//~ g = y;
-			//~ if( u > horizontal/2 - 1 && v > vertical/2 - 1 )
-				//~ b = x+y;
-			//~ b = z;
-			//~ b = bla[2];
-			
-			//~ vec3 color = vec3(abs(r), abs(g), abs(b));
-			//~ if( !( color[0] == 0 && color[1] == 0 && color[2] == 0 ) )
-				//~ color = normalize(color);
-			//~ color = vec3(color[0]*255, color[1]*255, color[2]*255);
 			
 			// need to swap picture, otherwise it will be upside down
 			image[ (vertical-1-v)*horizontal + u ] = color;
 			
 		}
-		
-		
-		// for debuging?
-		//~ double max = 0;
-		//~ for( int i = 0; i < vertical; i++ )
-			//~ for( int j = 0; j < horizontal; j++ )
-				//~ for( int k = 0; k < 3; k++ )
-					//~ if( image[ i*horizontal + j ][k] > max )
-						//~ max = image[ i*horizontal + j ][k];
-//~ 
-		//~ 
-		//~ for( int i = 0; i < vertical; i++ )
-			//~ for( int j = 0; j < horizontal; j++ )
-				//~ for( int k = 0; k < 3; k++ )
-				//~ {
-					//~ image[ i*horizontal + j ][k] /= max;
-					//~ image[ i*horizontal + j ][k] *= 255;
-				//~ }
-		
 }

@@ -2,7 +2,7 @@
 #define RAYTRACER_H
 
 #include "IntersectionResult.hpp"
-#include "./light/Light.hpp"
+#include "./light/LightContainer.hpp"
 #include "./surface/Surface.hpp"
 #include "../lib/glm/glm.hpp"
 #include <vector>
@@ -32,7 +32,8 @@ class Raytracer
 		std::vector<Surface*> surfaceArray;
 		
 		// lightlist
-		std::vector<Light*> lightArray;
+		//~ std::vector<Light*> lightArray;
+		LightContainer lightContainer;
 		
 		// private functions
 		glm::dvec3 shade( IntersectionResult intersection, Surface* objectNumber );
@@ -50,7 +51,8 @@ class Raytracer
 		void setMaxBounces( int maxBounces ){ this->maxBounces = maxBounces; }
 		
 		// lights
-		void setLightArray( std::vector<Light*> lightArray ){ this->lightArray = lightArray; }
+		//~ void setLightArray( std::vector<Light*> lightArray ){ this->lightArray = lightArray; }
+		void setLightContainer( LightContainer lightContainer ){ this->lightContainer = lightContainer; }
 		
 		// surfaces
 		void setSurfaceArray( std::vector<Surface*> surfaceArray ){ this->surfaceArray = surfaceArray; }

@@ -12,7 +12,7 @@ IntersectionResult Sphere::intersect( dvec3 point, dvec3 ray )
 	//~ double alpha = std::numeric_limits<double>::max();
 	
 	// transform point and ray into object coordinates with inverse transformation matrix
-	// all transformations are affine, so affineInvserse should work fine.
+	// all transformations are affine, so affineInverse should work fine.
 	/// TODO, for optimization i may calculate this only once (when setting transformation maybe?)
 	//~ std::cout << to_string( getTransformationMatrix() ) << std::endl;
 	dmat4 inverseTransformations = affineInverse( getTransformationMatrix() );
@@ -33,12 +33,9 @@ IntersectionResult Sphere::intersect( dvec3 point, dvec3 ray )
 		
 	else
 	{
-		intersectionResult.setIntersection( true );
+		//~ intersectionResult.setIntersection( true );
 		
-		/// TODO: that works fine for solid material but with textured i probably need to point
-		//~ intersectionResult.setSurfaceColor( getMaterial()->getColor() );
-		
-		double alpha;
+		double alpha = -1;
 		// alpha = ~ 0
 		if( t < std::numeric_limits<double>::epsilon() && t > -std::numeric_limits<double>::epsilon() )
 		{
@@ -52,37 +49,26 @@ IntersectionResult Sphere::intersect( dvec3 point, dvec3 ray )
 			double sqrtT = std::sqrt(t);
 			double alpha1 = (-b+sqrtT)/(2*a);
 			double alpha2 = (-b-sqrtT)/(2*a);
+			
+			
+			// if alpha < 0 than intersection is in the other direction, if it is 0 than intersection with the own wall
 			if( alpha1 < alpha2 )
-				alpha = alpha1;
+			{
+				//~ if( alpha1 > 0 )
+				if( alpha1 > std::numeric_limits<double>::epsilon() )
+					alpha = alpha1;
+				else
+					alpha = alpha2;
+			}
 			else
 				alpha = alpha2;
 		}
 		
 		intersectionResult.setAlpha( alpha );
-		
-		
-		
-		
-		//~ /// TODO: get point, normal, reflection, refraction
-		//~ // need to transform back into world space
-	//~ 
-		//~ // the intersection point is ray origin + alpha * ray direction
-		//~ dvec3 point = point + (ray*alpha);
-		//~ intersectionResult.setIntersectionPoint( 
-				//~ dvec3(getTransformationMatrix()* dvec4( point, 1) ) );
-	//~ 
-		//~ // the normal is the intersection point - center of the sphere
-		//~ dvec3 normal = normalize( point - position );
-		//~ normal = normalize( normal );
-		//~ intersectionResult.setNormal( 
-				//~ normalize( dvec3( getTransformationMatrix() * dvec4( normal, 0 ) ) ) );
-				//~ 
-		//~ // angle of incident = angle of reflection therefore 
-		//~ // it is ray direction - 2( normal . ray direction ) * normal
-		//~ dvec3 reflection = normalize( ray - 2* ( dot( normal, ray ) ) * normal );
-		//~ intersectionResult.setReflectionVector( 
-				//~ dvec3( getTransformationMatrix() * dvec4( reflection, 0 ) ) );
-		
+		//~ std::cout << alpha << std::endl;
+		if( alpha > std::numeric_limits<double>::epsilon()*alpha )
+			intersectionResult.setIntersection( true );
+			
 	}
 	
 	return intersectionResult;
