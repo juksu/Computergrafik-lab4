@@ -15,8 +15,8 @@ dvec3 Raytracer::shade( IntersectionResult intersectionResult, Surface* surface 
 	IntersectionResult shadowRayIntersection;
 	
 	
-	dvec3 color = surface->getMaterial()->getColor();
-	//~ dvec3 color = backgroundColor;
+	//~ dvec3 color = surface->getMaterial()->getColor();
+	dvec3 color = backgroundColor;
 	
 	//~ std::cout << "shade" << std::endl;
 	
@@ -24,31 +24,35 @@ dvec3 Raytracer::shade( IntersectionResult intersectionResult, Surface* surface 
 	
 	
 	/// TODO some error
-	//~ shadowRayIntersection.setIntersection( false );
-	//~ for( size_t i = 0; i < parallelLights.size(); i++ )
-	//~ {
-		//~ for( size_t j = 0; j < surfaceArray.size(); j++ )
-		//~ {
+	shadowRayIntersection.setIntersection( false );
+	for( size_t i = 0; i < parallelLights.size(); i++ )
+	{
+		for( size_t j = 0; j < surfaceArray.size(); j++ )
+		//~ for( size_t j = surfaceArray.size(); j > 0; j-- )
+		{
 			//~ std::cout << "testing shadowray intersection" << std::endl;
-			//~ shadowRayIntersection = surfaceArray.at(i)->intersect( 
-					//~ intersectionResult.getIntersectionPoint(), 
-					//~ normalize( -(parallelLights.at(i)->getDirection()) ) );
+			shadowRayIntersection = surfaceArray.at(j)->intersect( 
+					intersectionResult.getIntersectionPoint(), 
+					normalize( -(parallelLights.at(i)->getDirection()) ) );
+					//~ normalize( (parallelLights.at(i)->getDirection()) ) );
+					//~ normalize(dvec3(1,0,0)) );
 			//~ 
-			//~ if( shadowRayIntersection.isIntersection() )
-			//~ {
+			if( shadowRayIntersection.isIntersection() )
+			{
 				//~ std::cout << "intersection" << std::endl;
-				//~ break;
-			//~ }
-		//~ }
-		//~ if( !shadowRayIntersection.isIntersection() )
-		//~ {
+				break;
+			}
+		}
+		if( !shadowRayIntersection.isIntersection() )
+		{
 			//~ 
 			//~ std::cout << "no intersection" << std::endl;
 			//~ /// TODO something very wrong:
 			//~ /// example1.xml -> it thinks left is completly in shadow, the other completely in light
-			//~ color = surface->getMaterial()->getColor();
-		//~ }
-	//~ }
+			color = surface->getMaterial()->getColor();
+			//~ color = dvec3(0.7,0.7,0.7);
+		}
+	}
 	
 	//~ parallelLights.at(0)->getDirection();
 	
@@ -90,6 +94,9 @@ dvec3 Raytracer::trace( dvec3 point, dvec3 ray, int step )
 		surfaceArray.at(closestObject)->getIntersectionInformation( 
 				point, ray, &closestIntersection );
 		
+		//~ if( closestObject == 0 )
+			//~ std::cout << to_string(closestIntersection.getIntersectionPoint() ) << std::endl;
+		
 		color = shade( closestIntersection, surfaceArray.at(closestObject) );
 		
 		
@@ -104,6 +111,8 @@ dvec3 Raytracer::trace( dvec3 point, dvec3 ray, int step )
 			//~ color[1] = 0;
 		//~ if( color[2] < 0 )
 			//~ color[2] = 0;
+		
+		//~ color[2] = color[2]/3;
 		
 		//~ color = abs(color);
 		
