@@ -16,6 +16,10 @@ class Material
 	
 	public:
 		void setPhong( double ka, double kd, double ks, int exponent );
+		double getPhongKA(){ return phongKA; }
+		double getPhongKD(){ return phongKD; }
+		double getPhongKS(){ return phongKS; }
+		double getPhongExponent(){ return phongExponent; }
 		void setReflactance( double reflectance ) { this->reflectance = reflectance; }
 		void setTransmittance( double transmittance ) { this->transmittance = transmittance; }
 		void setRefraction( double refraction ) {this->refraction = refraction; }

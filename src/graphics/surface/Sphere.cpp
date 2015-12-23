@@ -124,8 +124,13 @@ void Sphere::getIntersectionInformation( dvec3 point, dvec3 ray,
 			
 	// angle of incident = angle of reflection therefore 
 	// it is ray direction - 2( normal . ray direction ) * normal
-	dvec3 intersectionReflection = normalize( rayTransformed - 
-			2 * ( dot( intersectionNormal, rayTransformed ) ) * intersectionNormal );
+	//~ dvec3 intersectionReflection = normalize( rayTransformed - 
+			//~ 2 * ( dot( intersectionNormal, rayTransformed ) ) * intersectionNormal );
+			
+	dvec3 intersectionReflection = normalize( 2 
+			* dot( intersectionNormal, rayTransformed ) 
+			* intersectionNormal - rayTransformed );
+			
 	intersectionResult->setReflectionVector( 
 			dvec3( getTransformationMatrix() * dvec4( intersectionReflection, 0 ) ) );
 			//~ intersectionReflection );

@@ -6,61 +6,79 @@
 
 #include <iostream>
 #include <limits>
-//~ #include <cmath>
+#include <cmath>
 
 using namespace glm;
 
-dvec3 Raytracer::shade( IntersectionResult intersectionResult, Surface* surface )
+dvec3 Raytracer::shade( IntersectionResult intersectionResult, Surface* surface, dvec3 eye )
 {
 	IntersectionResult shadowRayIntersection;
 	
+	// color of the material
+	dvec3 color = surface->getMaterial()->getColor();
 	
-	//~ dvec3 color = surface->getMaterial()->getColor();
-	dvec3 color = backgroundColor;
+	dvec3 intensity = dvec3(0, 0, 0);
 	
-	//~ std::cout << "shade" << std::endl;
+	//~ dvec3 color = backgroundColor;
 	
+	// Phong ilumination model
+	// Ambient Light
+	std::vector<AmbientLight*> ambientLights = lightContainer.getAmbientLights();
+	for( size_t i = 0; i < ambientLights.size(); i++ )
+	{
+		intensity = intensity + surface->getMaterial()->getPhongKA() * ambientLights.at(i)->getColor();
+	}
+
+	// parallel light
 	std::vector<ParallelLight*> parallelLights = lightContainer.getParallelLights();
-	
-	
-	/// TODO some error
 	shadowRayIntersection.setIntersection( false );
 	for( size_t i = 0; i < parallelLights.size(); i++ )
 	{
 		for( size_t j = 0; j < surfaceArray.size(); j++ )
-		//~ for( size_t j = surfaceArray.size(); j > 0; j-- )
 		{
-			//~ std::cout << "testing shadowray intersection" << std::endl;
 			shadowRayIntersection = surfaceArray.at(j)->intersect( 
 					intersectionResult.getIntersectionPoint(), 
 					normalize( -(parallelLights.at(i)->getDirection()) ) );
-					//~ normalize( (parallelLights.at(i)->getDirection()) ) );
-					//~ normalize(dvec3(1,0,0)) );
-			//~ 
+			
 			if( shadowRayIntersection.isIntersection() )
-			{
-				//~ std::cout << "intersection" << std::endl;
 				break;
-			}
 		}
 		if( !shadowRayIntersection.isIntersection() )
 		{
-			//~ 
-			//~ std::cout << "no intersection" << std::endl;
-			//~ /// TODO something very wrong:
-			//~ /// example1.xml -> it thinks left is completly in shadow, the other completely in light
-			color = surface->getMaterial()->getColor();
-			//~ color = dvec3(0.7,0.7,0.7);
+			// diffuse reflection
+			double angle = dot( normalize( -parallelLights.at(i)->getDirection() ), 
+					intersectionResult.getNormal() );
+			
+			if( angle < 0 )
+				angle = 0;
+			
+			intensity = intensity + surface->getMaterial()->getPhongKD() * angle 
+					* parallelLights.at(i)->getColor();
+			
+			// specular reflection
+			// calculate reflection ray from light source
+			dvec3 lightReflection = normalize( 2 * angle * intersectionResult.getNormal() 
+					- normalize( -parallelLights.at(i)->getDirection() ) );
+			
+			angle = dot( lightReflection, eye );
+			if( angle < 0 )
+				angle = 0;
+			
+			intensity = intensity + surface->getMaterial()->getPhongKS()
+					* parallelLights.at(i)->getColor() 
+					* pow( angle, surface->getMaterial()->getPhongExponent() );
 		}
 	}
 	
-	//~ parallelLights.at(0)->getDirection();
+	color[0] = color[0] * intensity[0];
+	color[1] = color[1] * intensity[1];
+	color[2] = color[2] * intensity[2];
 	
 	return color;
 }
 
 
-dvec3 Raytracer::trace( dvec3 point, dvec3 ray, int step )
+dvec3 Raytracer::trace( dvec3 point, dvec3 ray, dvec3 eye, int step )
 {
 	if( step > maxBounces )
 		return backgroundColor;
@@ -94,11 +112,11 @@ dvec3 Raytracer::trace( dvec3 point, dvec3 ray, int step )
 		surfaceArray.at(closestObject)->getIntersectionInformation( 
 				point, ray, &closestIntersection );
 		
-		//~ if( closestObject == 0 )
-			//~ std::cout << to_string(closestIntersection.getIntersectionPoint() ) << std::endl;
+		color = shade( closestIntersection, surfaceArray.at(closestObject), -ray );
 		
-		color = shade( closestIntersection, surfaceArray.at(closestObject) );
 		
+		/// TODO: ich hab hier ein enormes speicher problem -> delete die sachen die ich mit new aufrufe
+		trace( point, ray, eye, step++ );
 		
 		/// for debugging
 		//~ color = surfaceArray.at(closestObject)->getMaterial()->getColor();
@@ -169,7 +187,8 @@ void Raytracer::render()
 			//~ std::cout << "magdalena " << magdalena[0] << ", " << magdalena[1] << ", " 
 					//~ << magdalena[2] << std::endl;	
 					
-			dvec3 color = trace( camera, ray, 0 );
+			
+			dvec3 color = trace( camera, ray, -ray, 0 );
 			
 			// need to swap picture, otherwise it will be upside down
 			image[ (vertical-1-v)*horizontal + u ] = color;
