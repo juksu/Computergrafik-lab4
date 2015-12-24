@@ -12,7 +12,8 @@ class IntersectionResult
 		//~ glm::dvec3 reflectionVector;
 		bool transmittance;
 		//~ glm::dvec3 refractionVector;		/// wait, do we have refraction???
-												/// only tranmittance meaning no change of direction
+												/// only tranmittance meaning no change of direction??
+		/// I may still need that for textured Materials?
 		glm::dvec3 surfaceColor;
 		
 	public:

@@ -10,6 +10,9 @@
 
 using namespace glm;
 
+/// maybe a own function specifically for Phong
+
+
 dvec3 Raytracer::shade( IntersectionResult* intersectionResult, Surface* surface, dvec3* eyeVector )
 {
 	IntersectionResult* shadowRayIntersection = new IntersectionResult();
