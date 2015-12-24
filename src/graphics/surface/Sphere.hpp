@@ -15,7 +15,7 @@ class Sphere : public Surface
 		double getRadius(){ return radius; }
 		void setPosition( glm::dvec3 position ){ this->position = position; }
 		glm::dvec3 getPosition(){ return position; }
-		virtual IntersectionResult intersect( glm::dvec3 point, glm::dvec3 ray );
+		virtual IntersectionResult* intersect( glm::dvec3 point, glm::dvec3 ray );
 		virtual void getIntersectionInformation( glm::dvec3 point, glm::dvec3 ray, 
 				IntersectionResult* intersectionResult );
 

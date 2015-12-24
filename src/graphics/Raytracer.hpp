@@ -36,10 +36,14 @@ class Raytracer
 		LightContainer lightContainer;
 		
 		// private functions
-		glm::dvec3 shade( IntersectionResult intersection, Surface* objectNumber, glm::dvec3 eye );
-		glm::dvec3 trace( glm::dvec3 point, glm::dvec3 ray, glm::dvec3 eye, int step );
+		glm::dvec3 shade( IntersectionResult* intersection, Surface* objectNumber, glm::dvec3* eyeVector );
+		glm::dvec3 trace( glm::dvec3* point, glm::dvec3* ray, glm::dvec3* eyeVector, int step );
 		
 	public:
+		~Raytracer()
+		{
+			delete[] image;
+		}
 		
 		void setBackgroundColor( glm::dvec3 backgroundColor ){ this->backgroundColor = backgroundColor; }
 		// camera

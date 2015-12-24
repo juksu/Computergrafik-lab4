@@ -9,7 +9,7 @@ class IntersectionResult
 		double alpha;
 		glm::dvec3 intersectionPoint;
 		glm::dvec3 normal;
-		glm::dvec3 reflectionVector;
+		//~ glm::dvec3 reflectionVector;
 		bool transmittance;
 		//~ glm::dvec3 refractionVector;		/// wait, do we have refraction???
 												/// only tranmittance meaning no change of direction
@@ -27,9 +27,9 @@ class IntersectionResult
 		void setNormal( glm::dvec3 normal ){ this->normal = normal; }
 		glm::dvec3 getNormal(){ return normal; }
 		
-		void setReflectionVector( glm::dvec3 reflectionVector ){ 
-			this->reflectionVector = reflectionVector; }
-		glm::dvec3 getReflectionVector(){ return reflectionVector; }
+		//~ void setReflectionVector( glm::dvec3 reflectionVector ){ 
+			//~ this->reflectionVector = reflectionVector; }
+		//~ glm::dvec3 getReflectionVector(){ return reflectionVector; }
 		
 		void setTransmittance( bool transmittance ){ this->transmittance = transmittance; }
 		bool isTransmittance(){ return transmittance; }

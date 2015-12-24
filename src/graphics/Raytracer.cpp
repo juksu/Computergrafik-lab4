@@ -10,9 +10,9 @@
 
 using namespace glm;
 
-dvec3 Raytracer::shade( IntersectionResult intersectionResult, Surface* surface, dvec3 eye )
+dvec3 Raytracer::shade( IntersectionResult* intersectionResult, Surface* surface, dvec3* eyeVector )
 {
-	IntersectionResult shadowRayIntersection;
+	IntersectionResult* shadowRayIntersection = new IntersectionResult();
 	
 	// color of the material
 	dvec3 color = surface->getMaterial()->getColor();
@@ -31,23 +31,25 @@ dvec3 Raytracer::shade( IntersectionResult intersectionResult, Surface* surface,
 
 	// parallel light
 	std::vector<ParallelLight*> parallelLights = lightContainer.getParallelLights();
-	shadowRayIntersection.setIntersection( false );
+	shadowRayIntersection->setIntersection( false );
 	for( size_t i = 0; i < parallelLights.size(); i++ )
 	{
 		for( size_t j = 0; j < surfaceArray.size(); j++ )
 		{
-			shadowRayIntersection = surfaceArray.at(j)->intersect( 
-					intersectionResult.getIntersectionPoint(), 
+			
+			delete shadowRayIntersection;
+			shadowRayIntersection = surfaceArray.at(j)->intersect(
+					intersectionResult->getIntersectionPoint(), 
 					normalize( -(parallelLights.at(i)->getDirection()) ) );
 			
-			if( shadowRayIntersection.isIntersection() )
+			if( shadowRayIntersection->isIntersection() )
 				break;
 		}
-		if( !shadowRayIntersection.isIntersection() )
+		if( !shadowRayIntersection->isIntersection() )
 		{
 			// diffuse reflection
 			double angle = dot( normalize( -parallelLights.at(i)->getDirection() ), 
-					intersectionResult.getNormal() );
+					intersectionResult->getNormal() );
 			
 			if( angle < 0 )
 				angle = 0;
@@ -57,10 +59,10 @@ dvec3 Raytracer::shade( IntersectionResult intersectionResult, Surface* surface,
 			
 			// specular reflection
 			// calculate reflection ray from light source
-			dvec3 lightReflection = normalize( 2 * angle * intersectionResult.getNormal() 
+			dvec3 lightReflection = normalize( 2 * angle * intersectionResult->getNormal() 
 					- normalize( -parallelLights.at(i)->getDirection() ) );
 			
-			angle = dot( lightReflection, eye );
+			angle = dot( lightReflection, *eyeVector );
 			if( angle < 0 )
 				angle = 0;
 			
@@ -69,6 +71,7 @@ dvec3 Raytracer::shade( IntersectionResult intersectionResult, Surface* surface,
 					* pow( angle, surface->getMaterial()->getPhongExponent() );
 		}
 	}
+	delete shadowRayIntersection;
 	
 	color[0] = color[0] * intensity[0];
 	color[1] = color[1] * intensity[1];
@@ -78,50 +81,65 @@ dvec3 Raytracer::shade( IntersectionResult intersectionResult, Surface* surface,
 }
 
 
-dvec3 Raytracer::trace( dvec3 point, dvec3 ray, dvec3 eye, int step )
+dvec3 Raytracer::trace( dvec3* point, dvec3* ray, dvec3* eyeVector, int step )
 {
+	//~ std::cout << "step: " << step << ", maxBounces: " << maxBounces << std::endl;
+	
 	if( step > maxBounces )
 		return backgroundColor;
 
 	dvec3 color = backgroundColor;
 	
-	IntersectionResult closestIntersection;
-	closestIntersection.setIntersection( false );
-	closestIntersection.setAlpha( std::numeric_limits<double>::max() );
+	IntersectionResult* closestIntersection = new IntersectionResult();
+	closestIntersection->setIntersection( false );
+	closestIntersection->setAlpha( std::numeric_limits<double>::max() );
 	size_t closestObject;
 	//~ double alphaMin = std::numeric_limits<double>::max();
 	
 	for( size_t i = 0; i < surfaceArray.size(); i++ )
 	{
-		IntersectionResult intersect = surfaceArray.at(i)->intersect( point, ray );
+		IntersectionResult* intersect = surfaceArray.at(i)->intersect( *point, *ray );
 		
 		/// TODO here is probably room for optimization
-		if( intersect.isIntersection() )
+		if( intersect->isIntersection() )
 		{
 			//~ std::cout << "surface intersection" << std::endl;
-			if( closestIntersection.getAlpha() > intersect.getAlpha() )
+			if( closestIntersection->getAlpha() > intersect->getAlpha() )
 			{
+				delete closestIntersection;
 				closestIntersection = intersect;
 				closestObject = i;
 			}
+			else
+				delete intersect;
 		}
 	}
 	
-	if( closestIntersection.isIntersection() )
+	if( closestIntersection->isIntersection() )
 	{	
 		surfaceArray.at(closestObject)->getIntersectionInformation( 
-				point, ray, &closestIntersection );
+				*point, *ray, closestIntersection );
 		
-		color = shade( closestIntersection, surfaceArray.at(closestObject), -ray );
+		color = shade( closestIntersection, surfaceArray.at(closestObject), eyeVector );
 		
+		//~ delete point;
+		*point = dvec3( closestIntersection->getIntersectionPoint() );
+		//~ delete ray;
 		
-		/// TODO: ich hab hier ein enormes speicher problem -> delete die sachen die ich mit new aufrufe
-		trace( point, ray, eye, step++ );
+		// the ray points towards the surface, the normal away
+		// therefore use -ray so that both point away from the surface
+		dvec3 reflectedRay = normalize( 2 
+				* dot( closestIntersection->getNormal(), -(*ray) ) 
+				* closestIntersection->getNormal() + (*ray) );
+		*ray = dvec3( reflectedRay );
 		
+		delete closestIntersection;
+				
 		/// for debugging
 		//~ color = surfaceArray.at(closestObject)->getMaterial()->getColor();
-		//~ color = closestIntersection.getIntersectionPoint();
-		//~ color = closestIntersection.getNormal();
+		//~ color = closestIntersection->getIntersectionPoint();
+		//~ color = closestIntersection->getNormal();
+		//~ color = reflectedRay;
 		//~ color = normalize(color);
 		//~ if( color[0] < 0 )
 			//~ color[0] = 0;
@@ -129,11 +147,8 @@ dvec3 Raytracer::trace( dvec3 point, dvec3 ray, dvec3 eye, int step )
 			//~ color[1] = 0;
 		//~ if( color[2] < 0 )
 			//~ color[2] = 0;
-		
 		//~ color[2] = color[2]/3;
-		
 		//~ color = abs(color);
-		
 		
 	}
 	
@@ -142,7 +157,6 @@ dvec3 Raytracer::trace( dvec3 point, dvec3 ray, dvec3 eye, int step )
 
 void Raytracer::render()
 {
-	/// TODO all the graphics processing
 	image = new dvec3[horizontal*vertical];		
 	
 	// calculate the tan values for x and y using radian
@@ -165,7 +179,7 @@ void Raytracer::render()
 			//~ double z = camera[2] - 1;
 			double z = -1;
 			
-			dvec3 ray = normalize(dvec3(x,y,z));
+			dvec3 initialRay = normalize(dvec3(x,y,z));
 			
 			/// TODO: do something about lookat, up and so on
 
@@ -187,8 +201,25 @@ void Raytracer::render()
 			//~ std::cout << "magdalena " << magdalena[0] << ", " << magdalena[1] << ", " 
 					//~ << magdalena[2] << std::endl;	
 					
+			dvec3* point = new dvec3( camera );
+			dvec3* ray = new dvec3( initialRay );
+			dvec3* cameraVector = new dvec3( -initialRay );
 			
-			dvec3 color = trace( camera, ray, -ray, 0 );
+			//~ dvec3 color = trace( camera, ray, -ray, 0 );
+			//~ dvec3 color = trace( point, ray, cameraVector, 0 );
+			
+			// loop through bounces
+			// (recursive call really kills memory)
+			dvec3 color = dvec3( 0, 0, 0 );
+			for( int i = 0; i <= maxBounces; i++ )
+			{
+				color = color + trace( point, ray, cameraVector, i );
+			}
+			
+			delete point;
+			delete ray;
+			delete cameraVector;
+			
 			
 			// need to swap picture, otherwise it will be upside down
 			image[ (vertical-1-v)*horizontal + u ] = color;

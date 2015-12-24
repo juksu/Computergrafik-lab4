@@ -6,51 +6,45 @@
 
 using namespace glm;
 
-IntersectionResult Sphere::intersect( dvec3 point, dvec3 ray )
+IntersectionResult* Sphere::intersect( dvec3 point, dvec3 ray )
 {
-	IntersectionResult intersectionResult;
-	intersectionResult.setIntersection( false );
+	IntersectionResult* intersectionResult = new IntersectionResult();
+	intersectionResult->setIntersection( false );
 	//~ double alpha = std::numeric_limits<double>::max();
 	
 	// transform point and ray into object coordinates with inverse transformation matrix
 	// all transformations are affine, so affineInverse should work fine.
 	/// TODO, for optimization i may calculate this only once (when setting transformation maybe?)
-	//~ std::cout << to_string( getTransformationMatrix() ) << std::endl;
 	dmat4 inverseTransformations = affineInverse( getTransformationMatrix() );
-	//~ std::cout << to_string( inverseTransformations ) << std::endl;
 	
 	dvec3 pointTransformed = dvec3( inverseTransformations * dvec4( point, 1 ) );
-	//~ dvec3 pointTransformed = point;
 	dvec3 rayTransformed = dvec3( inverseTransformations * dvec4( ray, 0 ) );
-	//~ dvec3 rayTransformed = ray;
 	
 	//intersection test
 	double a = dot( rayTransformed, rayTransformed );
 	double b = 2 * dot( pointTransformed, rayTransformed ) - 2 * dot( position, rayTransformed );
 	double c = dot( pointTransformed - position, pointTransformed - position ) - radius * radius;
-	
 	double t = b*b - 4*a*c;
+	double epsilon = 1e-12;
 	
-	if( t < -std::numeric_limits<double>::epsilon() )
-		intersectionResult.setIntersection( false );
+	//~ if( t < -std::numeric_limits<double>::epsilon() )
+	if( t < -epsilon )
+		intersectionResult->setIntersection( false );
 		
 	else
-	{
-		//~ intersectionResult.setIntersection( true );
-		
-		///TODO test with the dot product if the normal is facing the camera or not -> intersection
-		
+	{	
 		double alpha = -1;
 		// alpha = ~ 0
-		if( abs(t) < std::numeric_limits<double>::epsilon() )
+		//~ if( abs(t) < std::numeric_limits<double>::epsilon() )
+		if( abs(t) < epsilon )
 		{
 			// we just touche the sqhere -> we do not go through the object and therefore there is no transmittance
-			intersectionResult.setTransmittance( false );
+			intersectionResult->setTransmittance( false );
 			alpha = (-b)/(2*a);
 		}
 		else
 		{
-			intersectionResult.setTransmittance( true );
+			intersectionResult->setTransmittance( true );
 			double sqrtT = std::sqrt(t);
 			double alpha1 = (-b+sqrtT)/(2*a);
 			double alpha2 = (-b-sqrtT)/(2*a);
@@ -61,7 +55,7 @@ IntersectionResult Sphere::intersect( dvec3 point, dvec3 ray )
 			{
 				//~ if( alpha1 > std::numeric_limits<double>::epsilon()*alpha1 )
 				//~ if( alpha1 > std::numeric_limits<double>::epsilon()*10000 )
-				if( alpha1 > 1e-12 )
+				if( alpha1 > epsilon )
 					alpha = alpha1;
 				else
 					alpha = alpha2;
@@ -71,7 +65,7 @@ IntersectionResult Sphere::intersect( dvec3 point, dvec3 ray )
 				{
 					//~ if( alpha2 > std::numeric_limits<double>::epsilon()*alpha2 )
 					//~ if( alpha2 > std::numeric_limits<double>::epsilon()*10000 )
-					if( alpha2 > 1e-12 )
+					if( alpha2 > epsilon )
 						alpha = alpha2;
 					else
 						alpha = alpha1;
@@ -79,14 +73,14 @@ IntersectionResult Sphere::intersect( dvec3 point, dvec3 ray )
 			}
 		}
 		
-		intersectionResult.setAlpha( alpha );
+		intersectionResult->setAlpha( alpha );
 		//~ std::cout << alpha << std::endl;
 		//~ if( alpha > std::numeric_limits<double>::epsilon()*10000 )
-		if( alpha > 1e-12 )
+		if( alpha > epsilon )
 		//~ if( alpha > 1.0e-17 )
-			intersectionResult.setIntersection( true );
+			intersectionResult->setIntersection( true );
 		else
-			intersectionResult.setIntersection( false );
+			intersectionResult->setIntersection( false );
 			
 	}
 	
@@ -126,12 +120,13 @@ void Sphere::getIntersectionInformation( dvec3 point, dvec3 ray,
 	// it is ray direction - 2( normal . ray direction ) * normal
 	//~ dvec3 intersectionReflection = normalize( rayTransformed - 
 			//~ 2 * ( dot( intersectionNormal, rayTransformed ) ) * intersectionNormal );
-			
-	dvec3 intersectionReflection = normalize( 2 
-			* dot( intersectionNormal, rayTransformed ) 
-			* intersectionNormal - rayTransformed );
-			
-	intersectionResult->setReflectionVector( 
-			dvec3( getTransformationMatrix() * dvec4( intersectionReflection, 0 ) ) );
+	
+	/// Because i only need this once it may be simpler to do that outside when needed		
+	//~ dvec3 intersectionReflection = normalize( 2 
+			//~ * dot( intersectionNormal, rayTransformed ) 
+			//~ * intersectionNormal - rayTransformed );
+			//~ 
+	//~ intersectionResult->setReflectionVector( 
+			//~ dvec3( getTransformationMatrix() * dvec4( intersectionReflection, 0 ) ) );
 			//~ intersectionReflection );
 }

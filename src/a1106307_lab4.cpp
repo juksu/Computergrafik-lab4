@@ -40,7 +40,7 @@ int main( int argc, char* argv[] )
 	xmlReader.loadFile( xmlFilename );
 	//~ horizontal = xmlReader.getHorizontalResolution();
 	//~ vertical = xmlReader.getVerticalResolution();
-	//~ xmlReader.printxml();
+	xmlReader.printxml();
 	
 	// set up raytracer
 	Raytracer raytracer;
