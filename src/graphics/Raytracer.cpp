@@ -160,63 +160,59 @@ dvec3 Raytracer::trace( dvec3* point, dvec3* ray, dvec3* eyeVector, int step )
 
 void Raytracer::render()
 {
-	image = new dvec3[horizontal*vertical];		
+	image = new dvec3[horizontal*vertical];
 	
 	// calculate the tan values for x and y using radian
 	double tanX = tan( fov * M_PI / 180 );
 	double tanY = tan( ((double)vertical / horizontal) * (fov * M_PI / 180) );
-	//~ std::cout << "vertical = " << vertical << " horizontal = " << horizontal << std::endl;
+	std::cout << "vertical = " << vertical << " horizontal = " << horizontal << std::endl;
 	//~ std::cout << (double)vertical/ horizontal << std::endl;
-	//~ std::cout << "tanx = " << tanX << ", tanY = " << tanY  << std::endl;
+	std::cout << "tanx = " << tanX << ", tanY = " << tanY  << std::endl;
 	
+	
+	//~ // other technique
+	dvec3 n = normalize( camera - center );
+	dvec3 u = normalize( cross( up, n ) );
+	dvec3 v = cross( u, n );
+	double viewPlaneHalfHorizontal = tan( fov * M_PI / 180 );	// fov is already half
+	double aspectRatio = ((double)vertical) / horizontal;
+	double viewPlaneHalfVertical = aspectRatio*viewPlaneHalfHorizontal;
+	
+	dvec3 viewPlaneBottomLeft = center - v * viewPlaneHalfVertical - u * viewPlaneHalfHorizontal;
+	
+	double bla = 2*viewPlaneHalfHorizontal/horizontal;
+	dvec3 xIncrement = u*bla;
+	bla = 2*viewPlaneHalfVertical/vertical;
+	dvec3 yIncrement = v*bla;
+
 	// traverse through every pixel
-	for( int u = 0; u < horizontal; u++  )
-		for( int v = 0; v < vertical; v++ )
+	for( int i = 0; i < horizontal; i++  )
+		for( int j = 0; j < vertical; j++ )
 		{		
+			/// Old approach			
 			// calculate the view plane point, assuming that the view plane is at z = -1;
-			/// TODO: the question is really does fov give the angle to the edge of the outermost pixel or to the middle of it
-			/// if edge: (horizontal-1)/horizontal, else (horizontal-1)/(horizontal-1)
-			/// the same for vertical
-			double x = (double)(2*u - (horizontal-1))/(horizontal-1)*tanX;
-			double y = (double)(2*v - (vertical-1))/(vertical-1)*tanY;
-			//~ double z = camera[2] - 1;
+			double x = (double)(2*i - (horizontal-1))/(horizontal-1)*tanX;
+			double y = (double)(2*j - (vertical-1))/(vertical-1)*tanY;
 			double z = -1;
 			
 			dvec3 initialRay = normalize(dvec3(x,y,z));
-			
-			/// TODO: do something about lookat, up and so on
+			//~ std::cout << "ray untransformed " << to_string( initialRay ) << std::endl;
 
-			// this assumes the camera is in the center with y-axis being up and viewplane at z = 1;
-			// to get the ray calculate viewplane - cameraposition
-			
-			//~ vec3 ray = vec3(x,y,z) - camera;
-			//~ std::cout << "xyz " << x << ", " << y << ", " << z << ", " << std::endl;
-			
-			//~ std::cout << "ray " << ray[0] << ", " << ray[1] << ", " << ray[2] << std::endl;
-			// normalize
-			//~ ray = normalize(ray);
-			//~ std::cout << "ray " << ray[0] << ", " << ray[1] << ", " << ray[2] << std::endl;
-			
-			/// TODO, no that does not work, inverse or not
-			// construct lookAtTransformation takin care about up and center and stuff
-			//~ mat4 lookAtTransformation = lookAt( camera, center, up );
-			//~ vec4 magdalena = affineInverse(lookAtTransformation) * vec4(ray[0],ray[1],ray[2],0);		// i told you
-			//~ std::cout << "magdalena " << magdalena[0] << ", " << magdalena[1] << ", " 
-					//~ << magdalena[2] << std::endl;	
+			/// New approach: this draws image as if the fewplane would be there were the center is -> with examples a zoomed in view -> correct?
+			/// same result only if center is a unit away from the camera
+			dvec3 viewPlanePoint = viewPlaneBottomLeft + ((double)i)*xIncrement + ((double)j)*yIncrement;
+			initialRay = normalize(viewPlanePoint - camera);
 					
 			dvec3* point = new dvec3( camera );
 			dvec3* ray = new dvec3( initialRay );
 			dvec3* cameraVector = new dvec3( -initialRay );
 			
-			//~ dvec3 color = trace( camera, ray, -ray, 0 );
-			//~ dvec3 color = trace( point, ray, cameraVector, 0 );
-			
 			// loop through bounces
 			// (recursive call really kills memory)
 			dvec3 color = dvec3( 0, 0, 0 );
-			for( int i = 0; i <= maxBounces; i++ )
+			for( int k = 0; k <= maxBounces; k++ )
 			{
-				color = color + trace( point, ray, cameraVector, i );
+				color = color + trace( point, ray, cameraVector, k );
 			}
 			
 			delete point;
@@ -225,7 +221,8 @@ void Raytracer::render()
 			
 			
 			// need to swap picture, otherwise it will be upside down
-			image[ (vertical-1-v)*horizontal + u ] = color;
+			//~ image[ (vertical-1-j)*horizontal + i ] = color;
+			image[ j*horizontal + i ] = color;
 			
 		}
 }
