@@ -185,7 +185,9 @@ dvec3 Raytracer::shade( IntersectionResult* intersectionResult, Surface* surface
 		{			
 			double angle = dot( normalize( spotLights.at(i)->getPosition() 
 					- intersectionResult->getIntersectionPoint() ),
-					intersectionResult->getNormal() ); 
+					intersectionResult->getNormal() );
+			
+			angle = acos(angle);
 					
 			dvec3 spotIntensity = dvec3( 0, 0, 0 );
 			
@@ -208,8 +210,9 @@ dvec3 Raytracer::shade( IntersectionResult* intersectionResult, Surface* surface
 				{
 					// use linear falloff
 					double falloff = ( angle - spotLights.at(i)->getFalloffAlpha1() ) 
-							/ ( spotLights.at(i)->getFalloffAlpha2() - spotLights.at(i)->getFalloffAlpha1() )
-							* 100;
+							/ ( spotLights.at(i)->getFalloffAlpha2() - spotLights.at(i)->getFalloffAlpha1() );
+					
+					falloff = 1 - falloff;
 							
 					spotIntensity = spotIntensity * falloff;
 				}
