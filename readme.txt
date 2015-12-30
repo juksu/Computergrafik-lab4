@@ -11,4 +11,6 @@ The executable a1106307_lab4 can be found in the bin directory.
 The run the programm pass the location of the .xml to the programm as commandline argument, eg: ./a1106307_lab4 example.xml.
 The created image will be saved as an ascii ppm image.
 
+References:
+- https://steveharveynz.wordpress.com/2012/12/20/ray-tracer-part-two-creating-the-camera/
 

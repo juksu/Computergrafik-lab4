@@ -13,33 +13,78 @@ using namespace glm;
 /// maybe a own function specifically for Phong
 
 
+dvec3 Raytracer::ambientLight( double phongKA, dvec3 lightColor )
+{
+	return phongKA * lightColor;
+}
+
+dvec3 Raytracer::diffuseLight( double phongKD, dvec3 lightColor, 
+		dvec3 lightVector, dvec3 normalVector )
+{
+	//~ double angle = dot( normalize( -parallelLights.at(i)->getDirection() ), 
+					//~ intersectionResult->getNormal() );
+	double angle = dot( lightVector, normalVector );
+			
+	if( angle < 0 )
+		angle = 0;
+			
+	return phongKD * angle * lightColor;
+	//~ intensity = intensity + surface->getMaterial()->getPhongKD() * angle
+			//~ * parallelLights.at(i)->getColor();	
+}
+
+dvec3 Raytracer::specularLight( double phongKS, double phongExponent, dvec3 lightColor, 
+		dvec3 lightVector, dvec3 normalVector, dvec3 eyeVector )
+{
+	// calculate reflection ray from light source
+	dvec3 lightReflection = normalize( 2 * dot( lightVector, normalVector ) 
+			* normalVector - lightVector );
+			
+	double angle = dot( lightReflection, eyeVector );
+	
+	if( angle < 0 )
+		angle = 0;
+		
+	return phongKS * lightColor * pow( angle, phongExponent );
+	
+	
+				//~ dvec3 lightReflection = normalize( 2 * angle * intersectionResult->getNormal() 
+					//~ - normalize( -parallelLights.at(i)->getDirection() ) );
+			//~ 
+			//~ angle = dot( lightReflection, *eyeVector );
+			//~ if( angle < 0 )
+				//~ angle = 0;
+			//~ 
+			//~ intensity = intensity + surface->getMaterial()->getPhongKS()
+					//~ * parallelLights.at(i)->getColor() 
+					//~ * pow( angle, surface->getMaterial()->getPhongExponent() );
+}
+
 dvec3 Raytracer::shade( IntersectionResult* intersectionResult, Surface* surface, dvec3* eyeVector )
 {
-	IntersectionResult* shadowRayIntersection = new IntersectionResult();
-	
 	// color of the material
 	dvec3 color = surface->getMaterial()->getColor();
 	
 	dvec3 intensity = dvec3(0, 0, 0);
-	
-	//~ dvec3 color = backgroundColor;
 	
 	// Phong ilumination model
 	// Ambient Light
 	std::vector<AmbientLight*> ambientLights = lightContainer.getAmbientLights();
 	for( size_t i = 0; i < ambientLights.size(); i++ )
 	{
-		intensity = intensity + surface->getMaterial()->getPhongKA() * ambientLights.at(i)->getColor();
+		intensity = intensity + ambientLight(
+				surface->getMaterial()->getPhongKA(), ambientLights.at(i)->getColor() );
 	}
 
 	// parallel light
 	std::vector<ParallelLight*> parallelLights = lightContainer.getParallelLights();
+	IntersectionResult* shadowRayIntersection = new IntersectionResult();
 	shadowRayIntersection->setIntersection( false );
+	
 	for( size_t i = 0; i < parallelLights.size(); i++ )
 	{
 		for( size_t j = 0; j < surfaceArray.size(); j++ )
 		{
-			
 			delete shadowRayIntersection;
 			shadowRayIntersection = surfaceArray.at(j)->intersect(
 					intersectionResult->getIntersectionPoint(), 
@@ -51,35 +96,131 @@ dvec3 Raytracer::shade( IntersectionResult* intersectionResult, Surface* surface
 		if( !shadowRayIntersection->isIntersection() )
 		{
 			// diffuse reflection
-			double angle = dot( normalize( -parallelLights.at(i)->getDirection() ), 
-					intersectionResult->getNormal() );
-			
-			if( angle < 0 )
-				angle = 0;
-			
-			intensity = intensity + surface->getMaterial()->getPhongKD() * angle 
-					* parallelLights.at(i)->getColor();
-			
+			intensity = intensity 
+					+ diffuseLight( surface->getMaterial()->getPhongKD(), parallelLights.at(i)->getColor(),
+							normalize( -parallelLights.at(i)->getDirection() ), intersectionResult->getNormal() );
+
 			// specular reflection
-			// calculate reflection ray from light source
-			dvec3 lightReflection = normalize( 2 * angle * intersectionResult->getNormal() 
-					- normalize( -parallelLights.at(i)->getDirection() ) );
+			intensity = intensity
+					+ specularLight( surface->getMaterial()->getPhongKS(), surface->getMaterial()->getPhongExponent(),
+							parallelLights.at(i)->getColor(), normalize( -parallelLights.at(i)->getDirection() ),
+							intersectionResult->getNormal(), *eyeVector );
+		}
+	}
+	
+	// point light
+	std::vector<PointLight*> pointLights = lightContainer.getPointLights();
+	shadowRayIntersection->setIntersection( false );
+	for( size_t i = 0; i < pointLights.size(); i++ )
+	{
+		for( size_t j = 0; j < surfaceArray.size(); j++ )
+		{
 			
-			angle = dot( lightReflection, *eyeVector );
-			if( angle < 0 )
-				angle = 0;
+			delete shadowRayIntersection;
+			shadowRayIntersection = surfaceArray.at(j)->intersect(
+					intersectionResult->getIntersectionPoint(), 
+					normalize( pointLights.at(i)->getPosition() 
+							- intersectionResult->getIntersectionPoint() ) );
 			
-			intensity = intensity + surface->getMaterial()->getPhongKS()
-					* parallelLights.at(i)->getColor() 
-					* pow( angle, surface->getMaterial()->getPhongExponent() );
+			// it may be that we have an intersection but the intersection is after the point light source
+			// therefore, if only break if length to intersection point < length to light source
+			// else, we tread it as no intersection
+			if( shadowRayIntersection->isIntersection() )
+			{
+				if( length( shadowRayIntersection->getIntersectionPoint() 
+								- intersectionResult->getIntersectionPoint() ) 
+						< length( pointLights.at(i)->getPosition() 
+								- intersectionResult->getIntersectionPoint() ) )
+					break;
+				else
+					shadowRayIntersection->setIntersection( false );
+			}
+		}
+		if( !shadowRayIntersection->isIntersection() )
+		{
+			// diffuse reflection
+			intensity = intensity 
+					+ diffuseLight( surface->getMaterial()->getPhongKD(), pointLights.at(i)->getColor(),
+							normalize( pointLights.at(i)->getPosition() - intersectionResult->getIntersectionPoint() ),
+							intersectionResult->getNormal() );
+
+			// specular reflection
+			intensity = intensity + 
+					specularLight( surface->getMaterial()->getPhongKS(), surface->getMaterial()->getPhongExponent(),
+							pointLights.at(i)->getColor(), 
+							normalize( pointLights.at(i)->getPosition() - intersectionResult->getIntersectionPoint() ),
+							intersectionResult->getNormal(), *eyeVector );
+		}
+	}
+	
+	// spot light
+	std::vector<SpotLight*> spotLights = lightContainer.getSpotLights();
+	shadowRayIntersection->setIntersection( false );
+	for( size_t i = 0; i < spotLights.size(); i++ )
+	{
+		for( size_t j = 0; j < surfaceArray.size(); j++ )
+		{
+			
+			delete shadowRayIntersection;
+			shadowRayIntersection = surfaceArray.at(j)->intersect(
+					intersectionResult->getIntersectionPoint(), 
+					normalize( spotLights.at(i)->getPosition() 
+							- intersectionResult->getIntersectionPoint() ) );
+			
+			// it may be that we have an intersection but the intersection is after the spot light source
+			// therefore, if only break if length to intersection point < length to light source
+			// else, we tread it as no intersection
+			//~ if( shadowRayIntersection->isIntersection() )
+			{
+				if( length( shadowRayIntersection->getIntersectionPoint() 
+								- intersectionResult->getIntersectionPoint() ) 
+						< length( spotLights.at(i)->getPosition() 
+								- intersectionResult->getIntersectionPoint() ) )
+					break;
+				else
+					shadowRayIntersection->setIntersection( false );
+			}
+		}
+		if( !shadowRayIntersection->isIntersection() )
+		{			
+			double angle = dot( normalize( spotLights.at(i)->getPosition() 
+					- intersectionResult->getIntersectionPoint() ),
+					intersectionResult->getNormal() ); 
+					
+			dvec3 spotIntensity = dvec3( 0, 0, 0 );
+			
+			if( angle > spotLights.at(i)->getFalloffAlpha2() ) ;
+				//~ spotIntensity = dvev3( 0, 0, 0 );
+			else
+			{
+				spotIntensity = spotIntensity
+						+ diffuseLight( surface->getMaterial()->getPhongKD(), spotLights.at(i)->getColor(),
+								normalize( spotLights.at(i)->getPosition() - intersectionResult->getIntersectionPoint() ),
+								intersectionResult->getNormal() );
+				
+				spotIntensity = spotIntensity + 
+						specularLight( surface->getMaterial()->getPhongKS(), surface->getMaterial()->getPhongExponent(),
+								spotLights.at(i)->getColor(), 
+								normalize( spotLights.at(i)->getPosition() - intersectionResult->getIntersectionPoint() ),
+								intersectionResult->getNormal(), *eyeVector );
+								
+				if( angle > spotLights.at(i)->getFalloffAlpha1() )
+				{
+					// use linear falloff
+					double falloff = ( angle - spotLights.at(i)->getFalloffAlpha1() ) 
+							/ ( spotLights.at(i)->getFalloffAlpha2() - spotLights.at(i)->getFalloffAlpha1() )
+							* 100;
+							
+					spotIntensity = spotIntensity * falloff;
+				}
+			}
+			
+			intensity = intensity + spotIntensity;
 		}
 	}
 	delete shadowRayIntersection;
 	
-	color[0] = color[0] * intensity[0];
-	color[1] = color[1] * intensity[1];
-	color[2] = color[2] * intensity[2];
-	
+	color = color * intensity;
 	return color;
 }
 

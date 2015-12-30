@@ -39,6 +39,13 @@ class Raytracer
 		glm::dvec3 shade( IntersectionResult* intersection, Surface* objectNumber, glm::dvec3* eyeVector );
 		glm::dvec3 trace( glm::dvec3* point, glm::dvec3* ray, glm::dvec3* eyeVector, int step );
 		
+		glm::dvec3 ambientLight( double phongKA, glm::dvec3 lightColor );
+		glm::dvec3 diffuseLight( double phongKD, glm::dvec3 lightColor, 
+				glm::dvec3 lightVector, glm::dvec3 normalVector );
+		glm::dvec3 specularLight( double phongKS, double phongExponent, glm::dvec3 lightColor, 
+				glm::dvec3 lightVector, glm::dvec3 normalVector, glm::dvec3 eyeVector );
+		
+		
 	public:
 		~Raytracer()
 		{
