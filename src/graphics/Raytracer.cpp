@@ -183,9 +183,11 @@ dvec3 Raytracer::shade( IntersectionResult* intersectionResult, Surface* surface
 		}
 		if( !shadowRayIntersection->isIntersection() )
 		{			
-			double angle = dot( normalize( spotLights.at(i)->getPosition() 
-					- intersectionResult->getIntersectionPoint() ),
-					intersectionResult->getNormal() );
+			// what is the angle between the spotLight direction and the vector from spotLightPosition to IntersectionPoint?
+			double angle = dot( normalize( spotLights.at(i)->getDirection() ),
+					normalize( intersectionResult->getIntersectionPoint()
+					- spotLights.at(i)->getPosition() ) );
+
 			
 			angle = acos(angle);
 					
@@ -208,12 +210,15 @@ dvec3 Raytracer::shade( IntersectionResult* intersectionResult, Surface* surface
 								
 				if( angle > spotLights.at(i)->getFalloffAlpha1() )
 				{
-					// use linear falloff
+					// what intensity between alpha1 (100% intensity) and alpha2 (0% intensity) do we have
 					double falloff = ( angle - spotLights.at(i)->getFalloffAlpha1() ) 
 							/ ( spotLights.at(i)->getFalloffAlpha2() - spotLights.at(i)->getFalloffAlpha1() );
 					
-					falloff = 1 - falloff;
-							
+					// linear falloff
+					falloff = 1 - falloff;				
+					// quadratic falloff (prettier result but spot looks smaller as it actually is)
+					falloff = falloff * falloff;
+											
 					spotIntensity = spotIntensity * falloff;
 				}
 			}
@@ -323,6 +328,7 @@ void Raytracer::render()
 	double viewPlaneHalfVertical = aspectRatio*viewPlaneHalfHorizontal;
 	
 	dvec3 viewPlaneBottomLeft = center - v * viewPlaneHalfVertical - u * viewPlaneHalfHorizontal;
+	//~ dvec3 viewPlaneBottomLeft = -n - v * viewPlaneHalfVertical - u * viewPlaneHalfHorizontal;
 	
 	double bla = 2*viewPlaneHalfHorizontal/horizontal;
 	dvec3 xIncrement = u*bla;

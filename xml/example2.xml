@@ -25,9 +25,9 @@
 		</parallel_light>
 		<spot_light>
 			<color r="1.0" g="1.0" b="1.0"/>
-			<position x="0" y="-2" z="-2"/>
-			<direction x="0.0" y="2.0" z="2.0"/>
-			<falloff alpha1="0.2" alpha2="0.8"/>
+			<position x="0" y="-1" z="0"/>
+			<direction x="2.0" y="0.8" z="-3.0"/>
+			<falloff alpha1="0.1" alpha2="0.2"/>
 		</spot_light> 
 	</lights>
 	<surfaces>
