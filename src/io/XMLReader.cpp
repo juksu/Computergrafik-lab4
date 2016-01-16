@@ -1,14 +1,15 @@
 #include "XMLReader.hpp"
-#include <iostream>
-#include <string>
-
+#include "WavefrontOBJReader.hpp"
 #include "../graphics/light/AmbientLight.hpp"
 #include "../graphics/light/PointLight.hpp"
 #include "../graphics/light/ParallelLight.hpp"
 #include "../graphics/light/SpotLight.hpp"
 #include "../graphics/surface/Sphere.hpp"
+#include "../graphics/surface/Mesh.hpp"
 #include "../lib/glm/gtx/string_cast.hpp"
 
+#include <iostream>
+#include <string>
 
 using namespace tinyxml2;
 
@@ -271,6 +272,7 @@ std::vector<Surface*> XMLReader::getSurfaces()
 		
 		if( type.compare("sphere") == 0 )
 		{
+			//~ Sphere* sphere = new Sphere();
 			Sphere* sphere = new Sphere();
 			sphere->setRadius( xmlSurfaceElement->DoubleAttribute("radius") );
 			//~ std::cout << "radius " << sphere->getRadius() << std::endl;
@@ -281,26 +283,31 @@ std::vector<Surface*> XMLReader::getSurfaces()
 					xmlElement->DoubleAttribute("y"), xmlElement->DoubleAttribute("z") );
 			sphere->setPosition( position );
 			
-			/// TODO from here it is for all surfaces the same -> change code
-			xmlElement = xmlSurfaceElement->FirstChildElement("material_solid");
-			if( xmlElement != nullptr )
-				sphere->setMaterial( getMaterialSolid( xmlElement ) );
-			
-			xmlElement = xmlSurfaceElement->FirstChildElement("material_textured");
-			if( xmlElement != nullptr )
-				sphere->setMaterial( getMaterialTextured( xmlElement ) );
-			
-			xmlElement = xmlSurfaceElement->FirstChildElement("transform");
-			if( xmlElement != nullptr )	// in case no transformations exist
-				getTransformations( xmlElement, sphere );
-			
-			
-			/// TODO continue
-			
-			surfaceArray.push_back(sphere);
-			
+			surfaceArray.push_back( sphere );			
 		}
-	
+		
+		if( type.compare("mesh") == 0 )
+		{
+			Mesh* mesh = new Mesh();
+			WavefrontOBJReader objReader;
+			
+			objReader.readOBJ( xmlSurfaceElement->Attribute("name"), mesh );
+			
+			surfaceArray.push_back( mesh );
+		}
+		
+		xmlElement = xmlSurfaceElement->FirstChildElement("material_solid");
+		if( xmlElement != nullptr )
+			surfaceArray.back()->setMaterial( getMaterialSolid( xmlElement ) );
+		
+		xmlElement = xmlSurfaceElement->FirstChildElement("material_textured");
+		if( xmlElement != nullptr )
+			surfaceArray.back()->setMaterial( getMaterialTextured( xmlElement ) );
+		
+		xmlElement = xmlSurfaceElement->FirstChildElement("transform");
+		if( xmlElement != nullptr )	// in case no transformations exist
+			getTransformations( xmlElement, surfaceArray.back() );
+		
 		//~ std::cout << xmlSurfaceElement->Value() << std::endl;
 		xmlSurfaceElement = xmlSurfaceElement->NextSiblingElement();
 	}

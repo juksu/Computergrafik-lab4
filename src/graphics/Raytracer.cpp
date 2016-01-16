@@ -311,29 +311,30 @@ void Raytracer::render()
 {
 	image = new dvec3[horizontal*vertical];
 	
+	/// old approach
 	// calculate the tan values for x and y using radian
-	double tanX = tan( fov * M_PI / 180 );
-	double tanY = tan( ((double)vertical / horizontal) * (fov * M_PI / 180) );
-	std::cout << "vertical = " << vertical << " horizontal = " << horizontal << std::endl;
+	//~ double tanX = tan( fov * M_PI / 180 );
+	//~ double tanY = tan( ((double)vertical / horizontal) * (fov * M_PI / 180) );
+	//~ std::cout << "vertical = " << vertical << " horizontal = " << horizontal << std::endl;
 	//~ std::cout << (double)vertical/ horizontal << std::endl;
-	std::cout << "tanx = " << tanX << ", tanY = " << tanY  << std::endl;
+	//~ std::cout << "tanx = " << tanX << ", tanY = " << tanY  << std::endl;
 	
 	
-	//~ // other technique
+	/// new approach
+	double zoom = 1.0;		// used for zooming in or out of the scene
 	dvec3 n = normalize( camera - center );
 	dvec3 u = normalize( cross( up, n ) );
 	dvec3 v = cross( u, n );
-	double viewPlaneHalfHorizontal = tan( fov * M_PI / 180 );	// fov is already half
+	double viewPlaneHalfHorizontal = tan( fov * M_PI / 180 ) * distance( camera, center ) * zoom;	// fov is already half
 	double aspectRatio = ((double)vertical) / horizontal;
 	double viewPlaneHalfVertical = aspectRatio*viewPlaneHalfHorizontal;
 	
 	dvec3 viewPlaneBottomLeft = center - v * viewPlaneHalfVertical - u * viewPlaneHalfHorizontal;
-	//~ dvec3 viewPlaneBottomLeft = -n - v * viewPlaneHalfVertical - u * viewPlaneHalfHorizontal;
 	
-	double bla = 2*viewPlaneHalfHorizontal/horizontal;
-	dvec3 xIncrement = u*bla;
-	bla = 2*viewPlaneHalfVertical/vertical;
-	dvec3 yIncrement = v*bla;
+	double magdalena = 2*viewPlaneHalfHorizontal/horizontal;
+	dvec3 xIncrement = u*magdalena;
+	magdalena = 2*viewPlaneHalfVertical/vertical;
+	dvec3 yIncrement = v*magdalena;
 
 	// traverse through every pixel
 	for( int i = 0; i < horizontal; i++  )
@@ -341,17 +342,16 @@ void Raytracer::render()
 		{		
 			/// Old approach			
 			// calculate the view plane point, assuming that the view plane is at z = -1;
-			double x = (double)(2*i - (horizontal-1))/(horizontal-1)*tanX;
-			double y = (double)(2*j - (vertical-1))/(vertical-1)*tanY;
-			double z = -1;
-			
-			dvec3 initialRay = normalize(dvec3(x,y,z));
+			//~ double x = (double)(2*i - (horizontal-1))/(horizontal-1)*tanX;
+			//~ double y = (double)(2*j - (vertical-1))/(vertical-1)*tanY;
+			//~ double z = -1;
+			//~ dvec3 initialRay = normalize(dvec3(x,y,z));
 			//~ std::cout << "ray untransformed " << to_string( initialRay ) << std::endl;
 
 			/// New approach: this draws image as if the fewplane would be there were the center is -> with examples a zoomed in view -> correct?
 			/// same result only if center is a unit away from the camera
 			dvec3 viewPlanePoint = viewPlaneBottomLeft + ((double)i)*xIncrement + ((double)j)*yIncrement;
-			initialRay = normalize(viewPlanePoint - camera);
+			dvec3 initialRay = normalize(viewPlanePoint - camera);
 					
 			dvec3* point = new dvec3( camera );
 			dvec3* ray = new dvec3( initialRay );

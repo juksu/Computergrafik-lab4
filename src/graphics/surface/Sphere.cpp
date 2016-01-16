@@ -98,7 +98,7 @@ void Sphere::getIntersectionInformation( dvec3 point, dvec3 ray,
 	
 	// need to transform back into world space
 	// the intersection point is ray origin + alpha * ray direction
-	dvec3 intersectionPoint = pointTransformed + (rayTransformed*intersectionResult->getAlpha());
+	dvec3 intersectionPoint = pointTransformed + ( rayTransformed*intersectionResult->getAlpha() );
 	intersectionResult->setIntersectionPoint( 
 			dvec3(getTransformationMatrix()* dvec4( intersectionPoint, 1) ) );
 	
@@ -106,14 +106,4 @@ void Sphere::getIntersectionInformation( dvec3 point, dvec3 ray,
 	dvec3 intersectionNormal = normalize( intersectionPoint - position );
 	intersectionResult->setNormal( 
 			normalize( dvec3( getTransformationMatrix() * dvec4( intersectionNormal, 0 ) ) ) );
-			
-	/// Because i only need this once it may be simpler to do that outside when needed		
-	/// Also i save the transformation that way
-	//~ dvec3 intersectionReflection = normalize( 2 
-			//~ * dot( intersectionNormal, rayTransformed ) 
-			//~ * intersectionNormal - rayTransformed );
-			//~ 
-	//~ intersectionResult->setReflectionVector( 
-			//~ dvec3( getTransformationMatrix() * dvec4( intersectionReflection, 0 ) ) );
-			//~ intersectionReflection );
 }
