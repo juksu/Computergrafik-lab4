@@ -283,33 +283,31 @@ IntersectionResult* Mesh::intersect( dvec3 point, dvec3 ray )
 				//~ std::cout << to_string( matrix ) << std::endl << std::endl;
 				
 				
+				
 				double matrix[9];
-				for( int i = 0; i < 9; i++ )
-					matrix[i] = i;
+				for( int i = 0; i < 3; i++ )
+				{
+					matrix[i*3] = v1[i];
+					matrix[i*3+1] = v2[i];
+					matrix[i*3+2] = v3[i];
+				}
 				
 				double res[3];
 				for( int i = 0; i < 3; i++ )
-					res[i] = i;
+					res[i] = result[i];
 				
+				// solve the linear system to find out if intersection is inside the triangle
 				dvec2 uv = solveUV( matrix, res );
 				std::cout << "uv " << to_string(uv) << std::endl;
 				
+				if( uv[0] >= epsilon && uv[1] >= epsilon )
+					if( uv[0] <= 1 + epsilon && uv[1] <= 1 + epsilon )
+						if( uv[0] + uv[1] <= 1 + epsilon )		// don't need to test >= 0 because at this point u,v can't be negative
+							intersectionResult->setIntersection( true );
 				
-				
+				intersectionResult->setLambda( lambda );
 				//~ std::cout << "solve " << to_string( solve ) << std::endl;
-				
-				// solve the linear system to find out if intersection is inside the triangle
-				
 			}			
-			
-			
-			// lambda = (n * V_1 - n * P) / ( n * d ) where 
-			// n = ( V_3 - V_1 x V_2 - V_1 ) / ( V_3 - V_1 x V_2 - V_1 )
-			// P = point
-			// d = ray
-			
-			// if n*d = 0 than either parallel to plane or inside plane therefore no intersection
-			// if n*d != 0 than one intersection
 		}
 	}
 	

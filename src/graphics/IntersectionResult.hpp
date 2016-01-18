@@ -6,7 +6,7 @@ class IntersectionResult
 {
 	private:
 		bool intersection;
-		double alpha;
+		double lambda;
 		glm::dvec3 intersectionPoint;
 		glm::dvec3 normal;
 		//~ glm::dvec3 reflectionVector;
@@ -19,8 +19,8 @@ class IntersectionResult
 	public:
 		void setIntersection( bool intersection ){ this->intersection = intersection; }
 		bool isIntersection(){ return intersection; }
-		void setAlpha( double alpha ){ this->alpha = alpha; }
-		double getAlpha(){ return alpha; }
+		void setLambda( double lambda ){ this->lambda = lambda; }
+		double getLambda(){ return lambda; }
 		void setIntersectionPoint( glm::dvec3 intersectionPoint ){
 			this->intersectionPoint = intersectionPoint; }
 		glm::dvec3 getIntersectionPoint(){ return intersectionPoint; }

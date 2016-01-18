@@ -244,9 +244,9 @@ dvec3 Raytracer::trace( dvec3* point, dvec3* ray, dvec3* eyeVector, int step )
 	
 	IntersectionResult* closestIntersection = new IntersectionResult();
 	closestIntersection->setIntersection( false );
-	closestIntersection->setAlpha( std::numeric_limits<double>::max() );
+	closestIntersection->setLambda( std::numeric_limits<double>::max() );
 	size_t closestObject;
-	//~ double alphaMin = std::numeric_limits<double>::max();
+	//~ double lambdaMin = std::numeric_limits<double>::max();
 	
 	for( size_t i = 0; i < surfaceArray.size(); i++ )
 	{
@@ -256,7 +256,7 @@ dvec3 Raytracer::trace( dvec3* point, dvec3* ray, dvec3* eyeVector, int step )
 		if( intersect->isIntersection() )
 		{
 			//~ std::cout << "surface intersection" << std::endl;
-			if( closestIntersection->getAlpha() > intersect->getAlpha() )
+			if( closestIntersection->getLambda() > intersect->getLambda() )
 			{
 				delete closestIntersection;
 				closestIntersection = intersect;
@@ -269,8 +269,8 @@ dvec3 Raytracer::trace( dvec3* point, dvec3* ray, dvec3* eyeVector, int step )
 	
 	if( closestIntersection->isIntersection() )
 	{	
-		surfaceArray.at(closestObject)->getIntersectionInformation( 
-				*point, *ray, closestIntersection );
+		//~ surfaceArray.at(closestObject)->getIntersectionInformation( 
+				//~ *point, *ray, closestIntersection );
 		
 		color = shade( closestIntersection, surfaceArray.at(closestObject), eyeVector );
 		

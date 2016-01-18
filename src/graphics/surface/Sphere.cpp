@@ -10,7 +10,7 @@ IntersectionResult* Sphere::intersect( dvec3 point, dvec3 ray )
 {
 	IntersectionResult* intersectionResult = new IntersectionResult();
 	intersectionResult->setIntersection( false );
-	//~ double alpha = std::numeric_limits<double>::max();
+	//~ double lambda = std::numeric_limits<double>::max();
 	
 	// transform point and ray into object coordinates with inverse transformation matrix
 	// all transformations are affine, so affineInverse should work fine.
@@ -33,55 +33,67 @@ IntersectionResult* Sphere::intersect( dvec3 point, dvec3 ray )
 		
 	else
 	{	
-		double alpha = -1;
-		// alpha = ~ 0
+		double lambda = -1;
+		// lambda = ~ 0
 		//~ if( abs(t) < std::numeric_limits<double>::epsilon() )
 		if( abs(t) < epsilon )
 		{
 			// we just touche the sqhere -> we do not go through the object and therefore there is no transmittance
 			intersectionResult->setTransmittance( false );
-			alpha = (-b)/(2*a);
+			lambda = (-b)/(2*a);
 		}
 		else
 		{
 			intersectionResult->setTransmittance( true );
 			double sqrtT = std::sqrt(t);
-			double alpha1 = (-b+sqrtT)/(2*a);
-			double alpha2 = (-b-sqrtT)/(2*a);
+			double lambda1 = (-b+sqrtT)/(2*a);
+			double lambda2 = (-b-sqrtT)/(2*a);
 			
 			
-			// if alpha < 0 than intersection is in the other direction, if it is 0 than intersection with the own wall
-			if( alpha1 < alpha2 )
+			// if lambda < 0 than intersection is in the other direction, if it is 0 than intersection with the own wall
+			if( lambda1 < lambda2 )
 			{
-				//~ if( alpha1 > std::numeric_limits<double>::epsilon()*alpha1 )
-				//~ if( alpha1 > std::numeric_limits<double>::epsilon()*10000 )
-				if( alpha1 > epsilon )
-					alpha = alpha1;
+				//~ if( lambda1 > std::numeric_limits<double>::epsilon()*lambda1 )
+				//~ if( lambda1 > std::numeric_limits<double>::epsilon()*10000 )
+				if( lambda1 > epsilon )
+					lambda = lambda1;
 				else
-					alpha = alpha2;
+					lambda = lambda2;
 			} else 
 			{
-				if( alpha2 < alpha1 )
+				if( lambda2 < lambda1 )
 				{
-					//~ if( alpha2 > std::numeric_limits<double>::epsilon()*alpha2 )
-					//~ if( alpha2 > std::numeric_limits<double>::epsilon()*10000 )
-					if( alpha2 > epsilon )
-						alpha = alpha2;
+					//~ if( lambda2 > std::numeric_limits<double>::epsilon()*lambda2 )
+					//~ if( lambda2 > std::numeric_limits<double>::epsilon()*10000 )
+					if( lambda2 > epsilon )
+						lambda = lambda2;
 					else
-						alpha = alpha1;
+						lambda = lambda1;
 				}
 			}
 		}
 		
-		intersectionResult->setAlpha( alpha );
-		//~ std::cout << alpha << std::endl;
-		//~ if( alpha > std::numeric_limits<double>::epsilon()*10000 )
-		if( alpha > epsilon )
-		//~ if( alpha > 1.0e-17 )
+		intersectionResult->setLambda( lambda );
+		//~ std::cout << lambda << std::endl;
+		//~ if( lambda > std::numeric_limits<double>::epsilon()*10000 )
+		if( lambda > epsilon )
+		{
+		//~ if( lambda > 1.0e-17 )
 			intersectionResult->setIntersection( true );
-		else
-			intersectionResult->setIntersection( false );
 			
+			// get intersection Point and normal
+			dvec3 intersectionPoint = pointTransformed + lambda;
+			intersectionResult->setIntersectionPoint( 
+					dvec3(getTransformationMatrix()* dvec4( intersectionPoint, 1) ) );
+	
+			// the normal is the intersection point - center of the sphere
+			dvec3 intersectionNormal = normalize( intersectionPoint - position );
+			intersectionResult->setNormal( 
+					normalize( dvec3( getTransformationMatrix() * dvec4( intersectionNormal, 0 ) ) ) );
+			
+		}
+		else
+			intersectionResult->setIntersection( false );	
 	}
 	
 	return intersectionResult;
@@ -97,8 +109,8 @@ void Sphere::getIntersectionInformation( dvec3 point, dvec3 ray,
 	dvec3 rayTransformed = dvec3( inverseTransformations * dvec4( ray, 0 ) );	
 	
 	// need to transform back into world space
-	// the intersection point is ray origin + alpha * ray direction
-	dvec3 intersectionPoint = pointTransformed + ( rayTransformed*intersectionResult->getAlpha() );
+	// the intersection point is ray origin + lambda * ray direction
+	dvec3 intersectionPoint = pointTransformed + ( rayTransformed*intersectionResult->getLambda() );
 	intersectionResult->setIntersectionPoint( 
 			dvec3(getTransformationMatrix()* dvec4( intersectionPoint, 1) ) );
 	
