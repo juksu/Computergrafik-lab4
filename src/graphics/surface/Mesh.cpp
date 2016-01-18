@@ -6,6 +6,13 @@
 
 using namespace glm;
 
+dvec3 solve3x3( double* matrix, double* result )
+{
+	
+	
+}
+
+
 dvec2 solve2x2( double* matrix, double* result )
 {
 	// swap rows to largest pivot
@@ -23,20 +30,20 @@ dvec2 solve2x2( double* matrix, double* result )
 		result[1] = temp;
 	}
 	
-	std::cout << "matrix in solve2x2 after swap " << std::endl;
-	for( int i = 0; i < 4; i++ )
-	{
-		std::cout << matrix[i] << " ";
-		if( i % 2 == 1 )
-			std::cout << std::endl;
-	}
+	//~ std::cout << "matrix in solve2x2 after swap " << std::endl;
+	//~ for( int i = 0; i < 4; i++ )
+	//~ {
+		//~ std::cout << matrix[i] << " ";
+		//~ if( i % 2 == 1 )
+			//~ std::cout << std::endl;
+	//~ }
 	
-	std::cout << "result in solveUV after swap " << std::endl;
-	for( int i = 0; i < 2; i++ )
-	{
-		std::cout << result[i] << " ";
-	}
-	std::cout << "'" << std::endl;
+	//~ std::cout << "result in solveUV after swap " << std::endl;
+	//~ for( int i = 0; i < 2; i++ )
+	//~ {
+		//~ std::cout << result[i] << " ";
+	//~ }
+	//~ std::cout << "'" << std::endl;
 	
 	// bring matrix into triangular form
 	double factor = matrix[2]/matrix[0];
@@ -62,20 +69,20 @@ dvec2 solve2x2( double* matrix, double* result )
 
 dvec2 solveUV( double* matrix, double* result )
 {	
-	std::cout << "matrix in solveUV " << std::endl;
-	for( int i = 0; i < 9; i++ )
-	{
-		std::cout << matrix[i] << " ";
-		if( i % 3 == 2 )
-			std::cout << std::endl;
-	}
-	
-	std::cout << "result in solveUV " << std::endl;
-	for( int i = 0; i < 3; i++ )
-	{
-		std::cout << result[i] << " ";
-	}
-	std::cout << "'" << std::endl;
+	//~ std::cout << "matrix in solveUV " << std::endl;
+	//~ for( int i = 0; i < 9; i++ )
+	//~ {
+		//~ std::cout << matrix[i] << " ";
+		//~ if( i % 3 == 2 )
+			//~ std::cout << std::endl;
+	//~ }
+	//~ 
+	//~ std::cout << "result in solveUV " << std::endl;
+	//~ for( int i = 0; i < 3; i++ )
+	//~ {
+		//~ std::cout << result[i] << " ";
+	//~ }
+	//~ std::cout << "'" << std::endl;
 	
 	int ignoreRow = -1;
 	int ignoreColumn = -1;
@@ -95,7 +102,6 @@ dvec2 solveUV( double* matrix, double* result )
 	// from ignoreRow and ignoreColumn we can now build a 2x2 matrix which will be linear independent
 	
 	// if there was not any column or row with only 0 it still may be that there is a linear dependence
-	/// TODO check for linear dependence
 	/// TODO i hope that is right now -> need sleep zzzz
 	int m1 = 0;
 	if( m1 == ignoreRow )
@@ -154,16 +160,16 @@ dvec2 solveUV( double* matrix, double* result )
 	double linIndMatrix[4];
 	double linIndResult[2];
 	
-	std::cout << "matrix in solveUV - 2 " << std::endl;
-	for( int i = 0; i < 9; i++ )
-	{
-		std::cout << matrix[i] << " ";
-		if( i % 3 == 2 )
-			std::cout << std::endl;
-	}
-	
-	std::cout << "ignoreRow " << ignoreRow << std::endl;
-	std::cout << "ignoreColumn " << ignoreColumn << std::endl;
+	//~ std::cout << "matrix in solveUV - 2 " << std::endl;
+	//~ for( int i = 0; i < 9; i++ )
+	//~ {
+		//~ std::cout << matrix[i] << " ";
+		//~ if( i % 3 == 2 )
+			//~ std::cout << std::endl;
+	//~ }
+	//~ 
+	//~ std::cout << "ignoreRow " << ignoreRow << std::endl;
+	//~ std::cout << "ignoreColumn " << ignoreColumn << std::endl;
 	
 	
 	int it = 0;
@@ -172,7 +178,7 @@ dvec2 solveUV( double* matrix, double* result )
 		{
 			if( i != ignoreRow && j != ignoreColumn )
 			{
-				std::cout << "it " << it << " i " << i << " j " << j << std::endl;
+				//~ std::cout << "it " << it << " i " << i << " j " << j << std::endl;
 				linIndMatrix[it] = matrix[i*3 + j];
 				it++;
 			}
@@ -185,24 +191,24 @@ dvec2 solveUV( double* matrix, double* result )
 			it++;
 		}
 	
-	std::cout << "linIndMatrix in solveUV " << std::endl;
-	for( int i = 0; i < 4; i++ )
-	{
-		std::cout << linIndMatrix[i] << " ";
-		if( i % 2 == 1 )
-			std::cout << std::endl;
-	}
-	
-	std::cout << "linIndResult in solveUV " << std::endl;
-	for( int i = 0; i < 2; i++ )
-	{
-		std::cout << linIndResult[i] << " " << std::endl;
-	}
+	//~ std::cout << "linIndMatrix in solveUV " << std::endl;
+	//~ for( int i = 0; i < 4; i++ )
+	//~ {
+		//~ std::cout << linIndMatrix[i] << " ";
+		//~ if( i % 2 == 1 )
+			//~ std::cout << std::endl;
+	//~ }
+	//~ 
+	//~ std::cout << "linIndResult in solveUV " << std::endl;
+	//~ for( int i = 0; i < 2; i++ )
+	//~ {
+		//~ std::cout << linIndResult[i] << " " << std::endl;
+	//~ }
 	
 	dvec2 uv = solve2x2( linIndMatrix, linIndResult );
 	
-	std::cout << "uv in solveUV" << std::endl;
-	std::cout << to_string(uv) << std::endl;
+	//~ std::cout << "uv in solveUV" << std::endl;
+	//~ std::cout << to_string(uv) << std::endl;
 	
 
 	// we got 1 - u - v and v
@@ -244,30 +250,34 @@ IntersectionResult* Mesh::intersect( dvec3 point, dvec3 ray )
 			dvec3 v1 = vertices.at( faceVertices.at( verticesPerFace.at( i ) ) );
 			dvec3 v2 = vertices.at( faceVertices.at( verticesPerFace.at( i ) + 1 ) );
 			dvec3 v3 = vertices.at( faceVertices.at( verticesPerFace.at( i ) + 2 ) );
-			std::cout << "v1 " << to_string(v1) << std::endl;
-			std::cout << "v2 " << to_string(v2) << std::endl;
-			std::cout << "v3 " << to_string(v3) << std::endl;
+			//~ std::cout << "v1 " << to_string(v1) << std::endl;
+			//~ std::cout << "v2 " << to_string(v2) << std::endl;
+			//~ std::cout << "v3 " << to_string(v3) << std::endl;
 			
-			dvec3 n = cross( v3 - v1, v2 - v1 ) / abs( length( cross( v3 - v1, v2 - v1 ) ) );
-			std::cout << "n " << to_string( n ) << std::endl;
+			//~ dvec3 n = cross( v3 - v1, v2 - v1 ) / abs( length( cross( v3 - v1, v2 - v1 ) ) );
+			dvec3 n = normalize(cross( v3 - v1, v2 - v1 ));
+			//~ std::cout << "n " << to_string( n ) << std::endl;
 			
 			double nd = dot( n, rayTransformed );
-			std::cout << "nd " << nd << std::endl;
+			//~ std::cout << "nd " << nd << std::endl;
 			
 			
 			// if n.d = 0 than either parallel to plane or inside plane therefore no intersection
 			// if n.d != 0 than one intersection with the plane
-			if( abs(nd) > epsilon )
+			//~ if( abs(nd) > epsilon )
+			//~ if( abs(nd) > abs(epsilon) )
+			if( nd != 0 )
 			{
 				/// TODO lambda is 0 -> maybe some error in calculation?
 				double lambda = ( dot( n, v1 ) - dot( n, pointTransformed ) ) / nd;
-				std::cout << "lambda " << lambda << std::endl;
+				intersectionResult->setLambda( lambda );
+				//~ std::cout << "lambda " << lambda << std::endl;
 				/// TODO
 				//~ lambda = 1;
 				dvec3 result = pointTransformed + lambda * rayTransformed;
 				
-				std::cout << "pointTransformed " << to_string( pointTransformed ) << std::endl;
-				std::cout << "rayTransformed " << to_string( rayTransformed ) << std::endl;
+				//~ std::cout << "pointTransformed " << to_string( pointTransformed ) << std::endl;
+				//~ std::cout << "rayTransformed " << to_string( rayTransformed ) << std::endl;
 				
 				
 				//~ dmat2x2 matrix;
@@ -297,15 +307,30 @@ IntersectionResult* Mesh::intersect( dvec3 point, dvec3 ray )
 					res[i] = result[i];
 				
 				// solve the linear system to find out if intersection is inside the triangle
+				/// TODO: write a different solver because this one probably makes the problems
 				dvec2 uv = solveUV( matrix, res );
-				std::cout << "uv " << to_string(uv) << std::endl;
+				//~ std::cout << "uv " << to_string(uv) << std::endl;
 				
-				if( uv[0] >= epsilon && uv[1] >= epsilon )
-					if( uv[0] <= 1 + epsilon && uv[1] <= 1 + epsilon )
-						if( uv[0] + uv[1] <= 1 + epsilon )		// don't need to test >= 0 because at this point u,v can't be negative
+				if( uv[0] >= 0 && uv[1] >= 0 )
+					if( uv[0] <= 1 && uv[1] <= 1 )
+						//~ if( uv[0] + uv[1] <= 1 && uv[0] + uv[1] >= 0 )
+						//~ if( uv[0] + uv[1] <= 1 )
+						if( uv[0] + uv[1] > 0 )
+						{
 							intersectionResult->setIntersection( true );
+							
+							// get intersection Point and normal
+							dvec3 intersectionPoint = pointTransformed + rayTransformed * lambda;
+							intersectionResult->setIntersectionPoint( 
+									dvec3(getTransformationMatrix()* dvec4( intersectionPoint, 1) ) );
+					
+							//~ dvec3 intersectionNormal = n;
+							//~ intersectionResult->setNormal( 
+									//~ normalize( dvec3( getTransformationMatrix() * dvec4( n, 0 ) ) ) );
+							intersectionResult->setNormal( -normals.at( faceNormals.at( normalsPerFace.at( i ) ) ) );
+						}
 				
-				intersectionResult->setLambda( lambda );
+				
 				//~ std::cout << "solve " << to_string( solve ) << std::endl;
 			}			
 		}
@@ -314,6 +339,7 @@ IntersectionResult* Mesh::intersect( dvec3 point, dvec3 ray )
 	return intersectionResult;
 }
 
+/// TODO obsolete???
 void Mesh::getIntersectionInformation( dvec3 point, dvec3 ray, 
 		IntersectionResult* intersectionResult )
 {

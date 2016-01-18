@@ -16,6 +16,7 @@ using namespace tinyxml2;
 bool XMLReader::loadFile( std::string filename )
 {
 	//~ XMLDocument xmlDocument;
+	this->filename = filename;
 	XMLError xmlResult = xmlDocument.LoadFile( filename.c_str() );
 	//~ tinyxml2::XMLError xmlResult = xmlDocument.LoadFile( "example1.xml" );
 	if( xmlResult != XML_SUCCESS )
@@ -291,9 +292,21 @@ std::vector<Surface*> XMLReader::getSurfaces()
 			Mesh* mesh = new Mesh();
 			WavefrontOBJReader objReader;
 			
-			objReader.readOBJ( xmlSurfaceElement->Attribute("name"), mesh );
+			// if the file is executed from a different path where the xml is saved (which is usually the case)
+			// we need to add the path information to the filename 
+			// assuming the .obj file is at the same location as the .xml file
+			std::string fn = filename;
+			size_t i = fn.rfind( "/" );
+			fn.erase( i+1, fn.length() );
+			fn.append( xmlSurfaceElement->Attribute("name") );
+			
+			//~ objReader.readOBJ( fn, mesh );
+			objReader.readOBJ( "./xml/plane_small.obj", mesh );
+			//~ std::cout << "obj name " << fn << std::endl;
 			
 			surfaceArray.push_back( mesh );
+			
+			mesh->printMesh();
 		}
 		
 		xmlElement = xmlSurfaceElement->FirstChildElement("material_solid");

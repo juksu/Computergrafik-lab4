@@ -42,7 +42,18 @@ string WavefrontOBJReader::readStringInformation( string str )
 
 void WavefrontOBJReader::readOBJ( string filename, Mesh* mesh )
 {
-	cout << "reading obj" << endl;
+	//~ cout << "reading obj" << endl;
+	//~ fstream fstest;
+	//~ string testfilename = filename;
+	//~ testfilename.insert( 2, "test" );
+	//~ fstest.open( testfilename, std::fstream::in | std::fstream::out | std::fstream::app );
+	//~ if( fstest )
+		//~ fstest << "test content";
+	//~ else
+		//~ cout << "no test " << testfilename <<  endl;
+	//~ 
+	cout << "Reading .obj-file " << filename << endl;
+	
 	ifstream fs;
 	fs.open( filename, ifstream::in );
 	

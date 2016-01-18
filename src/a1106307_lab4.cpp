@@ -64,11 +64,11 @@ int main( int argc, char* argv[] )
 	raytracer.setLightContainer( xmlReader.getLights() );
 	
 	/// testing obj reader
-	WavefrontOBJReader objReader;
-	Mesh* mesh = new Mesh();
-	objReader.readOBJ( "./xml/plane_small.obj", mesh );
-	mesh->printMesh();
-	mesh->intersect( glm::dvec3(0.7,0.3,0.5), glm::dvec3(-1,-1,-1) );
+	//~ WavefrontOBJReader objReader;
+	//~ Mesh* mesh = new Mesh();
+	//~ objReader.readOBJ( "./xml/plane_small.obj", mesh );
+	//~ mesh->printMesh();
+	//~ mesh->intersect( glm::dvec3(0.7,0.3,0.5), glm::dvec3(-1,-1,-1) );
 	
 	
 	raytracer.render();

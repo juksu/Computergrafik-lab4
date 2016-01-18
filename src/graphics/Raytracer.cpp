@@ -272,7 +272,7 @@ dvec3 Raytracer::trace( dvec3* point, dvec3* ray, dvec3* eyeVector, int step )
 		//~ surfaceArray.at(closestObject)->getIntersectionInformation( 
 				//~ *point, *ray, closestIntersection );
 		
-		color = shade( closestIntersection, surfaceArray.at(closestObject), eyeVector );
+		//~ color = shade( closestIntersection, surfaceArray.at(closestObject), eyeVector );
 		
 		//~ delete point;
 		*point = dvec3( closestIntersection->getIntersectionPoint() );
@@ -288,7 +288,7 @@ dvec3 Raytracer::trace( dvec3* point, dvec3* ray, dvec3* eyeVector, int step )
 		delete closestIntersection;
 				
 		/// for debugging
-		//~ color = surfaceArray.at(closestObject)->getMaterial()->getColor();
+		color = surfaceArray.at(closestObject)->getMaterial()->getColor();
 		//~ color = closestIntersection->getIntersectionPoint();
 		//~ color = closestIntersection->getNormal();
 		//~ color = reflectedRay;
@@ -297,6 +297,9 @@ dvec3 Raytracer::trace( dvec3* point, dvec3* ray, dvec3* eyeVector, int step )
 			//~ color[0] = 0;
 		//~ if( color[1] < 0 )
 			//~ color[1] = 0;
+		//~ if( color[2] < 0 )
+			//~ color[2] = 0;
+			//~ color[2] = -color[2];
 		//~ if( color[2] < 0 )
 			//~ color[2] = 0;
 		//~ color[2] = color[2]/3;

@@ -82,7 +82,7 @@ IntersectionResult* Sphere::intersect( dvec3 point, dvec3 ray )
 			intersectionResult->setIntersection( true );
 			
 			// get intersection Point and normal
-			dvec3 intersectionPoint = pointTransformed + lambda;
+			dvec3 intersectionPoint = pointTransformed + rayTransformed * lambda;
 			intersectionResult->setIntersectionPoint( 
 					dvec3(getTransformationMatrix()* dvec4( intersectionPoint, 1) ) );
 	
@@ -94,12 +94,14 @@ IntersectionResult* Sphere::intersect( dvec3 point, dvec3 ray )
 		}
 		else
 			intersectionResult->setIntersection( false );	
+			
 	}
 	
 	return intersectionResult;
 }
 
 
+// this function is probably now obsolete
 void Sphere::getIntersectionInformation( dvec3 point, dvec3 ray, 
 		IntersectionResult* intersectionResult )
 {
