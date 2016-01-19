@@ -236,7 +236,6 @@ IntersectionResult* Mesh::intersect( dvec3 point, dvec3 ray )
 	
 	dmat4 inverseTransformations = affineInverse( getTransformationMatrix() );
 	
-	
 	dvec3 pointTransformed = dvec3( inverseTransformations * dvec4( point, 1 ) );
 	dvec3 rayTransformed = dvec3( inverseTransformations * dvec4( ray, 0 ) );
 	
@@ -268,10 +267,11 @@ IntersectionResult* Mesh::intersect( dvec3 point, dvec3 ray )
 			//~ rayTransformed = rayTransformed;
 			
 			//~ dvec3 n = cross( v3 - v1, v2 - v1 ) / abs( length( cross( v3 - v1, v2 - v1 ) ) );
-			dvec3 n = normalize(cross( v3 - v1, v2 - v1 ));
+			dvec3 planeNormal = normalize(cross( v3 - v1, v2 - v1 ));
 			//~ std::cout << "n " << to_string( n ) << std::endl;
 			
-			double nd = dot( n, rayTransformed );
+			//~ double nd = dot( planeNormal, rayTransformed );
+			double nd = dot( planeNormal, rayTransformed );
 			//~ std::cout << "nd " << nd << std::endl;
 			
 			
@@ -281,86 +281,66 @@ IntersectionResult* Mesh::intersect( dvec3 point, dvec3 ray )
 			//~ if( abs(nd) > abs(epsilon) )
 			if( nd != 0 )
 			{
-				//~ double lambda = ( dot( n, v1 ) - dot( n, pointTransformed ) ) / nd;
-				double lambda = ( dot( n, v1 ) - dot( n, pointTransformed ) ) / nd;
+				double lambda = ( dot( planeNormal, v1 ) - dot( planeNormal, pointTransformed ) ) / nd;
+				//~ double lambda = ( dot( pointTransformed - v1, planeNormal ) ) / nd;		//from scratch a pixel
+				/// important: the normal of the plane may look in different direction than our ray
+				/// should be pointed towards the camera
+				/// -> negate lambda
+				/// if we allow lambda to be negative than we draw the triangle even if it is in the opposite direction of our ray
+				lambda = lambda;
+				
 				intersectionResult->setLambda( lambda );
-				//~ std::cout << "lambda " << lambda << std::endl;
-				/// TODO
-				//~ lambda = 1;
-				dvec3 result = pointTransformed + lambda * rayTransformed;
+
+				//~ dvec3 result = pointTransformed + lambda * rayTransformed;
 				
 				//~ std::cout << "pointTransformed " << to_string( pointTransformed ) << std::endl;
 				//~ std::cout << "rayTransformed " << to_string( rayTransformed ) << std::endl;
 				
-				
-				//~ dmat2x2 matrix;
-				
-				//~ dmat3x3 matrix;
-				//~ matrix = column( matrix, 0, dvec3(0,1,3) );
-				//~ matrix = column( matrix, 1, dvec3(3,2,3) );
-				//~ matrix = column( matrix, 2, dvec3(6,4,2) );				
-				//~ matrix = column( matrix, 0, v1 );
-				//~ matrix = column( matrix, 1, v2 );
-				//~ matrix = column( matrix, 2, v3 );
+				//~ double matrix[9];
+				//~ for( int j = 0; j < 3; j++ )
+				//~ {
+					//~ matrix[j*3] = v1[j];
+					//~ matrix[j*3+1] = v2[j];
+					//~ matrix[j*3+2] = v3[j];
+				//~ }
 				//~ 
-				//~ std::cout << to_string( matrix ) << std::endl << std::endl;
-				
-				
-				// some problems if we cross the (+/-)x = (+/-)y axis??
-				/// TODO try: translate all points so that v1 is in origin
-				/// this should not affect the test
-				//~ v2 = v2 - v1;
-				//~ v3 = v3 - v1;
-				//~ v1 = dvec3(0,0,0);
-				 
-				//~ result = result - v1;
-				
-				double matrix[9];
-				for( int j = 0; j < 3; j++ )
-				{
-					matrix[j*3] = v1[j];
-					matrix[j*3+1] = v2[j];
-					matrix[j*3+2] = v3[j];
-				}
-				
-				double res[3];
-				for( int i = 0; i < 3; i++ )
-					res[i] = result[i];
-				
+				//~ double res[3];
+				//~ for( int i = 0; i < 3; i++ )
+					//~ res[i] = result[i];
+				//~ 
 				// solve the linear system to find out if intersection is inside the triangle
 				/// TODO: write a different solver because this one probably makes the problems
-				dvec2 uv = solveUV( matrix, res );
-				//~ std::cout << "uv " << to_string(uv) << std::endl;
+				//~ dvec2 uv = solveUV( matrix, res );
 				
-				if( uv[0] >= 0 && uv[0] <= 1 )
-					if( uv[1] >= 0 && uv[1] <= 1 )
-						if( uv[0] + uv[1] <= 1 && uv[0] + uv[1] >= 0 )
-				
-				
-				//~ if( abs(uv[0]) <= 1 )
-					//~ if( uv[1] >= 0 && uv[1] <= 1 )
-					//~ if( uv[1] <= 1 )		
-					//~ if( uv[1] >= 0 )		
-					//~ if( uv[0] <= 1 )		/// TODO hier ein fehler? -> vorzeichen verkehrt?
-							/// TODO hier ein fehler? -> vorzeichen verkehrt?
-					//~ if( uv[1] <= 1 + 0.005 && uv[1] >= 1 - 0.005 )		/// TODO hier ein fehler? -> vorzeichen verkehrt?
-						{
-							intersectionResult->setIntersection( true );
-							
-							// get intersection Point and normal
-							dvec3 intersectionPoint = (pointTransformed) + (rayTransformed) * lambda;
-							intersectionResult->setIntersectionPoint( 
-									dvec3(getTransformationMatrix()* dvec4( intersectionPoint, 1) ) );
+ 
+				//~ if( uv[0] >= 0 && uv[1] >= 0 && uv[0] + uv[1] < 1 )
+					//~ if( false )
+					//~ if( uv[0] + uv[1] <=   + 0.005 && uv[0] + uv[1] >=   - 0.005 )		/// TODO hier ein fehler? -> vorzeichen verkehrt?
+					//~ if( uv[0] + uv[1] <=   0 + 0.005 && uv[0] + uv[1] >=  0 - 0.005 )		/// TODO hier ein fehler? -> vorzeichen verkehrt?
+						//~ {
+							//~ intersectionResult->setIntersection( true );
+							//~ 
+							//~ // get intersection Point and normal
+							//~ dvec3 intersectionPoint = (pointTransformed) + (rayTransformed) * lambda;
+							//~ intersectionResult->setIntersectionPoint( 
+									//~ dvec3(getTransformationMatrix()* dvec4( intersectionPoint, 1) ) );
 									//~ dvec3(transformationMat* dvec4( intersectionPoint, 1) ) );
-					
-							//~ dvec3 intersectionNormal = n;
+					//~ 
+							//~ dvec3 intersectionNormal = planeNormal;
 							//~ intersectionResult->setNormal( 
-									//~ normalize( dvec3( getTransformationMatrix() * dvec4( n, 0 ) ) ) );
-							intersectionResult->setNormal( -normals.at( faceNormals.at( normalsPerFace.at( i ) ) ) );
-						}
+									//~ normalize( dvec3( getTransformationMatrix() * dvec4( planeNormal, 0 ) ) ) );
+							//~ intersectionResult->setNormal( -normals.at( faceNormals.at( normalsPerFace.at( i ) ) ) );
+						//~ }
 				
 				
 				//~ std::cout << "solve " << to_string( solve ) << std::endl;
+				
+				
+				
+				
+				
+				
+				
 			}			
 		}
 	}
