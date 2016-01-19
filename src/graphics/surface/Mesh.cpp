@@ -2,6 +2,7 @@
 #include "../../lib/glm/gtc/matrix_inverse.hpp"
 #include "../../lib/glm/gtx/string_cast.hpp"
 #include "../../lib/glm/gtc/matrix_access.hpp"
+#include "../../lib/glm/gtc/matrix_transform.hpp"
 #include <iostream>
 
 using namespace glm;
@@ -231,7 +232,10 @@ IntersectionResult* Mesh::intersect( dvec3 point, dvec3 ray )
 	// transform point and ray into object coordinates with inverse transformation matrix
 	// all transformations are affine, so affineInverse should work fine.
 	/// TODO, for optimization i may calculate this only once (when setting transformation maybe?)
+	//~ dmat4x4 transformationMat = getTransformationMatrix();
+	
 	dmat4 inverseTransformations = affineInverse( getTransformationMatrix() );
+	
 	
 	dvec3 pointTransformed = dvec3( inverseTransformations * dvec4( point, 1 ) );
 	dvec3 rayTransformed = dvec3( inverseTransformations * dvec4( ray, 0 ) );
@@ -252,9 +256,16 @@ IntersectionResult* Mesh::intersect( dvec3 point, dvec3 ray )
 			dvec3 v1 = vertices.at( faceVertices.at( verticesPerFace.at( i ) ) );
 			dvec3 v2 = vertices.at( faceVertices.at( verticesPerFace.at( i ) + 1 ) );
 			dvec3 v3 = vertices.at( faceVertices.at( verticesPerFace.at( i ) + 2 ) );
+			
+			//~ v3 = v3 - v1;
+			//~ v2 = v2 - v1;
+			//~ v1 = dvec3(0,0,0);
+			
 			//~ std::cout << "v1 " << to_string(v1) << std::endl;
 			//~ std::cout << "v2 " << to_string(v2) << std::endl;
 			//~ std::cout << "v3 " << to_string(v3) << std::endl;
+			//~ pointTransformed = pointTransformed - v1;
+			//~ rayTransformed = rayTransformed;
 			
 			//~ dvec3 n = cross( v3 - v1, v2 - v1 ) / abs( length( cross( v3 - v1, v2 - v1 ) ) );
 			dvec3 n = normalize(cross( v3 - v1, v2 - v1 ));
@@ -270,7 +281,7 @@ IntersectionResult* Mesh::intersect( dvec3 point, dvec3 ray )
 			//~ if( abs(nd) > abs(epsilon) )
 			if( nd != 0 )
 			{
-				/// TODO lambda is 0 -> maybe some error in calculation?
+				//~ double lambda = ( dot( n, v1 ) - dot( n, pointTransformed ) ) / nd;
 				double lambda = ( dot( n, v1 ) - dot( n, pointTransformed ) ) / nd;
 				intersectionResult->setLambda( lambda );
 				//~ std::cout << "lambda " << lambda << std::endl;
@@ -295,13 +306,21 @@ IntersectionResult* Mesh::intersect( dvec3 point, dvec3 ray )
 				//~ std::cout << to_string( matrix ) << std::endl << std::endl;
 				
 				
+				// some problems if we cross the (+/-)x = (+/-)y axis??
+				/// TODO try: translate all points so that v1 is in origin
+				/// this should not affect the test
+				//~ v2 = v2 - v1;
+				//~ v3 = v3 - v1;
+				//~ v1 = dvec3(0,0,0);
+				 
+				//~ result = result - v1;
 				
 				double matrix[9];
-				for( int i = 0; i < 3; i++ )
+				for( int j = 0; j < 3; j++ )
 				{
-					matrix[i*3] = v1[i];
-					matrix[i*3+1] = v2[i];
-					matrix[i*3+2] = v3[i];
+					matrix[j*3] = v1[j];
+					matrix[j*3+1] = v2[j];
+					matrix[j*3+2] = v3[j];
 				}
 				
 				double res[3];
@@ -313,23 +332,26 @@ IntersectionResult* Mesh::intersect( dvec3 point, dvec3 ray )
 				dvec2 uv = solveUV( matrix, res );
 				//~ std::cout << "uv " << to_string(uv) << std::endl;
 				
-				//~ if( uv[0] >= 0 && uv[0] <= 1 )
+				if( uv[0] >= 0 && uv[0] <= 1 )
+					if( uv[1] >= 0 && uv[1] <= 1 )
+						if( uv[0] + uv[1] <= 1 && uv[0] + uv[1] >= 0 )
+				
+				
 				//~ if( abs(uv[0]) <= 1 )
 					//~ if( uv[1] >= 0 && uv[1] <= 1 )
 					//~ if( uv[1] <= 1 )		
 					//~ if( uv[1] >= 0 )		
 					//~ if( uv[0] <= 1 )		/// TODO hier ein fehler? -> vorzeichen verkehrt?
-						if( uv[0] >= 0 )
-						//~ if( abs(uv[0] + uv[1]) <= 1 )		// it seems to work only when using abs?
-						//~ if( uv[0] + uv[1] <= 1 )
-						//~ if( uv[0] + uv[1] > 0 )
+							/// TODO hier ein fehler? -> vorzeichen verkehrt?
+					//~ if( uv[1] <= 1 + 0.005 && uv[1] >= 1 - 0.005 )		/// TODO hier ein fehler? -> vorzeichen verkehrt?
 						{
 							intersectionResult->setIntersection( true );
 							
 							// get intersection Point and normal
-							dvec3 intersectionPoint = pointTransformed + rayTransformed * lambda;
+							dvec3 intersectionPoint = (pointTransformed) + (rayTransformed) * lambda;
 							intersectionResult->setIntersectionPoint( 
 									dvec3(getTransformationMatrix()* dvec4( intersectionPoint, 1) ) );
+									//~ dvec3(transformationMat* dvec4( intersectionPoint, 1) ) );
 					
 							//~ dvec3 intersectionNormal = n;
 							//~ intersectionResult->setNormal( 
