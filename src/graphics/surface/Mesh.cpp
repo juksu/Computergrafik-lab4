@@ -6,13 +6,6 @@
 
 using namespace glm;
 
-dvec3 solve3x3( double* matrix, double* result )
-{
-	
-	
-}
-
-
 dvec2 solve2x2( double* matrix, double* result )
 {
 	// swap rows to largest pivot
@@ -205,18 +198,27 @@ dvec2 solveUV( double* matrix, double* result )
 		//~ std::cout << linIndResult[i] << " " << std::endl;
 	//~ }
 	
+	
+	/// TODO debug
+	linIndMatrix[0] = matrix[1];
+	linIndMatrix[1] = matrix[2];
+	linIndMatrix[2] = matrix[4];
+	linIndMatrix[3] = matrix[5];
+	linIndResult[0] = result[0];
+	linIndResult[1] = result[1];
+	
 	dvec2 uv = solve2x2( linIndMatrix, linIndResult );
 	
 	//~ std::cout << "uv in solveUV" << std::endl;
 	//~ std::cout << to_string(uv) << std::endl;
-	
 
+/// TODO restore after debug
 	// we got 1 - u - v and v
-	if( ignoreColumn == 1 )
-		return dvec2( 1-uv[1], uv[1] );
+	//~ if( ignoreColumn == 1 )
+		//~ return dvec2( 1-uv[1], uv[1] );
 	// we got 1 - u - v and u
-	if( ignoreColumn == 2 )
-		return dvec2( uv[1], 1-uv[1] );	
+	//~ if( ignoreColumn == 2 )
+		//~ return dvec2( uv[1], 1-uv[1] );	
 	// else we have uv directly
 	return uv;
 }
@@ -311,11 +313,16 @@ IntersectionResult* Mesh::intersect( dvec3 point, dvec3 ray )
 				dvec2 uv = solveUV( matrix, res );
 				//~ std::cout << "uv " << to_string(uv) << std::endl;
 				
-				if( uv[0] >= 0 && uv[1] >= 0 )
-					if( uv[0] <= 1 && uv[1] <= 1 )
-						//~ if( uv[0] + uv[1] <= 1 && uv[0] + uv[1] >= 0 )
+				//~ if( uv[0] >= 0 && uv[0] <= 1 )
+				//~ if( abs(uv[0]) <= 1 )
+					//~ if( uv[1] >= 0 && uv[1] <= 1 )
+					//~ if( uv[1] <= 1 )		
+					//~ if( uv[1] >= 0 )		
+					//~ if( uv[0] <= 1 )		/// TODO hier ein fehler? -> vorzeichen verkehrt?
+						if( uv[0] >= 0 )
+						//~ if( abs(uv[0] + uv[1]) <= 1 )		// it seems to work only when using abs?
 						//~ if( uv[0] + uv[1] <= 1 )
-						if( uv[0] + uv[1] > 0 )
+						//~ if( uv[0] + uv[1] > 0 )
 						{
 							intersectionResult->setIntersection( true );
 							
