@@ -9,7 +9,7 @@
 		<up x="0.0" y="1.0" z="0.0"/>
 		<horizontal_fov angle="45"/>
 		<resolution horizontal="600" vertical="600"/>
-		<max_bounces n="100"/>
+		<max_bounces n="4"/>
 	</camera>
 	<lights>
 		<ambient_light>
@@ -41,8 +41,8 @@
 				<color r="0.17" g="0.18" b="0.50"/>
 				<phong ka="0.3" kd="0.9" ks="1.0" exponent="200"/>
 				<reflectance r="0.0"/>
-				<transmittance t="0.0"/>
-				<refraction iof="2.3"/>
+				<transmittance t="0.8"/>
+				<refraction iof="1.1"/>
 			</material_solid>
 		</sphere>
 		<sphere radius="1.0">
@@ -51,8 +51,8 @@
 				<color r="0.5" g="0.17" b="0.18"/>
 				<phong ka="0.3" kd="0.9" ks="1.0" exponent="200"/>
 				<reflectance r="0.0"/>
-				<transmittance t="0.0"/>
-				<refraction iof="2.3"/>
+				<transmittance t="0.8"/>
+				<refraction iof="1.1"/>
 			</material_solid>
 		</sphere>
 		<sphere radius="1.0">
@@ -61,8 +61,8 @@
 				<color r="0.18" g="0.50" b="0.17"/>
 				<phong ka="0.3" kd="0.9" ks="1.0" exponent="200"/>
 				<reflectance r="0.0"/>
-				<transmittance t="0.0"/>
-				<refraction iof="2.3"/>
+				<transmittance t="0.8"/>
+				<refraction iof="6"/>
 			</material_solid>
 		</sphere>
 		<mesh name="open_room.obj">

@@ -340,13 +340,13 @@ MaterialSolid* XMLReader::getMaterialSolid( XMLElement* xmlMaterialElement )
 	getPhong( xmlMaterialElement, material );
 	
 	xmlElement = xmlMaterialElement->FirstChildElement("reflectance");
-	material->setReflactance( xmlElement->DoubleAttribute("r") );
+	material->setReflectance( xmlElement->DoubleAttribute("r") );
 	
 	xmlElement = xmlMaterialElement->FirstChildElement("transmittance");
 	material->setTransmittance( xmlElement->DoubleAttribute("t") );
 	
 	xmlElement = xmlMaterialElement->FirstChildElement("refraction");
-	material->setTransmittance( xmlElement->DoubleAttribute("iof") );
+	material->setRefractionIndex( xmlElement->DoubleAttribute("iof") );
 	
 	return material;
 }
