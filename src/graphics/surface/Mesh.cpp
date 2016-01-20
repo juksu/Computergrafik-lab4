@@ -232,8 +232,6 @@ IntersectionResult* Mesh::intersect( dvec3 point, dvec3 ray )
 	// transform point and ray into object coordinates with inverse transformation matrix
 	// all transformations are affine, so affineInverse should work fine.
 	/// TODO, for optimization i may calculate this only once (when setting transformation maybe?)
-	//~ dmat4x4 transformationMat = getTransformationMatrix();
-	
 	dmat4 inverseTransformations = affineInverse( getTransformationMatrix() );
 	
 	dvec3 pointTransformed = dvec3( inverseTransformations * dvec4( point, 1 ) );
@@ -256,91 +254,64 @@ IntersectionResult* Mesh::intersect( dvec3 point, dvec3 ray )
 			dvec3 v2 = vertices.at( faceVertices.at( verticesPerFace.at( i ) + 1 ) );
 			dvec3 v3 = vertices.at( faceVertices.at( verticesPerFace.at( i ) + 2 ) );
 			
-			//~ v3 = v3 - v1;
-			//~ v2 = v2 - v1;
-			//~ v1 = dvec3(0,0,0);
+			dvec3 planeNormal = normalize(cross( v2 - v1, v3 - v1 ));
 			
-			//~ std::cout << "v1 " << to_string(v1) << std::endl;
-			//~ std::cout << "v2 " << to_string(v2) << std::endl;
-			//~ std::cout << "v3 " << to_string(v3) << std::endl;
-			//~ pointTransformed = pointTransformed - v1;
-			//~ rayTransformed = rayTransformed;
+			//~ double dotPlaneNRay = -dot( planeNormal, rayTransformed );
+			double dotPlaneNRay = dot( planeNormal, rayTransformed );
 			
-			//~ dvec3 n = cross( v3 - v1, v2 - v1 ) / abs( length( cross( v3 - v1, v2 - v1 ) ) );
-			dvec3 planeNormal = normalize(cross( v3 - v1, v2 - v1 ));
-			//~ std::cout << "n " << to_string( n ) << std::endl;
-			
-			//~ double nd = dot( planeNormal, rayTransformed );
-			double nd = dot( planeNormal, rayTransformed );
-			//~ std::cout << "nd " << nd << std::endl;
-			
-			
-			// if n.d = 0 than either parallel to plane or inside plane therefore no intersection
-			// if n.d != 0 than one intersection with the plane
-			//~ if( abs(nd) > epsilon )
-			//~ if( abs(nd) > abs(epsilon) )
-			if( nd != 0 )
+			// we want the planeNormal to face towards the point where the ray is comming from
+			// check for orientation, normal and rayTransformed should have opposite orientation
+			// important for some later calculations
+			//~ if( dotPlaneNRay < 0 )	/// TODO epsilon test
+			if( dotPlaneNRay > 0 )	/// TODO epsilon test
 			{
-				double lambda = ( dot( planeNormal, v1 ) - dot( planeNormal, pointTransformed ) ) / nd;
-				//~ double lambda = ( dot( pointTransformed - v1, planeNormal ) ) / nd;		//from scratch a pixel
-				/// important: the normal of the plane may look in different direction than our ray
-				/// should be pointed towards the camera
-				/// -> negate lambda
-				/// if we allow lambda to be negative than we draw the triangle even if it is in the opposite direction of our ray
-				lambda = lambda;
-				
+				planeNormal = -planeNormal;	// let planeNormal face opposite direction
+				dotPlaneNRay = -dotPlaneNRay;	// dot product of opposite orrientation = -dot product of same orrientation
+			}
+			
+			if( dotPlaneNRay != 0 )	/// TODO epsilon test
+			{
+				// calculate the distance from ray origin to plane
+				double lambda = - ( dot( planeNormal, pointTransformed - v1 ) ) / dotPlaneNRay;		// beware of + and - in scratchapixel!!!				
 				intersectionResult->setLambda( lambda );
+				
+				// if lambda is very close to zero or is even in opposite direction we say we do not have an interaction
+				// -> nothing more needs to be done
+				if( lambda < epsilon )
+					return intersectionResult;
+					
+				// test for ray triangle intersection with Barycentric Coordinates Computation
+				// V(s,t) = V_1 + s(V_2 - V_1) + t(V_3 - V_1) = V_1 + su + tv
+				
+				dvec3 intersectionPoint = pointTransformed + rayTransformed * lambda;
+				dvec3 w = intersectionPoint - v1;
+				dvec3 u = v2 - v1;
+				dvec3 v = v3 - v1;
+				
+				// formular from http://geomalgorithms.com/a06-_intersect-2.html
+				double dotUV = dot( u, v );
+				double dotWV = dot( w, v );
+				double dotWU = dot( w, u );
+				double dotUU = dot( u, u );
+				double dotVV = dot( v, v );
+				double denom = dotUV * dotUV - dotUU * dotVV;
 
-				//~ dvec3 result = pointTransformed + lambda * rayTransformed;
+				double s = ( dotUV * dotWV - dotVV * dotWU ) / denom;
+				double t = ( dotUV * dotWU - dotUU * dotWV ) / denom;
 				
-				//~ std::cout << "pointTransformed " << to_string( pointTransformed ) << std::endl;
-				//~ std::cout << "rayTransformed " << to_string( rayTransformed ) << std::endl;
-				
-				//~ double matrix[9];
-				//~ for( int j = 0; j < 3; j++ )
-				//~ {
-					//~ matrix[j*3] = v1[j];
-					//~ matrix[j*3+1] = v2[j];
-					//~ matrix[j*3+2] = v3[j];
-				//~ }
-				//~ 
-				//~ double res[3];
-				//~ for( int i = 0; i < 3; i++ )
-					//~ res[i] = result[i];
-				//~ 
-				// solve the linear system to find out if intersection is inside the triangle
-				/// TODO: write a different solver because this one probably makes the problems
-				//~ dvec2 uv = solveUV( matrix, res );
-				
- 
-				//~ if( uv[0] >= 0 && uv[1] >= 0 && uv[0] + uv[1] < 1 )
-					//~ if( false )
-					//~ if( uv[0] + uv[1] <=   + 0.005 && uv[0] + uv[1] >=   - 0.005 )		/// TODO hier ein fehler? -> vorzeichen verkehrt?
-					//~ if( uv[0] + uv[1] <=   0 + 0.005 && uv[0] + uv[1] >=  0 - 0.005 )		/// TODO hier ein fehler? -> vorzeichen verkehrt?
-						//~ {
-							//~ intersectionResult->setIntersection( true );
-							//~ 
-							//~ // get intersection Point and normal
-							//~ dvec3 intersectionPoint = (pointTransformed) + (rayTransformed) * lambda;
-							//~ intersectionResult->setIntersectionPoint( 
-									//~ dvec3(getTransformationMatrix()* dvec4( intersectionPoint, 1) ) );
-									//~ dvec3(transformationMat* dvec4( intersectionPoint, 1) ) );
-					//~ 
-							//~ dvec3 intersectionNormal = planeNormal;
-							//~ intersectionResult->setNormal( 
-									//~ normalize( dvec3( getTransformationMatrix() * dvec4( planeNormal, 0 ) ) ) );
-							//~ intersectionResult->setNormal( -normals.at( faceNormals.at( normalsPerFace.at( i ) ) ) );
-						//~ }
-				
-				
-				//~ std::cout << "solve " << to_string( solve ) << std::endl;
-				
-				
-				
-				
-				
-				
-				
+				if( s >= 0 )
+					if( t >= 0 )
+						if( s + t <= 1 )
+						{
+							intersectionResult->setIntersection( true );
+							
+							// get intersection Point and normal
+							intersectionResult->setIntersectionPoint( 
+									dvec3(getTransformationMatrix()* dvec4( intersectionPoint, 1) ) );
+									
+							intersectionResult->setNormal( 
+									normalize( dvec3( getTransformationMatrix() * dvec4( planeNormal, 0 ) ) ) );			
+						}	
 			}			
 		}
 	}
