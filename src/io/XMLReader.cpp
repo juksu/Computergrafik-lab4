@@ -300,8 +300,8 @@ std::vector<Surface*> XMLReader::getSurfaces()
 			fn.erase( i+1, fn.length() );
 			fn.append( xmlSurfaceElement->Attribute("name") );
 			
-			//~ objReader.readOBJ( fn, mesh );
-			objReader.readOBJ( "./xml/plane_small.obj", mesh );
+			objReader.readOBJ( fn, mesh );
+			//~ objReader.readOBJ( "./xml/plane_small.obj", mesh );
 			//~ std::cout << "obj name " << fn << std::endl;
 			
 			surfaceArray.push_back( mesh );

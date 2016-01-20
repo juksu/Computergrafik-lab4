@@ -13,4 +13,6 @@ The created image will be saved as an ascii ppm image.
 
 References:
 - https://steveharveynz.wordpress.com/2012/12/20/ray-tracer-part-two-creating-the-camera/
+- http://geomalgorithms.com/a06-_intersect-2.html
+
 
