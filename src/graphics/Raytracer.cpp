@@ -21,16 +21,12 @@ dvec3 Raytracer::ambientLight( double phongKA, dvec3 lightColor )
 dvec3 Raytracer::diffuseLight( double phongKD, dvec3 lightColor, 
 		dvec3 lightVector, dvec3 normalVector )
 {
-	//~ double angle = dot( normalize( -parallelLights.at(i)->getDirection() ), 
-					//~ intersectionResult->getNormal() );
 	double angle = dot( lightVector, normalVector );
 			
 	if( angle < 0 )
 		angle = 0;
 			
 	return phongKD * angle * lightColor;
-	//~ intensity = intensity + surface->getMaterial()->getPhongKD() * angle
-			//~ * parallelLights.at(i)->getColor();	
 }
 
 dvec3 Raytracer::specularLight( double phongKS, double phongExponent, dvec3 lightColor, 
@@ -46,18 +42,6 @@ dvec3 Raytracer::specularLight( double phongKS, double phongExponent, dvec3 ligh
 		angle = 0;
 		
 	return phongKS * lightColor * pow( angle, phongExponent );
-	
-	
-				//~ dvec3 lightReflection = normalize( 2 * angle * intersectionResult->getNormal() 
-					//~ - normalize( -parallelLights.at(i)->getDirection() ) );
-			//~ 
-			//~ angle = dot( lightReflection, *eyeVector );
-			//~ if( angle < 0 )
-				//~ angle = 0;
-			//~ 
-			//~ intensity = intensity + surface->getMaterial()->getPhongKS()
-					//~ * parallelLights.at(i)->getColor() 
-					//~ * pow( angle, surface->getMaterial()->getPhongExponent() );
 }
 
 dvec3 Raytracer::shade( IntersectionResult* intersectionResult, Surface* surface, dvec3* eyeVector )
@@ -170,7 +154,7 @@ dvec3 Raytracer::shade( IntersectionResult* intersectionResult, Surface* surface
 			// it may be that we have an intersection but the intersection is after the spot light source
 			// therefore, if only break if length to intersection point < length to light source
 			// else, we tread it as no intersection
-			//~ if( shadowRayIntersection->isIntersection() )
+			if( shadowRayIntersection->isIntersection() )		/// this was commented out -> reason???
 			{
 				if( length( shadowRayIntersection->getIntersectionPoint() 
 								- intersectionResult->getIntersectionPoint() ) 
@@ -272,7 +256,7 @@ dvec3 Raytracer::trace( dvec3* point, dvec3* ray, dvec3* eyeVector, int step )
 		//~ surfaceArray.at(closestObject)->getIntersectionInformation( 
 				//~ *point, *ray, closestIntersection );
 		
-		//~ color = shade( closestIntersection, surfaceArray.at(closestObject), eyeVector );
+		color = shade( closestIntersection, surfaceArray.at(closestObject), eyeVector );
 		
 		//~ delete point;
 		*point = dvec3( closestIntersection->getIntersectionPoint() );
@@ -286,9 +270,19 @@ dvec3 Raytracer::trace( dvec3* point, dvec3* ray, dvec3* eyeVector, int step )
 		*ray = dvec3( reflectedRay );
 		
 		delete closestIntersection;
+		
+		/// TODO if reflectance != 0 trace reflected Ray
+		//~ if( surfaceArray.at(closestObject)->getMaterial() )
+		
+		
+		/// TODO if refractance != 0 trace refracted Ray
+		
+		//~ color = color + trace( point, ray, eyeVector, ++step );
+		
+		
 				
 		/// for debugging
-		color = surfaceArray.at(closestObject)->getMaterial()->getColor();
+		//~ color = surfaceArray.at(closestObject)->getMaterial()->getColor();
 		//~ color = closestIntersection->getIntersectionPoint();
 		//~ color = closestIntersection->getNormal();
 		//~ color = reflectedRay;
@@ -312,18 +306,8 @@ dvec3 Raytracer::trace( dvec3* point, dvec3* ray, dvec3* eyeVector, int step )
 
 void Raytracer::render()
 {
-	image = new dvec3[horizontal*vertical];
+	image = new dvec3[horizontal*vertical];	
 	
-	/// old approach
-	// calculate the tan values for x and y using radian
-	//~ double tanX = tan( fov * M_PI / 180 );
-	//~ double tanY = tan( ((double)vertical / horizontal) * (fov * M_PI / 180) );
-	//~ std::cout << "vertical = " << vertical << " horizontal = " << horizontal << std::endl;
-	//~ std::cout << (double)vertical/ horizontal << std::endl;
-	//~ std::cout << "tanx = " << tanX << ", tanY = " << tanY  << std::endl;
-	
-	
-	/// new approach
 	double zoom = 1.0;		// used for zooming in or out of the scene
 	dvec3 n = normalize( camera - center );
 	dvec3 u = normalize( cross( up, n ) );
@@ -343,16 +327,6 @@ void Raytracer::render()
 	for( int i = 0; i < horizontal; i++  )
 		for( int j = 0; j < vertical; j++ )
 		{		
-			/// Old approach			
-			// calculate the view plane point, assuming that the view plane is at z = -1;
-			//~ double x = (double)(2*i - (horizontal-1))/(horizontal-1)*tanX;
-			//~ double y = (double)(2*j - (vertical-1))/(vertical-1)*tanY;
-			//~ double z = -1;
-			//~ dvec3 initialRay = normalize(dvec3(x,y,z));
-			//~ std::cout << "ray untransformed " << to_string( initialRay ) << std::endl;
-
-			/// New approach: this draws image as if the fewplane would be there were the center is -> with examples a zoomed in view -> correct?
-			/// same result only if center is a unit away from the camera
 			dvec3 viewPlanePoint = viewPlaneBottomLeft + ((double)i)*xIncrement + ((double)j)*yIncrement;
 			dvec3 initialRay = normalize(viewPlanePoint - camera);
 					
@@ -362,11 +336,14 @@ void Raytracer::render()
 			
 			// loop through bounces
 			// (recursive call really kills memory)
-			dvec3 color = dvec3( 0, 0, 0 );
-			for( int k = 0; k <= maxBounces; k++ )
-			{
-				color = color + trace( point, ray, cameraVector, k );
-			}
+			/// after some additional tests and optimizations this seems no more the case (in fact even better than in loop?)
+			//~ dvec3 color = dvec3( 0, 0, 0 );
+			//~ for( int k = 0; k <= maxBounces; k++ )
+			//~ {
+				//~ color = color + trace( point, ray, cameraVector, k );
+			//~ }
+			
+			dvec3 color = trace( point, ray, cameraVector, 0 );
 			
 			delete point;
 			delete ray;

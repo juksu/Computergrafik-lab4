@@ -306,7 +306,7 @@ std::vector<Surface*> XMLReader::getSurfaces()
 			
 			surfaceArray.push_back( mesh );
 			
-			mesh->printMesh();
+			//~ mesh->printMesh();
 		}
 		
 		xmlElement = xmlSurfaceElement->FirstChildElement("material_solid");

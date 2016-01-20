@@ -17,8 +17,23 @@
 		</ambient_light>
 		<parallel_light>
 			<color r="1.0" g="1.0" b="1.0"/>
-			<direction x="0.0" y="-3.0" z="-1.0"/>
+			<direction x="0.0" y="-10.0" z="2.5"/>
 		</parallel_light>
+		<point_light>
+			<color r="0.5" g="0.5" b="0.5"/>
+			<position x="5.0" y="5.0" z="-2.5"/>
+		</point_light>
+		<point_light>
+			<color r="0.5" g="0.5" b="0.5"/>
+			<position x="-5.0" y="5.0" z="-2.5"/>
+		</point_light>
+		<spot_light>
+			<color r="0.7" g="0.7" b="0.7"/>
+			<position x="0" y="-1" z="0"/>
+			<direction x="2" y="1" z="-3.5"/>
+			<falloff alpha1="0.1" alpha2="0.2"/>
+		</spot_light>
+
 	</lights>
 	<surfaces>
 		<sphere radius="1.0">

@@ -29,10 +29,7 @@ class Surface
 		
 		std::string transformationMatrixString();
 		
-		virtual IntersectionResult* intersect( glm::dvec3 point, glm::dvec3 ray ) = 0;
-		virtual void getIntersectionInformation( glm::dvec3 point, glm::dvec3 ray,
-				IntersectionResult* intersectionResult ) = 0;
-		
+		virtual IntersectionResult* intersect( glm::dvec3 point, glm::dvec3 ray ) = 0;		
 };		
 
 #endif // SURFACE_H

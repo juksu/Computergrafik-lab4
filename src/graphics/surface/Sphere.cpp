@@ -39,12 +39,13 @@ IntersectionResult* Sphere::intersect( dvec3 point, dvec3 ray )
 		if( abs(t) < epsilon )
 		{
 			// we just touche the sqhere -> we do not go through the object and therefore there is no transmittance
-			intersectionResult->setTransmittance( false );
+			/// TODO: not clear if still needed
+			//~ intersectionResult->setTransmittance( false );
 			lambda = (-b)/(2*a);
 		}
 		else
 		{
-			intersectionResult->setTransmittance( true );
+			//~ intersectionResult->setTransmittance( true );
 			double sqrtT = std::sqrt(t);
 			double lambda1 = (-b+sqrtT)/(2*a);
 			double lambda2 = (-b-sqrtT)/(2*a);
@@ -98,26 +99,4 @@ IntersectionResult* Sphere::intersect( dvec3 point, dvec3 ray )
 	}
 	
 	return intersectionResult;
-}
-
-
-// this function is probably now obsolete
-void Sphere::getIntersectionInformation( dvec3 point, dvec3 ray, 
-		IntersectionResult* intersectionResult )
-{
-	dmat4 inverseTransformations = affineInverse( getTransformationMatrix() );
-	
-	dvec3 pointTransformed = dvec3( inverseTransformations * dvec4( point, 1 ) );
-	dvec3 rayTransformed = dvec3( inverseTransformations * dvec4( ray, 0 ) );	
-	
-	// need to transform back into world space
-	// the intersection point is ray origin + lambda * ray direction
-	dvec3 intersectionPoint = pointTransformed + ( rayTransformed*intersectionResult->getLambda() );
-	intersectionResult->setIntersectionPoint( 
-			dvec3(getTransformationMatrix()* dvec4( intersectionPoint, 1) ) );
-	
-	// the normal is the intersection point - center of the sphere
-	dvec3 intersectionNormal = normalize( intersectionPoint - position );
-	intersectionResult->setNormal( 
-			normalize( dvec3( getTransformationMatrix() * dvec4( intersectionNormal, 0 ) ) ) );
 }

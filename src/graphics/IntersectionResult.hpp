@@ -10,7 +10,7 @@ class IntersectionResult
 		glm::dvec3 intersectionPoint;
 		glm::dvec3 normal;
 		//~ glm::dvec3 reflectionVector;
-		bool transmittance;
+		//~ bool transmittance;
 		//~ glm::dvec3 refractionVector;		/// wait, do we have refraction???
 												/// only tranmittance meaning no change of direction??
 		/// I may still need that for textured Materials?
@@ -32,13 +32,13 @@ class IntersectionResult
 			//~ this->reflectionVector = reflectionVector; }
 		//~ glm::dvec3 getReflectionVector(){ return reflectionVector; }
 		
-		void setTransmittance( bool transmittance ){ this->transmittance = transmittance; }
-		bool isTransmittance(){ return transmittance; }
+		//~ void setTransmittance( bool transmittance ){ this->transmittance = transmittance; }
+		//~ bool isTransmittance(){ return transmittance; }
 		//~ void setRefractionVector( glm::dvec3 refractionVector ){ 
 			//~ this->refractionVector = refractionVector; }
 		//~ glm::dvec3 getRefractionVector(){ return refractionVector; }
-		void setSurfaceColor( glm::dvec3 surfaceColor ){ this->surfaceColor = surfaceColor; }
-		glm::dvec3 getSurfaceColor(){ return surfaceColor; }
+		//~ void setSurfaceColor( glm::dvec3 surfaceColor ){ this->surfaceColor = surfaceColor; }
+		//~ glm::dvec3 getSurfaceColor(){ return surfaceColor; }
 		
 };
 #endif // INTERSECTIONRESULT_H

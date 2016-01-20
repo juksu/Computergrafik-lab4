@@ -63,10 +63,7 @@ class Mesh : public Surface
 		
 		void printMesh();
 		
-		virtual IntersectionResult* intersect( glm::dvec3 point, glm::dvec3 ray );
-		virtual void getIntersectionInformation( glm::dvec3 point, glm::dvec3 ray, 
-				IntersectionResult* intersectionResult );
-		
+		virtual IntersectionResult* intersect( glm::dvec3 point, glm::dvec3 ray );		
 };
 
 #endif // MESH_H
