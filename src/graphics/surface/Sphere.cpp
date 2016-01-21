@@ -38,7 +38,7 @@ IntersectionResult* Sphere::intersect( dvec3 point, dvec3 ray )
 		//~ if( abs(t) < std::numeric_limits<double>::epsilon() )
 		if( abs(t) < epsilon )
 		{
-			// we just touche the sqhere -> we do not go through the object and therefore there is no transmittance
+			// we only touche the sqhere -> we do not go through the object and therefore there is no transmittance
 			/// TODO: not clear if still needed
 			//~ intersectionResult->setTransmittance( false );
 			lambda = (-b)/(2*a);

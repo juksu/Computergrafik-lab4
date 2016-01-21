@@ -17,7 +17,7 @@ class Surface
 		Surface(){ transformations = glm::dmat4(1.0); }
 		
 		void setMaterial( Material* material ){ this->material = material; }
-		Material* getMaterial(){ return material; }
+		Material* getMaterial() const { return material; }
 				
 		void translate( glm::dvec3 translate ); 
 		void scale( glm::dvec3 scale );
@@ -25,9 +25,9 @@ class Surface
 		void rotateY( double rotateY );
 		void rotateZ( double rotateZ );
 		
-		glm::dmat4 getTransformationMatrix(){ return transformations; }
+		glm::dmat4 getTransformationMatrix() const { return transformations; }
 		
-		std::string transformationMatrixString();
+		std::string transformationMatrixString() const;
 		
 		virtual IntersectionResult* intersect( glm::dvec3 point, glm::dvec3 ray ) = 0;
 };		

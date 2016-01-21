@@ -18,15 +18,15 @@ class IntersectionResult
 		
 	public:
 		void setIntersection( bool intersection ){ this->intersection = intersection; }
-		bool isIntersection(){ return intersection; }
+		bool isIntersection() const { return intersection; }
 		void setLambda( double lambda ){ this->lambda = lambda; }
-		double getLambda(){ return lambda; }
+		double getLambda() const { return lambda; }
 		void setIntersectionPoint( glm::dvec3 intersectionPoint ){
 			this->intersectionPoint = intersectionPoint; }
-		glm::dvec3 getIntersectionPoint(){ return intersectionPoint; }
+		glm::dvec3 getIntersectionPoint() const { return intersectionPoint; }
 		
 		void setNormal( glm::dvec3 normal ){ this->normal = normal; }
-		glm::dvec3 getNormal(){ return normal; }
+		glm::dvec3 getNormal() const { return normal; }
 		
 		//~ void setReflectionVector( glm::dvec3 reflectionVector ){ 
 			//~ this->reflectionVector = reflectionVector; }

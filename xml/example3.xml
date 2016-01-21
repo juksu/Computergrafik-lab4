@@ -42,7 +42,7 @@
 				<phong ka="0.3" kd="0.9" ks="1.0" exponent="200"/>
 				<reflectance r="0.0"/>
 				<transmittance t="0.8"/>
-				<refraction iof="1.1"/>
+				<refraction iof="1"/>
 			</material_solid>
 		</sphere>
 		<sphere radius="1.0">
@@ -52,7 +52,7 @@
 				<phong ka="0.3" kd="0.9" ks="1.0" exponent="200"/>
 				<reflectance r="0.0"/>
 				<transmittance t="0.8"/>
-				<refraction iof="1.1"/>
+				<refraction iof="1"/>
 			</material_solid>
 		</sphere>
 		<sphere radius="1.0">
@@ -62,7 +62,7 @@
 				<phong ka="0.3" kd="0.9" ks="1.0" exponent="200"/>
 				<reflectance r="0.0"/>
 				<transmittance t="0.8"/>
-				<refraction iof="6"/>
+				<refraction iof="1"/>
 			</material_solid>
 		</sphere>
 		<mesh name="open_room.obj">

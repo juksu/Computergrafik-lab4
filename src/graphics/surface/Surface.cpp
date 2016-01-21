@@ -29,7 +29,7 @@ void Surface::rotateZ( double rotateZ )
 	transformations = glm::rotate( transformations, rotateZ, glm::dvec3(0,0,1) );
 }
 
-std::string Surface::transformationMatrixString()
+std::string Surface::transformationMatrixString() const
 {
 	return glm::to_string( transformations );
 }

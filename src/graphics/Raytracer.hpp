@@ -36,14 +36,15 @@ class Raytracer
 		LightContainer lightContainer;
 		
 		// private functions
-		glm::dvec3 shade( IntersectionResult* intersection, Surface* objectNumber, glm::dvec3* eyeVector );
-		glm::dvec3 trace( glm::dvec3* point, glm::dvec3* ray, glm::dvec3* eyeVector, int step, double refractionIndex );
-		
-		glm::dvec3 ambientLight( double phongKA, glm::dvec3 lightColor );
+		glm::dvec3 shade( const IntersectionResult* const intersection, const Surface* const objectNumber, 
+				const glm::dvec3* const eyeVector ) const;
+		glm::dvec3 trace( glm::dvec3* point, glm::dvec3* ray, const glm::dvec3* const eyeVector, 
+				int step, double refractionIndex ) const;
+		glm::dvec3 ambientLight( double phongKA, glm::dvec3 lightColor ) const;
 		glm::dvec3 diffuseLight( double phongKD, glm::dvec3 lightColor, 
-				glm::dvec3 lightVector, glm::dvec3 normalVector );
+				glm::dvec3 lightVector, glm::dvec3 normalVector ) const;
 		glm::dvec3 specularLight( double phongKS, double phongExponent, glm::dvec3 lightColor, 
-				glm::dvec3 lightVector, glm::dvec3 normalVector, glm::dvec3 eyeVector );
+				glm::dvec3 lightVector, glm::dvec3 normalVector, glm::dvec3 eyeVector ) const;
 		
 		
 	public:
@@ -58,7 +59,8 @@ class Raytracer
 		void setLookAt( glm::dvec3 center ){ this->center = center; }
 		void setCameraUp( glm::dvec3 up ){ this->up = up; }
 		void setHorizontalFOV( double fov ){ this->fov = fov; }
-		void setResolution( int horizontal, int vertical );
+		void setResolution( int horizontal, int vertical ) {
+			this->horizontal = horizontal; this->vertical = vertical; }
 		void setMaxBounces( int maxBounces ){ this->maxBounces = maxBounces; }
 		
 		// lights
@@ -70,16 +72,11 @@ class Raytracer
 		
 		void render();
 		
-		glm::dvec3* getImage(){ return image; }
+		glm::dvec3* getImage() const { return image; }
 		
 		//~ void setupViewPlane();
 		
 		
 };
-
-inline void Raytracer::setResolution( int horizontal, int vertical )
-{ 
-	this->horizontal = horizontal; this->vertical = vertical; 
-}
 
 #endif // RAYTRACER_H
