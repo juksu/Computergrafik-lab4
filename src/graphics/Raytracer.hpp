@@ -39,7 +39,7 @@ class Raytracer
 		glm::dvec3 shade( const IntersectionResult* const intersection, const Surface* const objectNumber, 
 				const glm::dvec3* const eyeVector ) const;
 		glm::dvec3 trace( glm::dvec3* point, glm::dvec3* ray, const glm::dvec3* const eyeVector, 
-				int step, double refractionIndex ) const;
+				int step, double refractionIndex, bool internalRay ) const;
 		glm::dvec3 ambientLight( double phongKA, glm::dvec3 lightColor ) const;
 		glm::dvec3 diffuseLight( double phongKD, glm::dvec3 lightColor, 
 				glm::dvec3 lightVector, glm::dvec3 normalVector ) const;

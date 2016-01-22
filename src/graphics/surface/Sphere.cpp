@@ -89,8 +89,15 @@ IntersectionResult* Sphere::intersect( dvec3 point, dvec3 ray )
 	
 			// the normal is the intersection point - center of the sphere
 			dvec3 intersectionNormal = normalize( intersectionPoint - position );
-			intersectionResult->setNormal( 
-					normalize( dvec3( getTransformationMatrix() * dvec4( intersectionNormal, 0 ) ) ) );
+			
+			// check for orientation of normal, we always want the normal to face towards the origin of the ray
+			// and in some cases we may be inside the sphere			
+			if(  dot( intersectionNormal, rayTransformed ) > 0 )
+				intersectionResult->setNormal( 
+						normalize( dvec3( getTransformationMatrix() * dvec4( -intersectionNormal, 0 ) ) ) );
+			else
+				intersectionResult->setNormal( 
+						normalize( dvec3( getTransformationMatrix() * dvec4( intersectionNormal, 0 ) ) ) );
 			
 		}
 		else

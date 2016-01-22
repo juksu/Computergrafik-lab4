@@ -1,9 +1,11 @@
 #include "PPMWriter.hpp"
 #include <cstdlib>
 #include <cstdio>
+#include <iostream>
 
 void PPMWriter::writePPM( glm::dvec3* image )
 {
+	std::cout << "writing image " << filename << std::endl;
 	FILE *fp = fopen(filename.c_str(), "w");
 	fprintf(fp, "P3\n%d %d\n255\n", horizontal, vertical);	// header of ppm ASCII
 	for( int i = 0; i < vertical; i++ )

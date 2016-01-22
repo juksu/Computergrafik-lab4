@@ -4,12 +4,12 @@
 <scene output_file="example3.png">
 	<background_color r="0.0" g="0.0" b="0.0"/>
 	<camera>
-		<position x="0.0" y="0.0" z="1.0"/>
+		<position x="2.0" y="1.0" z="1.0"/>
 		<lookat x="0.0" y="0.0" z="-2.5"/>
 		<up x="0.0" y="1.0" z="0.0"/>
 		<horizontal_fov angle="45"/>
-		<resolution horizontal="600" vertical="600"/>
-		<max_bounces n="4"/>
+		<resolution horizontal="800" vertical="800"/>
+		<max_bounces n="16"/>
 	</camera>
 	<lights>
 		<ambient_light>
@@ -17,22 +17,8 @@
 		</ambient_light>
 		<parallel_light>
 			<color r="1.0" g="1.0" b="1.0"/>
-			<direction x="5.0" y="-10.0" z="-2.5"/>
+			<direction x="0.0" y="-10.0" z="-2.5"/>
 		</parallel_light>
-		<point_light>
-			<color r="0.5" g="0.5" b="0.5"/>
-			<position x="4.0" y="5.0" z="-2.5"/>
-		</point_light>
-		<point_light>
-			<color r="0.5" g="0.5" b="0.5"/>
-			<position x="-4.0" y="5.0" z="-2.5"/>
-		</point_light>
-		<spot_light>
-			<color r="0.7" g="0.7" b="0.7"/>
-			<position x="0" y="-1" z="0"/>
-			<direction x="2" y="1" z="-3.5"/>
-			<falloff alpha1="0.1" alpha2="0.2"/>
-		</spot_light>
 	</lights>
 	<surfaces>
 		<sphere radius="1.0">
@@ -41,8 +27,8 @@
 				<color r="0.17" g="0.18" b="0.50"/>
 				<phong ka="0.3" kd="0.9" ks="1.0" exponent="200"/>
 				<reflectance r="0.0"/>
-				<transmittance t="0.8"/>
-				<refraction iof="1"/>
+				<transmittance t="0.6"/>
+				<refraction iof="1.8"/>
 			</material_solid>
 		</sphere>
 		<sphere radius="1.0">
@@ -51,8 +37,8 @@
 				<color r="0.5" g="0.17" b="0.18"/>
 				<phong ka="0.3" kd="0.9" ks="1.0" exponent="200"/>
 				<reflectance r="0.0"/>
-				<transmittance t="0.8"/>
-				<refraction iof="1"/>
+				<transmittance t="0.7"/>
+				<refraction iof="50"/>
 			</material_solid>
 		</sphere>
 		<sphere radius="1.0">
@@ -62,7 +48,7 @@
 				<phong ka="0.3" kd="0.9" ks="1.0" exponent="200"/>
 				<reflectance r="0.0"/>
 				<transmittance t="0.8"/>
-				<refraction iof="1"/>
+				<refraction iof="1.8"/>
 			</material_solid>
 		</sphere>
 		<mesh name="open_room.obj">

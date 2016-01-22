@@ -10,9 +10,6 @@
 
 using namespace glm;
 
-/// maybe a own function specifically for Phong
-
-
 dvec3 Raytracer::ambientLight( double phongKA, dvec3 lightColor ) const
 {
 	return phongKA * lightColor;
@@ -48,7 +45,7 @@ dvec3 Raytracer::shade( const IntersectionResult* const intersectionResult,
 		const Surface* const surface, const dvec3* const eyeVector ) const
 {
 	// color of the material
-	//~ dvec3 color = surface->getMaterial()->getColor();
+	dvec3 color = surface->getMaterial()->getColor();
 	
 	//~ dvec3 color = dvec3(0,0,0);
 	dvec3 intensity = dvec3(0, 0, 0);
@@ -214,13 +211,13 @@ dvec3 Raytracer::shade( const IntersectionResult* const intersectionResult,
 	}
 	delete shadowRayIntersection;
 	
-	//~ color = color * intensity;
-	//~ return color;
-	return intensity;
+	color = color * intensity;
+	return color;
+	//~ return intensity;
 }
 
 /// TODO: maybe good and simple idea to give also the refractionIndex of the material the ray is comming from as an argument 
-dvec3 Raytracer::trace( dvec3* point, dvec3* ray, const dvec3* const eyeVector, int step, double refractionIndex ) const
+dvec3 Raytracer::trace( dvec3* point, dvec3* ray, const dvec3* const eyeVector, int step, double refractionIndex, bool internalRay ) const
 {
 	//~ std::cout << "step: " << step << ", maxBounces: " << maxBounces << std::endl;
 	
@@ -233,7 +230,6 @@ dvec3 Raytracer::trace( dvec3* point, dvec3* ray, const dvec3* const eyeVector, 
 	closestIntersection->setIntersection( false );
 	closestIntersection->setLambda( std::numeric_limits<double>::max() );
 	size_t closestObject;
-	//~ double lambdaMin = std::numeric_limits<double>::max();
 	
 	for( size_t i = 0; i < surfaceArray.size(); i++ )
 	{
@@ -256,50 +252,26 @@ dvec3 Raytracer::trace( dvec3* point, dvec3* ray, const dvec3* const eyeVector, 
 	
 	if( closestIntersection->isIntersection() )
 	{	
-		//~ surfaceArray.at(closestObject)->getIntersectionInformation( 
-				//~ *point, *ray, closestIntersection );
-		
-		color = surfaceArray.at(closestObject)->getMaterial()->getColor();
-		
-		// the color calculated in shade is only ( 1 - reflectance - transmittance ) part of final color
-		color = color * ( 1 - surfaceArray.at(closestObject)->getMaterial()->getReflectance()
+		if( !internalRay )
+		{
+			color = shade( closestIntersection, surfaceArray.at(closestObject), eyeVector );
+			color = color * ( 1 - surfaceArray.at(closestObject)->getMaterial()->getReflectance()
 				- surfaceArray.at(closestObject)->getMaterial()->getTransmittance() );
-		
-		// with this approach if 
-		
+		}
 		
 		
-		//~ color = color * ( 1 - surfaceArray.at(closestObject)->getMaterial()->getReflectance()
-				//~ - surfaceArray.at(closestObject)->getMaterial()->getTransmittance() );
-				
-		//~ delete point;
-		
-		/// TODO be aware if point changes in reflectedRay I may not use it anymore in refraction
-		//~ *point = dvec3( closestIntersection->getIntersectionPoint() );
-		//~ delete ray;
-		
-		// the ray points towards the surface, the normal away
-		// therefore use -ray so that both point away from the surface
-		
-		
-		
-		/// TODO if reflectance != 0 trace reflected Ray
 		// reflection
 		// no need for reflacted ray if reflectance is 0
 		if( surfaceArray.at(closestObject)->getMaterial()->getReflectance() != 0 )
-		{
-			//~ std::cout << surfaceArray.at(closestObject)->getMaterial()->getReflectance() << std::endl;
-			
+		{			
 			*point = dvec3( closestIntersection->getIntersectionPoint() );
 			
 			dvec3* reflectedRay = new dvec3(
 					normalize( 2 * dot( closestIntersection->getNormal(), -(*ray) ) 
 							* closestIntersection->getNormal() + (*ray) ) );
-			//~ reflectedRay = normalize( 2 
-					//~ * dot( closestIntersection->getNormal(), -(*ray) ) 
-					//~ * closestIntersection->getNormal() + (*ray) );
+							
 			color = color + surfaceArray.at(closestObject)->getMaterial()->getReflectance() 
-					* trace( point, reflectedRay, eyeVector, step + 1, refractionIndex );
+					* trace( point, reflectedRay, eyeVector, step + 1, refractionIndex, false );
 			
 			delete reflectedRay;
 			
@@ -310,107 +282,48 @@ dvec3 Raytracer::trace( dvec3* point, dvec3* ray, const dvec3* const eyeVector, 
 		{
 			*point = dvec3( closestIntersection->getIntersectionPoint() );
 			
-			dvec3* refractedRay = new dvec3( *ray );
+			double n1n2 = refractionIndex / surfaceArray.at(closestObject)->getMaterial()->getRefractionIndex();
 			
-			// new try: first do not bend the ray ignoring n1 and n2
-			color = color + surfaceArray.at(closestObject)->getMaterial()->getTransmittance()
-						* trace( point, refractedRay, eyeVector, step + 1, 
-								surfaceArray.at(closestObject)->getMaterial()->getRefractionIndex() );
+			double cosIncidence = dot( -(*ray), closestIntersection->getNormal() );	// normal and ray are normalized
 			
-			
-			
-			//~ bool totalInternalReflection = false;
-			//~ double n2n1 = surfaceArray.at(closestObject)->getMaterial()->getRefractionIndex() / refractionIndex;
-			
-			//~ double cosIncident = dot( -(*ray), closestIntersection->getNormal() );
-			//~ double cosIncident = dot( *ray, closestIntersection->getNormal() );		/// TODO: it seems this was the error but is it correct now?
-			
-			// if the fraction n2/n1 > 1 than arcsin is not defined and total internal reflection does not occur
-			//~ if( abs(n2n1) < 1 )
-			//~ {
-				//~ double criticalAngle = asin( n2n1 );
-				//~ double incidentAngle = acos( cosIncident );
-				//~ 
-				//~ // if angle of incidence > critical angle than total internal reflection
-				//~ if( incidentAngle > criticalAngle )
-					//~ totalInternalReflection = true;
-			//~ }
-			
-			//~ double n1n2 = refractionIndex / surfaceArray.at(closestObject)->getMaterial()->getRefractionIndex();
-			//~ double bla = 1 - n1n2 * n1n2 * (1 - cosIncident) * (1 - cosIncident);
-			//~ if( bla < 0 )
-				//~ totalInternalReflection = true;
-			
-			//~ if( totalInternalReflection )
-			//~ {
-				//~ dvec3* internalReflectedRay = new dvec3(
-						//~ normalize( 2 * dot( -closestIntersection->getNormal(), -(*ray) ) 
-								//~ * closestIntersection->getNormal() + (*ray) ) );
+			double bla = 1 - ((n1n2 * n1n2) * (1 - (cosIncidence * cosIncidence)));
+			if( bla >= 0 )
+			{
+				double cosRefraction = sqrt(bla);
+				
+				dvec3* refractedRay = new dvec3( ( n1n2 * (*ray) )
+								+ ( ( n1n2 * cosIncidence - cosRefraction ) * closestIntersection->getNormal() ) );
+				
+				// refraction is transmittion from one medium to another
+				// we leave the object therefore use standard refraction index 1 (air)
+				if( internalRay )
+					color = color + surfaceArray.at(closestObject)->getMaterial()->getTransmittance()
+							* trace( point, refractedRay, eyeVector, step + 1, 1, false );	
+				else
+					color = color + surfaceArray.at(closestObject)->getMaterial()->getTransmittance()
+							* trace( point, refractedRay, eyeVector, step + 1, 
+									surfaceArray.at(closestObject)->getMaterial()->getRefractionIndex(), true );
+				
+				delete refractedRay;
+				// new try: first do not bend the ray ignoring n1 and n2
+				
+			}
+			else 	// total reflection
+			{				
+				dvec3* reflectedRay = new dvec3(
+						normalize( 2 * dot( closestIntersection->getNormal(), -(*ray) ) 
+								* closestIntersection->getNormal() + (*ray) ) );
 									
-				//~ color = color + surfaceArray.at(closestObject)->getMaterial()->getReflectance()		/// TODO: with internal reflection do we use reflectance or transmittance index?
-						//~ * trace( point, internalReflectedRay, eyeVector, step + 1, refractionIndex );
+				color = color + surfaceArray.at(closestObject)->getMaterial()->getTransmittance()
+						* trace( point, reflectedRay, eyeVector, step + 1, refractionIndex, internalRay );
 				
-				//~ delete internalReflectedRay;
-				
-				//~ std::cout << "total internal reflection" << step << std::endl;
-				//~ std::cout << "angle in " << acos( cosIncident ) << std::endl;
-				//~ std::cout << "angle crit " << asin( n2n1 ) << std::endl;
-			//~ }
-			//~ else 	// refraction
-			//~ {
-				//~ double n1n2 = refractionIndex / surfaceArray.at(closestObject)->getMaterial()->getRefractionIndex();
-				// since we checked already for incidentAngle < criticalAngle this should be save
-				//~ double bla = 1 - n1n2 * n1n2 * (1 - cosIncident) * (1 - cosIncident);
-				//~ if( bla < 0 )
-				//~ {
-					//~ std::cout << "bla shouldn't happen " << bla << std::endl;
-				//~ }
-				//~ double cosTransmittance = sqrt( 1 - n1n2 * n1n2 * (1 - cosIncident) * (1 - cosIncident) );
-				
-				//~ /// TODO: some error, many vectors with nan values -> error probably in bla -> still some errors
-				//~ dvec3* refractedRay = new dvec3( 
-					//~ n1n2 * (*ray) + ( n1n2 * cosIncident - cosTransmittance ) * closestIntersection->getNormal() );
-				
-				//~ color = color + surfaceArray.at(closestObject)->getMaterial()->getTransmittance()
-						//~ * trace( point, refractedRay, eyeVector, step + 1, 
-								//~ surfaceArray.at(closestObject)->getMaterial()->getRefractionIndex() );
-					
-				//~ delete refractedRay;
-				
-				//~ std::cout << "refraction " << step << std::endl;
-				//~ std::cout << "inVec " << to_string(*ray) << std::endl;
-				//~ std::cout << "rfVec " << to_string(*refractedRay) << std::endl;
-			//~ }
-			
-			
-					//~ refractionIndex / surfaceArray.at(closestObject)->getMaterial()->getRefractionIndex
-					//~ * (*ray) );
-			
-			
-			
-			// if this condition is not fullfilled we have total internal reflection
-			// condition is sin^2 phi < 1 -> 1 - cos^2 phi < 1
-			//~ if( 1 - cosPhi * cosPhi < 1 )
-			//~ {
-				//~ 
-			//~ }
-			//~ else 	// total internal reflection
-			//~ {
-					//~ 
-			//~ }
-			
-			
+				delete reflectedRay;		
+			}
 		}
 		
-		color = color * shade( closestIntersection, surfaceArray.at(closestObject), eyeVector );
 		delete closestIntersection;
-		
-		/// TODO if refractance != 0 trace refracted Ray
-		
-		//~ color = color + trace( point, ray, eyeVector, ++step );
-		
-		
-				
+					
+						
 		/// for debugging
 		//~ color = surfaceArray.at(closestObject)->getMaterial()->getColor();
 		//~ color = closestIntersection->getIntersectionPoint();
@@ -435,8 +348,8 @@ dvec3 Raytracer::trace( dvec3* point, dvec3* ray, const dvec3* const eyeVector, 
 }
 
 void Raytracer::render()
-{
-	image = new dvec3[horizontal*vertical];	
+{	
+	image = new dvec3[horizontal*vertical];
 	
 	double zoom = 1.0;		// used for zooming in or out of the scene
 	dvec3 n = normalize( camera - center );
@@ -454,9 +367,20 @@ void Raytracer::render()
 	dvec3 yIncrement = v*magdalena;
 
 	// traverse through every pixel
+	
+	int pixelNum = horizontal * vertical;
+	std::cout << "rendering 0%" << std::endl;
+	int progress = 0;
 	for( int i = 0; i < horizontal; i++  )
 		for( int j = 0; j < vertical; j++ )
 		{		
+			if( i*horizontal + j*vertical % (pixelNum/5) == 0 )
+			{
+				progress += 20;
+				std::cout << "rendering " << progress << "%" << std::endl;
+				//~ std::cout << ".";
+			}
+			
 			dvec3 viewPlanePoint = viewPlaneBottomLeft + ((double)i)*xIncrement + ((double)j)*yIncrement;
 			dvec3 initialRay = normalize(viewPlanePoint - camera);
 					
@@ -474,12 +398,11 @@ void Raytracer::render()
 			//~ }
 			
 			// we asume the material the ray originates from is equal to 1 (air)
-			dvec3 color = trace( point, ray, cameraVector, 0, 1 );
+			dvec3 color = trace( point, ray, cameraVector, 0, 1, false );
 			
 			delete point;
 			delete ray;
 			delete cameraVector;
-			
 			
 			// need to swap picture, otherwise it will be upside down
 			//~ image[ (vertical-1-j)*horizontal + i ] = color;

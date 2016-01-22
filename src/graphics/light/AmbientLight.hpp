@@ -6,7 +6,7 @@
 
 class AmbientLight : public Light
 {
-	/// TODO hmm, lets see if i need a class for that
+	/// TODO hmm, lets see if i need a class for that at all
 };
 
 #endif // AMBIENTLIGHT_H

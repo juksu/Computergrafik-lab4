@@ -15,24 +15,20 @@ class Material
 		double refractionIndex;
 	
 	public:
-		void setPhong( double ka, double kd, double ks, int exponent );
-		double getPhongKA(){ return phongKA; }
-		double getPhongKD(){ return phongKD; }
-		double getPhongKS(){ return phongKS; }
-		double getPhongExponent(){ return phongExponent; }
+		void setPhong( double ka, double kd, double ks, int exponent ) {
+				this->phongKA = ka; this->phongKD = kd; this->phongKS = ks; this->phongExponent = exponent; }
+		double getPhongKA() const { return phongKA; }
+		double getPhongKD() const { return phongKD; }
+		double getPhongKS() const { return phongKS; }
+		double getPhongExponent() const { return phongExponent; }
 		void setReflectance( double reflectance ) { this->reflectance = reflectance; }
-		double getReflectance(){ return reflectance; }
+		double getReflectance() const { return reflectance; }
 		void setTransmittance( double transmittance ) { this->transmittance = transmittance; }
-		double getTransmittance(){ return transmittance; }
+		double getTransmittance() const { return transmittance; }
 		void setRefractionIndex( double refractionIndex ) {this->refractionIndex = refractionIndex; }
-		double getRefractionIndex(){ return refractionIndex; }
+		double getRefractionIndex() const { return refractionIndex; }
 		
 		virtual glm::dvec3 getColor() = 0;
 };
-
-inline void Material::setPhong( double ka, double kd, double ks, int exponent )
-{
-	this->phongKA = ka; this->phongKD = kd; this->phongKS = ks; this->phongExponent = exponent;
-}
 
 #endif // MATERIAL_H

@@ -9,7 +9,7 @@ class MaterialTextured : public Material
 	private:
 		std::string texture;
 	public:
-		virtual glm::dvec3 getColor(){ return glm::dvec3(0,0,0); }
+		virtual glm::dvec3 getColor() const { return glm::dvec3(0,0,0); }
 };
 
 #endif // MATERIALTEXTURED_H
