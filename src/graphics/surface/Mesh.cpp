@@ -17,7 +17,13 @@ IntersectionResult* Mesh::intersect( dvec3 point, dvec3 ray )
 	// transform point and ray into object coordinates with inverse transformation matrix
 	// all transformations are affine, so affineInverse should work fine.
 	/// TODO, for optimization i may calculate this only once (when setting transformation maybe?)
-	dmat4 inverseTransformations = affineInverse( getTransformationMatrix() );
+	//~ dmat4 inverseTransformations = affineInverse( getTransformationMatrix() );
+	
+	if( !inverseTransformationsSet )
+	{
+		inverseTransformations = affineInverse( transformations );
+		inverseTransformationsSet = true;
+	}
 	
 	dvec3 pointTransformed = dvec3( inverseTransformations * dvec4( point, 1 ) );
 	dvec3 rayTransformed = dvec3( inverseTransformations * dvec4( ray, 0 ) );
@@ -92,10 +98,10 @@ IntersectionResult* Mesh::intersect( dvec3 point, dvec3 ray )
 								
 								// get intersection Point and normal
 								intersectionResult->setIntersectionPoint( 
-										dvec3(getTransformationMatrix()* dvec4( intersectionPoint, 1) ) );
+										dvec3( transformations* dvec4( intersectionPoint, 1) ) );
 										
 								intersectionResult->setNormal( 
-										normalize( dvec3( getTransformationMatrix() * dvec4( planeNormal, 0 ) ) ) );			
+										normalize( dvec3( transformations * dvec4( planeNormal, 0 ) ) ) );			
 							}
 				}
 			}			

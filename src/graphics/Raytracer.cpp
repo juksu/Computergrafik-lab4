@@ -349,10 +349,12 @@ dvec3 Raytracer::trace( dvec3* point, dvec3* ray, const dvec3* const eyeVector, 
 
 void Raytracer::render()
 {	
+	std::cout << "rendering" << std::endl;
+	
 	image = new dvec3[horizontal*vertical];
 	
-	supersampling = true;
-	samplerate = 4;	
+	//~ supersampling = true;
+	//~ samplerate = 4;	
 	
 	double zoom = 1.0;		// used for zooming in or out of the scene
 	dvec3 n = normalize( camera - center );
@@ -434,8 +436,15 @@ void Raytracer::render()
 				delete initialRay;
 				delete cameraVector;
 			}
-			// need to swap picture, otherwise it will be upside down
-			//~ image[ (vertical-1-j)*horizontal + i ] = color;
+
+			// cap maximum rgb value to 1
+			if( color[0] > 1)
+				color[0] = 1;
+			if( color[1] > 1)
+				color[1] = 1;
+			if( color[2] > 1)
+				color[2] = 1;
+			
 			image[ j*horizontal + i ] = color;
 			
 		}

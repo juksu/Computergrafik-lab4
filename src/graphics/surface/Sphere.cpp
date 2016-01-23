@@ -15,7 +15,13 @@ IntersectionResult* Sphere::intersect( dvec3 point, dvec3 ray )
 	// transform point and ray into object coordinates with inverse transformation matrix
 	// all transformations are affine, so affineInverse should work fine.
 	/// TODO, for optimization i may calculate this only once (when setting transformation maybe?)
-	dmat4 inverseTransformations = affineInverse( getTransformationMatrix() );
+	if( !inverseTransformationsSet )
+	{
+		inverseTransformations = affineInverse( transformations );
+		inverseTransformationsSet = true;
+	}
+	
+	//~ dmat4 inverseTransformations = affineInverse( getTransformationMatrix() );
 	
 	dvec3 pointTransformed = dvec3( inverseTransformations * dvec4( point, 1 ) );
 	dvec3 rayTransformed = dvec3( inverseTransformations * dvec4( ray, 0 ) );
@@ -85,7 +91,7 @@ IntersectionResult* Sphere::intersect( dvec3 point, dvec3 ray )
 			// get intersection Point and normal
 			dvec3 intersectionPoint = pointTransformed + rayTransformed * lambda;
 			intersectionResult->setIntersectionPoint( 
-					dvec3(getTransformationMatrix()* dvec4( intersectionPoint, 1) ) );
+					dvec3( transformations * dvec4( intersectionPoint, 1) ) );
 	
 			// the normal is the intersection point - center of the sphere
 			dvec3 intersectionNormal = normalize( intersectionPoint - position );
@@ -94,10 +100,10 @@ IntersectionResult* Sphere::intersect( dvec3 point, dvec3 ray )
 			// and in some cases we may be inside the sphere			
 			if(  dot( intersectionNormal, rayTransformed ) > 0 )
 				intersectionResult->setNormal( 
-						normalize( dvec3( getTransformationMatrix() * dvec4( -intersectionNormal, 0 ) ) ) );
+						normalize( dvec3( transformations * dvec4( -intersectionNormal, 0 ) ) ) );
 			else
 				intersectionResult->setNormal( 
-						normalize( dvec3( getTransformationMatrix() * dvec4( intersectionNormal, 0 ) ) ) );
+						normalize( dvec3( transformations * dvec4( intersectionNormal, 0 ) ) ) );
 			
 		}
 		else

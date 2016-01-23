@@ -64,6 +64,9 @@ class Raytracer
 		void setResolution( int horizontal, int vertical ) {
 			this->horizontal = horizontal; this->vertical = vertical; }
 		void setMaxBounces( int maxBounces ){ this->maxBounces = maxBounces; }
+		void setSupersampling( int samplerate ){ 
+			if( samplerate < 1 ){ supersampling = false; this->samplerate = 1; } 
+			else{ supersampling = true; this->samplerate = samplerate; } }
 		
 		// lights
 		//~ void setLightArray( std::vector<Light*> lightArray ){ this->lightArray = lightArray; }

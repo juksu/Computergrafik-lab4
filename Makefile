@@ -42,5 +42,4 @@ clean:
 	-@rm -f -r $(OBJECTDIR)
 	-@rm -f -r $(BINDIR)
 	-@rm -f $(SOURCE_FILES:.cpp=.o)
-	-@rm -f $(SOURCE_FILES:.cpp=.hpp.gch)
-	-@rm -f *.ppm	
+	-@rm -f $(SOURCE_FILES:.cpp=.hpp.gch)	

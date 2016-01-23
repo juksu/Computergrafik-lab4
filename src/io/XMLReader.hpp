@@ -35,6 +35,7 @@ class XMLReader
 		int getHorizontalResolution();
 		int getVerticalResolution();
 		int getMaxBounces();
+		int getSuperSampling();
 		
 		// light
 		//~ std::vector<Light*> getLights();

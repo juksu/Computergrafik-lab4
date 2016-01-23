@@ -54,6 +54,7 @@ int main( int argc, char* argv[] )
 	raytracer.setHorizontalFOV( xmlReader.getHorizontalFOV() );
 	raytracer.setResolution( xmlReader.getHorizontalResolution(), xmlReader.getVerticalResolution() );
 	raytracer.setMaxBounces( xmlReader.getMaxBounces() );
+	raytracer.setSupersampling( xmlReader.getSuperSampling() );
 	
 	//~ vector<Surface*> surfaceArray;
 	// get all surfaces

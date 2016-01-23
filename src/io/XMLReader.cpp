@@ -142,6 +142,17 @@ int XMLReader::getMaxBounces()
 			
 	return xmlElement->IntAttribute("n");
 }
+
+int XMLReader::getSuperSampling()
+{
+	XMLElement* xmlElement = xmlDocument.FirstChildElement("scene")
+			->FirstChildElement("camera")->FirstChildElement("supersampling");
+	
+	if( xmlElement == nullptr )
+		return -1;
+	else
+		return xmlElement->IntAttribute("samplerate");
+}
 /*
  * camera END
  */

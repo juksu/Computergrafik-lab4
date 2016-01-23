@@ -10,11 +10,14 @@ class Surface
 {
 	private:
 		Material* material;	
-		//~ glm::mat4 transformations = glm::mat4(1.0);	// initializes with identity matrix
-		glm::dmat4 transformations;	// initializes with identity matrix
+	
+	protected:
+		glm::dmat4 transformations;
+		glm::dmat4 inverseTransformations;
+		bool inverseTransformationsSet;
 		
 	public:
-		Surface(){ transformations = glm::dmat4(1.0); }
+		Surface(){ transformations = glm::dmat4(1.0); inverseTransformationsSet = false; }
 		
 		void setMaterial( Material* material ){ this->material = material; }
 		Material* getMaterial() const { return material; }
@@ -25,7 +28,13 @@ class Surface
 		void rotateY( double rotateY );
 		void rotateZ( double rotateZ );
 		
-		glm::dmat4 getTransformationMatrix() const { return transformations; }
+		//~ bool isInverseTransformationMatrixSet(){ return inverseTransformationsSet; }
+		//~ void setInverseTransformationMatrixSet( bool inverseTransformationsSet ){
+				//~ this->inverseTransformationsSet = inverseTransformationsSet; }
+		//~ glm::dmat4 getTransformationMatrix() const { return transformations; }
+		//~ glm::dmat4 getInverseTransformationMatrix() const { return inverseTransformations; }
+		//~ void setInverseTransformationMatrix( glm::dmat4 inverseTransformations ){ 
+				//~ this->inverseTransformations = inverseTransformations; }
 		
 		std::string transformationMatrixString() const;
 		
