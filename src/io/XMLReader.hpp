@@ -32,8 +32,8 @@ class XMLReader
 		glm::dvec3 getLookAt();
 		glm::dvec3 getCameraUp();
 		double getHorizontalFOV();
-		int getHorizontalResolution();
-		int getVerticalResolution();
+		size_t getHorizontalResolution();
+		size_t getVerticalResolution();
 		int getMaxBounces();
 		int getSuperSampling();
 		

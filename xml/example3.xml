@@ -9,7 +9,7 @@
 		<up x="0.0" y="1.0" z="0.0"/>
 		<horizontal_fov angle="45"/>
 		<resolution horizontal="600" vertical="600"/>
-		<max_bounces n="16"/>
+		<max_bounces n="2"/>
 	</camera>
 	<lights>
 		<ambient_light>

@@ -8,6 +8,7 @@ TARGET := a1106307_lab4
 
 SOURCE_FILES := $(wildcard $(SOURCEDIR)/*.cpp) \
 		$(wildcard $(SOURCEDIR)/lib/tinyxml2/*.cpp) \
+		$(wildcard $(SOURCEDIR)/lib/lodepng/*.cpp) \
 		$(wildcard $(SOURCEDIR)/io/*.cpp) \
 		$(wildcard $(SOURCEDIR)/graphics/*.cpp) \
 		$(wildcard $(SOURCEDIR)/graphics/light/*.cpp) \

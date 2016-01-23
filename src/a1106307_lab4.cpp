@@ -8,6 +8,7 @@
 #include "./io/PPMWriter.hpp"
 #include "./io/XMLReader.hpp"
 #include "./io/WavefrontOBJReader.hpp"
+#include "./io/PNGio.hpp"
 #include "./graphics/Raytracer.hpp"
 
 #include "./graphics/surface/Surface.hpp"
@@ -64,15 +65,15 @@ int main( int argc, char* argv[] )
 	// get all lights
 	raytracer.setLightContainer( xmlReader.getLights() );
 	
-	/// testing obj reader
-	//~ WavefrontOBJReader objReader;
-	//~ Mesh* mesh = new Mesh();
-	//~ objReader.readOBJ( "./xml/plane_small.obj", mesh );
-	//~ mesh->printMesh();
-	//~ mesh->intersect( glm::dvec3(0.7,0.3,0.5), glm::dvec3(-1,-1,-1) );
-	
-	
+	// testing PNGreader
+	//~ PNGio pngIo;
+	//~ pngIo.readPNG( "./scenes/Brick.png" );
+
 	raytracer.render();
+	
+	// write png
+	pngIo.writePNG( xmlReader.getOutputFilename(), raytracer.getImage(), 
+			xmlReader.getHorizontalResolution(), xmlReader.getVerticalResolution() );
 	
 	// write ppm
 	PPMWriter ppmWriter;

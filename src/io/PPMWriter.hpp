@@ -7,20 +7,15 @@
 class PPMWriter
 {
 	private:
-		int horizontal;
-		int vertical;
+		size_t horizontal;
+		size_t vertical;
 		std::string filename;
 		
 	public:
-		void setResolution( int horizontal, int vertical );
-		void setFilename( std::string filename ){ this->filename = filename; }
+		void setResolution( size_t horizontal, size_t vertical ){
+				this->horizontal = horizontal; this->vertical = vertical; }
+		void setFilename( std::string filename );
 		void writePPM( glm::dvec3* image );
 };
-
-inline void PPMWriter::setResolution( int horizontal, int vertical )
-{
-	this->horizontal = horizontal; this->vertical = vertical;
-}
-
 
 #endif //PPMWRITER_H

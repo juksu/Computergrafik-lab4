@@ -39,18 +39,19 @@ std::string XMLReader::getOutputFilename()
 	
 	if( xmlElement != nullptr )
 	{
-		std::string fn = xmlElement->Attribute("output_file");
-		
-		int fileExt = fn.rfind(".");
-	
-		return fn.substr(0, fileExt).append(".ppm");
+		//~ std::string fn = xmlElement->Attribute("output_file");
+		//~ 
+		//~ int fileExt = fn.rfind(".");
+	//~ 
+		//~ return fn.substr(0, fileExt).append(".ppm");
+		return xmlElement->Attribute("output_file");
 	}
 	else
 	{
-		std::cout << "no output name found, out.ppm used instead" << std::endl;
+		std::cout << "no output name found, out.png used instead" << std::endl;
 	}
 	// if no filename can be found use standard name
-	return "out.ppm";
+	return "out.png";
 }
 
 glm::dvec3 XMLReader::getBackgroundColor()
@@ -119,20 +120,20 @@ double XMLReader::getHorizontalFOV()
 	return xmlElement->DoubleAttribute( "angle" );
 }
 
-int XMLReader::getHorizontalResolution()
+size_t XMLReader::getHorizontalResolution()
 {
 	XMLElement* xmlElement = xmlDocument.FirstChildElement("scene")
 			->FirstChildElement("camera")->FirstChildElement("resolution");
 			
-	return xmlElement->IntAttribute("horizontal");		
+	return xmlElement->UnsignedAttribute("horizontal");		
 }
 
-int XMLReader::getVerticalResolution()
+size_t XMLReader::getVerticalResolution()
 {
 	XMLElement* xmlElement = xmlDocument.FirstChildElement("scene")
 			->FirstChildElement("camera")->FirstChildElement("resolution");
 			
-	return xmlElement->IntAttribute("vertical");
+	return xmlElement->UnsignedAttribute("vertical");
 }
 
 int XMLReader::getMaxBounces()
