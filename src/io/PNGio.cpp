@@ -3,10 +3,12 @@
 
 glm::dvec3* PNGio::readPNG(const char* filename)
 {
+	std::cout << "reading texture " << filename << std::endl;
+	
 	std::vector<unsigned char> png;
 	std::vector<unsigned char> image; //the raw pixels
-	size_t width;
-	size_t height;
+	unsigned width;
+	unsigned height;
 	
 	//load and decode
 	unsigned error = lodepng::load_file(png, filename);

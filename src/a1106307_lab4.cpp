@@ -64,14 +64,11 @@ int main( int argc, char* argv[] )
 	
 	// get all lights
 	raytracer.setLightContainer( xmlReader.getLights() );
-	
-	// testing PNGreader
-	//~ PNGio pngIo;
-	//~ pngIo.readPNG( "./scenes/Brick.png" );
 
 	raytracer.render();
 	
 	// write png
+	PNGio pngIo;
 	pngIo.writePNG( xmlReader.getOutputFilename(), raytracer.getImage(), 
 			xmlReader.getHorizontalResolution(), xmlReader.getVerticalResolution() );
 	

@@ -1,5 +1,6 @@
 #include "XMLReader.hpp"
 #include "WavefrontOBJReader.hpp"
+#include "PNGio.hpp"
 #include "../graphics/light/AmbientLight.hpp"
 #include "../graphics/light/PointLight.hpp"
 #include "../graphics/light/ParallelLight.hpp"
@@ -8,6 +9,7 @@
 #include "../graphics/surface/Mesh.hpp"
 #include "../lib/glm/gtx/string_cast.hpp"
 
+
 #include <iostream>
 #include <string>
 
@@ -15,6 +17,8 @@ using namespace tinyxml2;
 
 bool XMLReader::loadFile( std::string filename )
 {
+	std::cout << "reading xml " << filename << std::endl;
+	
 	//~ XMLDocument xmlDocument;
 	this->filename = filename;
 	XMLError xmlResult = xmlDocument.LoadFile( filename.c_str() );
@@ -366,7 +370,20 @@ MaterialSolid* XMLReader::getMaterialSolid( XMLElement* xmlMaterialElement )
 MaterialTextured* XMLReader::getMaterialTextured( XMLElement* xmlMaterialElement )
 {
 	MaterialTextured* material = new MaterialTextured();
-	/// TODO
+	
+	PNGio pngIo;
+	XMLElement* xmlElement = xmlMaterialElement->FirstChildElement("texture");
+	material->setTexture( pngIo.readPNG( xmlElement->Attribute("name") ) );
+	
+	xmlElement = xmlMaterialElement->FirstChildElement("reflectance");
+	material->setReflectance( xmlElement->DoubleAttribute("r") );
+	
+	xmlElement = xmlMaterialElement->FirstChildElement("transmittance");
+	material->setTransmittance( xmlElement->DoubleAttribute("t") );
+	
+	xmlElement = xmlMaterialElement->FirstChildElement("refraction");
+	material->setRefractionIndex( xmlElement->DoubleAttribute("iof") );
+
 	return material;
 }
 

@@ -7,8 +7,9 @@
 class MaterialTextured : public Material
 {
 	private:
-		std::string texture;
+		glm::dvec3* texture;
 	public:
+		void setTexture( glm::dvec3* texture ){ this->texture = texture; }
 		virtual glm::dvec3 getColor() const { return glm::dvec3(0,0,0); }
 };
 
