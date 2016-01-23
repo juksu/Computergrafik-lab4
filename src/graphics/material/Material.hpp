@@ -28,7 +28,7 @@ class Material
 		void setRefractionIndex( double refractionIndex ) {this->refractionIndex = refractionIndex; }
 		double getRefractionIndex() const { return refractionIndex; }
 		
-		virtual glm::dvec3 getColor() = 0;
+		virtual glm::dvec3 getColor() const = 0;
 };
 
 #endif // MATERIAL_H

@@ -27,6 +27,8 @@ class Raytracer
 		int horizontal;
 		int vertical;
 		int maxBounces;
+		int samplerate;
+		bool supersampling;
 		
 		// objectlist
 		std::vector<Surface*> surfaceArray;

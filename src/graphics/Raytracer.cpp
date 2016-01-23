@@ -351,6 +351,9 @@ void Raytracer::render()
 {	
 	image = new dvec3[horizontal*vertical];
 	
+	supersampling = true;
+	samplerate = 4;	
+	
 	double zoom = 1.0;		// used for zooming in or out of the scene
 	dvec3 n = normalize( camera - center );
 	dvec3 u = normalize( cross( up, n ) );
@@ -361,49 +364,76 @@ void Raytracer::render()
 	
 	dvec3 viewPlaneBottomLeft = center - v * viewPlaneHalfVertical - u * viewPlaneHalfHorizontal;
 	
-	double magdalena = 2*viewPlaneHalfHorizontal/horizontal;
+	double magdalena = 2*viewPlaneHalfHorizontal/( horizontal * samplerate );
 	dvec3 xIncrement = u*magdalena;
-	magdalena = 2*viewPlaneHalfVertical/vertical;
+	magdalena = 2*viewPlaneHalfVertical/( vertical * samplerate );
 	dvec3 yIncrement = v*magdalena;
 
 	// traverse through every pixel
 	
-	int pixelNum = horizontal * vertical;
-	std::cout << "rendering 0%" << std::endl;
-	int progress = 0;
+	//~ int pixelNum = horizontal * vertical;
+	//~ std::cout << "rendering 0%" << std::endl;
+	//~ int progress = 0;
 	for( int i = 0; i < horizontal; i++  )
 		for( int j = 0; j < vertical; j++ )
 		{		
-			if( i*horizontal + j*vertical % (pixelNum/5) == 0 )
-			{
-				progress += 20;
-				std::cout << "rendering " << progress << "%" << std::endl;
-				//~ std::cout << ".";
-			}
-			
-			dvec3 viewPlanePoint = viewPlaneBottomLeft + ((double)i)*xIncrement + ((double)j)*yIncrement;
-			dvec3 initialRay = normalize(viewPlanePoint - camera);
-					
-			dvec3* point = new dvec3( camera );
-			dvec3* ray = new dvec3( initialRay );
-			dvec3* cameraVector = new dvec3( -initialRay );
-			
-			// loop through bounces
-			// (recursive call really kills memory)
-			/// after some additional tests and optimizations this seems no more the case (in fact even better than in loop?)
-			//~ dvec3 color = dvec3( 0, 0, 0 );
-			//~ for( int k = 0; k <= maxBounces; k++ )
+			//~ if( i*horizontal + j*vertical % (pixelNum/5) == 0 )
 			//~ {
-				//~ color = color + trace( point, ray, cameraVector, k );
+				//~ progress += 20;
+				//~ std::cout << "rendering " << progress << "%" << std::endl;
+				//~ std::cout << ".";
 			//~ }
+			dvec3 color = dvec3(0,0,0);
 			
-			// we asume the material the ray originates from is equal to 1 (air)
-			dvec3 color = trace( point, ray, cameraVector, 0, 1, false );
-			
-			delete point;
-			delete ray;
-			delete cameraVector;
-			
+			if( supersampling )		// use Jitter algorithm super sampling and take the average as the final color
+			{
+				// divide the pixel area into samplerate*sameplerate grids and shot an ray randomly through that grid
+				// the position refers to the middle of the grid, need also to 
+				for( int si = 0; si < samplerate; si++ )
+					for( int sj = 0; sj < samplerate; sj++ )
+					{
+						//~ dvec3 viewPlanePoint = viewPlaneBottomLeft + 
+								//~ + ((double)si + (((double)rand())/RAND_MAX) - 0.5) * xIncrement 
+								//~ + ((double)sj + (((double)rand())/RAND_MAX) - 0.5) * yIncrement;
+						
+						if( i == 0 && j == 0 )
+							std::cout << "in samplerate loop" << std::endl;
+						dvec3 viewPlanePoint = viewPlaneBottomLeft + 
+								+ ((double) i * samplerate + si + (((double)rand() / RAND_MAX) - 0.5 ) ) * xIncrement 
+								+ ((double) j * samplerate + sj + (((double)rand() / RAND_MAX) - 0.5 ) ) * yIncrement;
+						
+						dvec3* point = new dvec3( camera );
+						dvec3* initialRay = new dvec3(normalize(viewPlanePoint - camera));
+						dvec3* cameraVector = new dvec3( -(*initialRay) );
+						
+						
+						
+						color = color + trace( point, initialRay, cameraVector, 0, 1, false );
+				
+						delete initialRay;
+						delete point;
+						delete cameraVector;
+					}
+				
+				color = color / (double)( samplerate * samplerate );
+				
+				//~ color = dvec3(1,1,1);
+			}
+			else 	// if no supersampling simply shot ray through center of the pixel
+			{
+				dvec3 viewPlanePoint = viewPlaneBottomLeft + ((double)i)*xIncrement + ((double)j)*yIncrement;
+				
+				dvec3* point = new dvec3( camera );
+				dvec3* initialRay = new dvec3( normalize( viewPlanePoint - camera ) );
+				dvec3* cameraVector = new dvec3( -(*initialRay) );
+				
+				// we asume the material the ray originates from is equal to 1 (air)
+				color = trace( point, initialRay, cameraVector, 0, 1, false );
+				
+				delete point;
+				delete initialRay;
+				delete cameraVector;
+			}
 			// need to swap picture, otherwise it will be upside down
 			//~ image[ (vertical-1-j)*horizontal + i ] = color;
 			image[ j*horizontal + i ] = color;
