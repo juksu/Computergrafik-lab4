@@ -3,54 +3,76 @@
 
 <scene output_file="example7.png">
 	<background_color r="0.0" g="0.0" b="0.0"/>
-	<!-- Camera -->
 	<camera>
-		<position x="0.0" y="0.0" z="1.0"/>
-		<lookat x="0.0" y="0.0" z="-3.0"/>
+		<position x="0.0" y="2.0" z="1.5"/>
+		<lookat x="0.0" y="0.5" z="-3.5"/>
 		<up x="0.0" y="1.0" z="0.0"/>
 		<horizontal_fov angle="45"/>
-		<resolution horizontal="600" vertical="600"/>
-		<max_bounces n="2"/>
-		<supersampling samplerate="1" />
+		<resolution horizontal="640" vertical="480"/>
+		<max_bounces n="16"/>
+		<supersampling samplerate="4" />
 	</camera>
-
-  <!-- Lights -->
 	<lights>
-		<ambient_light>
-			<color r="1.0" g="1.0" b="1.0"/>
-		</ambient_light>
-		<point_light>
+		<parallel_light>
 			<color r="0.7" g="0.7" b="0.7"/>
-			<position x="2.0" y="10.0" z="-2.5"/>
-		</point_light>
+			<direction x="-2.0" y="-3.0" z="-2.5"/>
+		</parallel_light>
 		<point_light>
-			<color r="0.7" g="0.7" b="0.7"/>
-			<position x="-2.0" y="10.0" z="-2.5"/>
+			<color r="0.3" g="0.7" b="0.3"/>
+			<position x="0.0" y="5.0" z="-2.5"/>
 		</point_light>
 		<spot_light>
-			<color r="0.7" g="0.7" b="0.7"/>
-			<position x="-2.0" y="3.0" z="1"/>
+			<color r="1.0" g="0.1" b="0.1"/>
+			<position x="-1" y="2" z="0"/>
+			<direction x="1.0" y="-0.7" z="-0.7"/>
+			<falloff alpha1="0.05" alpha2="0.2"/>
+		</spot_light>
+		<spot_light>
+			<color r="0.1" g="0.1" b="1.0"/>
+			<position x="1" y="2" z="0"/>
+			<direction x="-1.0" y="-0.7" z="-0.7"/>
+			<falloff alpha1="0.05" alpha2="0.2"/>
 		</spot_light>
 	</lights>
-  
-	<!-- Surfaces -->
 	<surfaces>
-	    <!-- Floor -->
-		<mesh name="plane_small.obj">
+		<sphere radius="1.0">
+			<position x="-2.1" y="0.0" z="-2.0"/>
+			<material_solid>
+				<color r="0.5" g="0.5" b="0.5"/>
+				<phong ka="0.3" kd="0.9" ks="1.0" exponent="100"/>
+				<reflectance r="0.0"/>
+				<transmittance t="0.0"/>
+				<refraction iof="2.3"/>
+			</material_solid>
+		</sphere>
+		<sphere radius="1.5">
+			<position x="0.0" y="0.5" z="-4.0"/>
+			<material_solid>
+				<color r="0.5" g="0.17" b="0.18"/>
+				<phong ka="0.3" kd="1.0" ks="0.7" exponent="100"/>
+				<reflectance r="1.0"/>
+				<transmittance t="0.0"/>
+				<refraction iof="2.3"/>
+			</material_solid>
+		</sphere>
+		<sphere radius="1.0">
+			<position x="2.1" y="0.0" z="-2.0"/>
+			<material_solid>
+				<color r="0.5" g="0.5" b="0.5"/>
+				<phong ka="0.3" kd="0.7" ks="1.0" exponent="100"/>
+				<reflectance r="0.01"/>
+				<transmittance t="0.0"/>
+				<refraction iof="2.3"/>
+			</material_solid>
+		</sphere>
+		<mesh name="open_room.obj">
 			<material_textured>
-				<texture name="mramor6x6.png"/>
-				<phong ka="0.3" kd="0.9" ks="1.0" exponent="200"/>
-				<reflectance r="0.1"/>
-				<transmittance t="0"/>
-				<refraction iof="0"/>
+				<texture name="MarbleBeige.png"/>
+				<phong ka="0.3" kd="0.9" ks="1.0" exponent="20"/>
+				<reflectance r="0.25"/>
+				<transmittance t="0.0"/>
+				<refraction iof="0.0"/>
 			</material_textured>
-<!--
-			<transform>
-				<translate x="0.0" y="-2.5" z="-10.0" />
-				<rotateX theta="-90.0"/>
-				<scale x="20" y="20" z="1.0" />
-			</transform>
--->
 		</mesh>
 	</surfaces>
 </scene>

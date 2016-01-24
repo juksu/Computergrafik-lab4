@@ -400,8 +400,6 @@ void Raytracer::render()
 								//~ + ((double)si + (((double)rand())/RAND_MAX) - 0.5) * xIncrement 
 								//~ + ((double)sj + (((double)rand())/RAND_MAX) - 0.5) * yIncrement;
 						
-						if( i == 0 && j == 0 )
-							std::cout << "in samplerate loop" << std::endl;
 						dvec3 viewPlanePoint = viewPlaneBottomLeft + 
 								+ ((double) i * samplerate + si + (((double)rand() / RAND_MAX) - 0.5 ) ) * xIncrement 
 								+ ((double) j * samplerate + sj + (((double)rand() / RAND_MAX) - 0.5 ) ) * yIncrement;

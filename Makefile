@@ -36,7 +36,13 @@ $(BINDIR)/$(TARGET): $(OBJECT_FILES)
 	mkdir -p $(BINDIR)
 	$(CXX) -o $@ $^
 
-run:
+run:	
+	bin/$(TARGET) scenes/example1.xml
+	bin/$(TARGET) scenes/example2.xml
+	bin/$(TARGET) scenes/example3.xml
+	bin/$(TARGET) scenes/example4.xml
+	bin/$(TARGET) scenes/example5.xml
+	bin/$(TARGET) scenes/example6.xml
 	bin/$(TARGET) scenes/example7.xml
 
 clean:
