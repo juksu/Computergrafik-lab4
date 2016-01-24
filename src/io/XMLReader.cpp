@@ -387,6 +387,8 @@ MaterialTextured* XMLReader::getMaterialTextured( XMLElement* xmlMaterialElement
 	material->setTexture( pngIo.readPNG( fn ) );
 	material->setDimension( pngIo.getWidth(), pngIo.getHeight() );
 	
+	getPhong( xmlMaterialElement, material );
+	
 	/// TODO test if texture was read correctly
 	//~ pngIo.writePNG( "test.png", material->getTexture(), pngIo.getWidth(), pngIo.getHeight() );
 	

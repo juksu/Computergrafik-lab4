@@ -1,6 +1,5 @@
 #include "PNGio.hpp"
 #include <iostream>
-#include "PPMWriter.hpp"
 
 glm::dvec3* PNGio::readPNG(std::string filename)
 {
@@ -28,38 +27,23 @@ glm::dvec3* PNGio::readPNG(std::string filename)
 	{
 		this->width = width;
 		this->height = height;
-		//~ std::cout << "png dim " << width << " " << height << std::endl;
-		
+
 		// i prefer to have image information in vec3
+		// image is in column major - bring it in row major
 		glm::dvec3* vec3image = new glm::dvec3[ width * height ];
-		//~ for( unsigned i = 0; i < width * height; i++ )
-		//~ {
-			//~ vec3image[i][0] = ((double)image[ i*4]) / 255;
-			//~ vec3image[i][1] = ((double)image[ i*4 + 1]) / 255;
-			//~ vec3image[i][2] = ((double)image[ i*4 + 2]) / 255;
-		//~ }
-		
 		for( unsigned i = 0; i < width; i++ )
 			for( unsigned j = 0; j < height; j++ )
 			{
 				vec3image[i*height + j][0] = ((double)image[ (j* width + i)*4]) / 255;
 				vec3image[i*height + j][1] = ((double)image[ (j* width + i)*4 + 1]) / 255;
 				vec3image[i*height + j][2] = ((double)image[ (j* width + i)*4 + 2]) / 255;
-				
 			}
-		
-		writePNG( "test.png", vec3image, width, height/2 );
-		
-		PPMWriter ppmWriter;
-		ppmWriter.setResolution( this->width, this->height );
-		ppmWriter.setFilename( "test.ppm" );
-		ppmWriter.writePPM( vec3image );
 		
 		return vec3image;
 	}
 }
 
-void PNGio::writePNG( std::string filename, glm::dvec3* image, unsigned width, unsigned height )
+void PNGio::writePNG( std::string filename, const glm::dvec3* const image, unsigned width, unsigned height ) const
 {
 	std::cout << "writing image " << filename << std::endl; 
 	
@@ -78,7 +62,7 @@ void PNGio::writePNG( std::string filename, glm::dvec3* image, unsigned width, u
 	if( !error )
 		lodepng::save_file(png, filename);
 	
-	//if there's an error, display it
+	// if there's an error, display it
 	if( error ) 
 		std::cout << "encoder error " << error << ": "<< lodepng_error_text(error) << std::endl;
 }

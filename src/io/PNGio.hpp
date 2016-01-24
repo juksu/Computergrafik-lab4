@@ -14,9 +14,9 @@ class PNGio
 	
 	public :
 		glm::dvec3* readPNG(std::string filename);
-		size_t getWidth(){ return width; }
-		size_t getHeight(){ return height; }
-		void writePNG( std::string filename, glm::dvec3* image, unsigned width, unsigned height );	
+		size_t getWidth() const { return width; }
+		size_t getHeight() const { return height; }
+		void writePNG( std::string filename, const glm::dvec3* const image, unsigned width, unsigned height ) const;	
 };
 
 

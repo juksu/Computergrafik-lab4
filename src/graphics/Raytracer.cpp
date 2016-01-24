@@ -213,9 +213,9 @@ dvec3 Raytracer::shade( const IntersectionResult* const intersectionResult,
 	}
 	delete shadowRayIntersection;
 	
-	//~ color = color * intensity;
-	return color;
-	//~ return intensity;
+	color = color * intensity;
+	//~ return color;
+	return intensity;
 }
 
 /// TODO: maybe good and simple idea to give also the refractionIndex of the material the ray is comming from as an argument 
@@ -256,9 +256,12 @@ dvec3 Raytracer::trace( dvec3* point, dvec3* ray, const dvec3* const eyeVector, 
 	{	
 		if( !internalRay )
 		{
-			color = shade( closestIntersection, surfaceArray.at(closestObject), eyeVector );
+			color = closestIntersection->getSurfaceColor();
+			//~ color = shade( closestIntersection, surfaceArray.at(closestObject), eyeVector );
 			color = color * ( 1 - surfaceArray.at(closestObject)->getMaterial()->getReflectance()
 				- surfaceArray.at(closestObject)->getMaterial()->getTransmittance() );
+				
+			color = color * shade( closestIntersection, surfaceArray.at(closestObject), eyeVector );
 		}
 		
 		
@@ -307,7 +310,6 @@ dvec3 Raytracer::trace( dvec3* point, dvec3* ray, const dvec3* const eyeVector, 
 									surfaceArray.at(closestObject)->getMaterial()->getRefractionIndex(), true );
 				
 				delete refractedRay;
-				// new try: first do not bend the ray ignoring n1 and n2
 				
 			}
 			else 	// total reflection
@@ -322,6 +324,8 @@ dvec3 Raytracer::trace( dvec3* point, dvec3* ray, const dvec3* const eyeVector, 
 				delete reflectedRay;		
 			}
 		}
+		
+		//~ color = color * shade( closestIntersection, surfaceArray.at(closestObject), eyeVector );
 		
 		delete closestIntersection;
 					
