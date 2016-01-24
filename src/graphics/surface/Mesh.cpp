@@ -110,12 +110,8 @@ IntersectionResult* Mesh::intersect( dvec3 point, dvec3 ray )
 								dvec2 vt3 = textureCoordinates.at( faceTextureCoordinates.at( textureCoordinatesPerFace.at( i ) + 2 ) );
 								
 								dvec2 texCoordinate = vt1 + s*(vt2 - vt1) + t*(vt3 - vt1);
-								//~ dvec2 texCoordinate = (1-s-t)*vt1 + s*(vt2) + t*(vt3);
-								//~ std::cout << "mesh texcoo " << to_string(texCoordinate) << std::endl;
 								
 								intersectionResult->setSurfaceColor( material->getColor( texCoordinate[0], texCoordinate[1] ) );
-								//~ intersectionResult->setSurfaceColor( glm::dvec3(0.5,0.5,0.5) );
-								//~ std::cout << "surfaceColor set to " << to_string(intersectionResult->getSurfaceColor()) << std::endl;
 							}
 				}
 			}			

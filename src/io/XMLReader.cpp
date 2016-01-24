@@ -318,7 +318,7 @@ std::vector<Surface*> XMLReader::getSurfaces()
 			
 			objReader.readOBJ( fn, mesh );
 			//~ objReader.readOBJ( "./xml/plane_small.obj", mesh );
-			//~ std::cout << "obj name " << fn << std::endl;
+			std::cout << "read obj name " << fn << std::endl;
 			
 			surfaceArray.push_back( mesh );
 			
@@ -390,7 +390,7 @@ MaterialTextured* XMLReader::getMaterialTextured( XMLElement* xmlMaterialElement
 	getPhong( xmlMaterialElement, material );
 	
 	/// TODO test if texture was read correctly
-	//~ pngIo.writePNG( "test.png", material->getTexture(), pngIo.getWidth(), pngIo.getHeight() );
+	pngIo.writePNG( "test.png", material->getTexture(), pngIo.getWidth(), pngIo.getHeight() );
 	
 	xmlElement = xmlMaterialElement->FirstChildElement("reflectance");
 	material->setReflectance( xmlElement->DoubleAttribute("r") );
@@ -413,12 +413,13 @@ void XMLReader::getPhong( XMLElement* xmlMaterialElement, Material* material )
 }
 
 void XMLReader::getTransformations( XMLElement* xmlTransformElement, Surface* surface )
-{
+{	
 	XMLElement* xmlElement = xmlTransformElement->FirstChildElement();
 	while( xmlElement != nullptr )
 	{
-		//~ std::cout << "I make a transformation" << std::endl;
 		std::string type = xmlElement->Value();
+		//~ std::cout << "I make a transformation of " << type << std::endl;
+		//~ std::string type = xmlElement->Value();
 		if( type.compare("translate") == 0 )
 		{
 			glm::dvec3 translate = glm::dvec3( xmlElement->DoubleAttribute("x"), 
@@ -443,11 +444,11 @@ void XMLReader::getTransformations( XMLElement* xmlTransformElement, Surface* su
 		{
 			surface->rotateZ( xmlElement->DoubleAttribute("theta") );
 		}
-		/// TODO: Ask if there will be also shear.
 		
-		xmlElement->NextSiblingElement();
+		xmlElement = xmlElement->NextSiblingElement();
+		//~ xmlSurfaceElement = xmlSurfaceElement->NextSiblingElement();
 	}
-	std::cout << surface->transformationMatrixString() << std::endl;
+	//~ std::cout << surface->transformationMatrixString() << std::endl;
 }
 /*
  * surfaces END

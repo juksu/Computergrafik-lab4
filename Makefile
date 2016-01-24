@@ -37,7 +37,7 @@ $(BINDIR)/$(TARGET): $(OBJECT_FILES)
 	$(CXX) -o $@ $^
 
 run:
-	bin/$(TARGET) scenes/example4.xml
+	bin/$(TARGET) xml/example5.xml
 
 clean:
 	-@rm -f -r $(OBJECTDIR)

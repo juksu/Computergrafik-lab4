@@ -18,12 +18,9 @@ dvec3 Raytracer::ambientLight( double phongKA, dvec3 lightColor ) const
 dvec3 Raytracer::diffuseLight( double phongKD, dvec3 lightColor, 
 		dvec3 lightVector, dvec3 normalVector ) const
 {
-	double angle = dot( lightVector, normalVector );
+	double lightNormDot = dot( lightVector, normalVector );
 			
-	if( angle < 0 )
-		angle = 0;
-			
-	return phongKD * angle * lightColor;
+	return phongKD * lightNormDot * lightColor;
 }
 
 dvec3 Raytracer::specularLight( double phongKS, double phongExponent, dvec3 lightColor, 
@@ -32,13 +29,10 @@ dvec3 Raytracer::specularLight( double phongKS, double phongExponent, dvec3 ligh
 	// calculate reflection ray from light source
 	dvec3 lightReflection = normalize( 2 * dot( lightVector, normalVector ) 
 			* normalVector - lightVector );
-			
-	double angle = dot( lightReflection, eyeVector );
+
+	double lightEyeDot = dot( lightReflection, eyeVector );
 	
-	if( angle < 0 )
-		angle = 0;
-		
-	return phongKS * lightColor * pow( angle, phongExponent );
+	return phongKS * lightColor * pow( max( lightEyeDot, 0.0 ), phongExponent );
 }
 
 dvec3 Raytracer::shade( const IntersectionResult* const intersectionResult, 
@@ -214,8 +208,8 @@ dvec3 Raytracer::shade( const IntersectionResult* const intersectionResult,
 	delete shadowRayIntersection;
 	
 	color = color * intensity;
-	//~ return color;
-	return intensity;
+	return color;
+	//~ return intensity;
 }
 
 /// TODO: maybe good and simple idea to give also the refractionIndex of the material the ray is comming from as an argument 
@@ -254,16 +248,18 @@ dvec3 Raytracer::trace( dvec3* point, dvec3* ray, const dvec3* const eyeVector, 
 	
 	if( closestIntersection->isIntersection() )
 	{	
+		
+		// apply shading model only once when we hit or enter the object
 		if( !internalRay )
 		{
 			color = closestIntersection->getSurfaceColor();
-			//~ color = shade( closestIntersection, surfaceArray.at(closestObject), eyeVector );
+			color = shade( closestIntersection, surfaceArray.at(closestObject), eyeVector );
 			color = color * ( 1 - surfaceArray.at(closestObject)->getMaterial()->getReflectance()
 				- surfaceArray.at(closestObject)->getMaterial()->getTransmittance() );
 				
-			color = color * shade( closestIntersection, surfaceArray.at(closestObject), eyeVector );
+			//~ color = color * shade( closestIntersection, surfaceArray.at(closestObject), eyeVector );
+			//~ color = color * shade( closestIntersection, surfaceArray.at(closestObject), eyeVector );
 		}
-		
 		
 		// reflection
 		// no need for reflacted ray if reflectance is 0
@@ -287,11 +283,16 @@ dvec3 Raytracer::trace( dvec3* point, dvec3* ray, const dvec3* const eyeVector, 
 		{
 			*point = dvec3( closestIntersection->getIntersectionPoint() );
 			
-			double n1n2 = refractionIndex / surfaceArray.at(closestObject)->getMaterial()->getRefractionIndex();
-			
+			double n1n2;
+			if( !internalRay )
+				n1n2 = refractionIndex / surfaceArray.at(closestObject)->getMaterial()->getRefractionIndex();
+			else
+				n1n2 = refractionIndex / 1;
+				
 			double cosIncidence = dot( -(*ray), closestIntersection->getNormal() );	// normal and ray are normalized
+			//~ double cosIncidence = dot( *ray, closestIntersection->getNormal() );	// normal and ray are normalized
 			
-			double bla = 1 - ((n1n2 * n1n2) * (1 - (cosIncidence * cosIncidence)));
+			double bla = 1 - (n1n2 * n1n2 * (1 - cosIncidence * cosIncidence));
 			if( bla >= 0 )
 			{
 				double cosRefraction = sqrt(bla);
@@ -325,7 +326,8 @@ dvec3 Raytracer::trace( dvec3* point, dvec3* ray, const dvec3* const eyeVector, 
 			}
 		}
 		
-		//~ color = color * shade( closestIntersection, surfaceArray.at(closestObject), eyeVector );
+		//~ if( !internalRay )
+			//~ color = color * shade( closestIntersection, surfaceArray.at(closestObject), eyeVector );
 		
 		delete closestIntersection;
 					
@@ -412,15 +414,15 @@ void Raytracer::render()
 						
 						dvec3* point = new dvec3( camera );
 						dvec3* initialRay = new dvec3(normalize(viewPlanePoint - camera));
-						dvec3* cameraVector = new dvec3( -(*initialRay) );
+						dvec3* eyeVector = new dvec3( -(*initialRay) );
 						
 						
 						
-						color = color + trace( point, initialRay, cameraVector, 0, 1, false );
+						color = color + trace( point, initialRay, eyeVector, 0, 1, false );
 				
 						delete initialRay;
 						delete point;
-						delete cameraVector;
+						delete eyeVector;
 					}
 				
 				color = color / (double)( samplerate * samplerate );
@@ -433,14 +435,14 @@ void Raytracer::render()
 				
 				dvec3* point = new dvec3( camera );
 				dvec3* initialRay = new dvec3( normalize( viewPlanePoint - camera ) );
-				dvec3* cameraVector = new dvec3( -(*initialRay) );
+				dvec3* eyeVector = new dvec3( -(*initialRay) );
 				
 				// we asume the material the ray originates from is equal to 1 (air)
-				color = trace( point, initialRay, cameraVector, 0, 1, false );
+				color = trace( point, initialRay, eyeVector, 0, 1, false );
 				
 				delete point;
 				delete initialRay;
-				delete cameraVector;
+				delete eyeVector;
 			}
 
 			// cap maximum rgb value to 1

@@ -59,6 +59,7 @@ int main( int argc, char* argv[] )
 	// get all lights
 	raytracer.setLightContainer( xmlReader.getLights() );
 
+	std::cout << "all set up, lets render!" << std::endl;
 	// now make some pretty pictures
 	raytracer.render();
 	

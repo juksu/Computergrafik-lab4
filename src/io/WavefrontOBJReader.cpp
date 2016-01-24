@@ -42,16 +42,6 @@ string WavefrontOBJReader::readStringInformation( string str )
 
 void WavefrontOBJReader::readOBJ( string filename, Mesh* mesh )
 {
-	//~ cout << "reading obj" << endl;
-	//~ fstream fstest;
-	//~ string testfilename = filename;
-	//~ testfilename.insert( 2, "test" );
-	//~ fstest.open( testfilename, std::fstream::in | std::fstream::out | std::fstream::app );
-	//~ if( fstest )
-		//~ fstest << "test content";
-	//~ else
-		//~ cout << "no test " << testfilename <<  endl;
-	//~ 
 	cout << "Reading .obj-file " << filename << endl;
 	
 	ifstream fs;
@@ -67,15 +57,15 @@ void WavefrontOBJReader::readOBJ( string filename, Mesh* mesh )
 	
 	if( fs.is_open() )
 	{
-		// get lines in .obj file
 		string line;
-		
-		 
-		
+
+		// get lines in .obj file
 		while( getline( fs, line ) )
 		{
 			// vertex points
 			// vertex points may have an optional fourth component and defaults to 1.0 -> ignore
+			//~ cout << line << endl;
+			
 			if( line.compare( 0, 2, "v " ) == 0	) // vertex
 			{
 				// send the string to the vector reader, however exclude the element information
@@ -234,14 +224,6 @@ void WavefrontOBJReader::readOBJ( string filename, Mesh* mesh )
 	}
 	else
 		cout << "OBJ file can not be opened" << endl;
-		
-	//~ mesh->setVerticesPerFace( verticesPerFace );
-	//~ mesh->setFaceVertices( faceVertices );
-	//~ mesh->setFaceNormals( faceNormals );
-	//~ mesh->setFaceTextureCoordinates( faceTextureCoordinates );
-	//~ mesh->setVertices( vertices );		/// TODO segmentation fault
-	//~ mesh->setNormals( normals );		/// TODO segmentation fault
-	//~ mesh->setTextureCoordinates( textureCoordinates );		/// TODO segmentation fault
 	
 	// debug
 	//~ cout << "verticesPerFace" << endl;
