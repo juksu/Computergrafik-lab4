@@ -104,6 +104,9 @@ IntersectionResult* Sphere::intersect( dvec3 point, dvec3 ray )
 			else
 				intersectionResult->setNormal( 
 						normalize( dvec3( transformations * dvec4( intersectionNormal, 0 ) ) ) );
+						
+			/// TODO: calculate the texture position 
+			intersectionResult->setSurfaceColor( material->getColor( 0, 0 ) );
 			
 		}
 		else

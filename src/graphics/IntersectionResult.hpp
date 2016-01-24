@@ -37,8 +37,8 @@ class IntersectionResult
 		//~ void setRefractionVector( glm::dvec3 refractionVector ){ 
 			//~ this->refractionVector = refractionVector; }
 		//~ glm::dvec3 getRefractionVector(){ return refractionVector; }
-		//~ void setSurfaceColor( glm::dvec3 surfaceColor ){ this->surfaceColor = surfaceColor; }
-		//~ glm::dvec3 getSurfaceColor(){ return surfaceColor; }
+		void setSurfaceColor( glm::dvec3 surfaceColor ){ this->surfaceColor = surfaceColor; }
+		glm::dvec3 getSurfaceColor() const { return surfaceColor; }
 		
 };
 #endif // INTERSECTIONRESULT_H

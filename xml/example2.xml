@@ -66,5 +66,14 @@
 				<refraction iof="2.3"/>
 			</material_solid>
 		</sphere>
+		<mesh name="plane_small.obj">
+			<material_textured>
+				<texture name="MarbleBeige.png"/>
+				<phong ka="0.3" kd="0.9" ks="1.0" exponent="20"/>
+				<reflectance r="0.0"/>
+				<transmittance t="0.0"/>
+				<refraction iof="0.0"/>
+			</material_textured>
+		</mesh>
 	</surfaces>
 </scene>

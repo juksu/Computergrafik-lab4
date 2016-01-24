@@ -9,7 +9,7 @@ class MaterialSolid : public Material
 		glm::dvec3 color;
 	public:
 		void setColor( glm::dvec3 color ){ this->color = color; }
-		virtual glm::dvec3 getColor() const { return color; }
+		virtual glm::dvec3 getColor( double x, double y ) const { return color; }
 };
 
 

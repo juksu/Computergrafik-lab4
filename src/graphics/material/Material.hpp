@@ -28,7 +28,8 @@ class Material
 		void setRefractionIndex( double refractionIndex ) {this->refractionIndex = refractionIndex; }
 		double getRefractionIndex() const { return refractionIndex; }
 		
-		virtual glm::dvec3 getColor() const = 0;
+		// getColor expects x and y between 0 and 1, the function will transform the relative coordinates to the correct pixel
+		virtual glm::dvec3 getColor( double x, double y ) const = 0;
 };
 
 #endif // MATERIAL_H

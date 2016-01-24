@@ -8,10 +8,8 @@
 
 class Surface
 {
-	private:
-		Material* material;	
-	
 	protected:
+		Material* material;	
 		glm::dmat4 transformations;
 		glm::dmat4 inverseTransformations;
 		bool inverseTransformationsSet;

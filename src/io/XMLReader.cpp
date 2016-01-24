@@ -373,7 +373,22 @@ MaterialTextured* XMLReader::getMaterialTextured( XMLElement* xmlMaterialElement
 	
 	PNGio pngIo;
 	XMLElement* xmlElement = xmlMaterialElement->FirstChildElement("texture");
-	material->setTexture( pngIo.readPNG( xmlElement->Attribute("name") ) );
+	
+	// if the file is executed from a different path where the xml is saved (which is usually the case)
+	// we need to add the path information to the filename 
+	// assuming the .texture file is at the same location as the .xml file
+	std::string fn = filename;
+	size_t i = fn.rfind( "/" );
+	fn.erase( i+1, fn.length() );
+	fn.append( xmlElement->Attribute("name") );
+	
+	//~ objReader.readOBJ( fn, mesh );
+
+	material->setTexture( pngIo.readPNG( fn ) );
+	material->setDimension( pngIo.getWidth(), pngIo.getHeight() );
+	
+	/// TODO test if texture was read correctly
+	//~ pngIo.writePNG( "test.png", material->getTexture(), pngIo.getWidth(), pngIo.getHeight() );
 	
 	xmlElement = xmlMaterialElement->FirstChildElement("reflectance");
 	material->setReflectance( xmlElement->DoubleAttribute("r") );

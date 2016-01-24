@@ -72,6 +72,9 @@ int main( int argc, char* argv[] )
 	pngIo.writePNG( xmlReader.getOutputFilename(), raytracer.getImage(), 
 			xmlReader.getHorizontalResolution(), xmlReader.getVerticalResolution() );
 	
+	//~ PNGio pngIo;
+	//~ pngIo.readPNG( "scenes/MarbleBeige.png" );
+	
 	// write ppm
 	PPMWriter ppmWriter;
 	ppmWriter.setResolution( xmlReader.getHorizontalResolution(), xmlReader.getVerticalResolution() );

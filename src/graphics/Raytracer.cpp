@@ -45,7 +45,9 @@ dvec3 Raytracer::shade( const IntersectionResult* const intersectionResult,
 		const Surface* const surface, const dvec3* const eyeVector ) const
 {
 	// color of the material
-	dvec3 color = surface->getMaterial()->getColor();
+	//~ dvec3 color = surface->getMaterial()->getColor();
+	dvec3 color = intersectionResult->getSurfaceColor();
+	//~ std::cout << to_string(intersectionResult->getSurfaceColor()) << std::endl;
 	
 	//~ dvec3 color = dvec3(0,0,0);
 	dvec3 intensity = dvec3(0, 0, 0);
@@ -211,7 +213,7 @@ dvec3 Raytracer::shade( const IntersectionResult* const intersectionResult,
 	}
 	delete shadowRayIntersection;
 	
-	color = color * intensity;
+	//~ color = color * intensity;
 	return color;
 	//~ return intensity;
 }
