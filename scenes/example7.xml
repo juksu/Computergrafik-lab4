@@ -1,0 +1,56 @@
+<?xml version="1.0" standalone="no" ?>
+<!DOCTYPE scene SYSTEM "scene.dtd">
+
+<scene output_file="example7.png">
+	<background_color r="0.0" g="0.0" b="0.0"/>
+	<!-- Camera -->
+	<camera>
+		<position x="0.0" y="0.0" z="1.0"/>
+		<lookat x="0.0" y="0.0" z="-3.0"/>
+		<up x="0.0" y="1.0" z="0.0"/>
+		<horizontal_fov angle="45"/>
+		<resolution horizontal="600" vertical="600"/>
+		<max_bounces n="2"/>
+		<supersampling samplerate="1" />
+	</camera>
+
+  <!-- Lights -->
+	<lights>
+		<ambient_light>
+			<color r="1.0" g="1.0" b="1.0"/>
+		</ambient_light>
+		<point_light>
+			<color r="0.7" g="0.7" b="0.7"/>
+			<position x="2.0" y="10.0" z="-2.5"/>
+		</point_light>
+		<point_light>
+			<color r="0.7" g="0.7" b="0.7"/>
+			<position x="-2.0" y="10.0" z="-2.5"/>
+		</point_light>
+		<spot_light>
+			<color r="0.7" g="0.7" b="0.7"/>
+			<position x="-2.0" y="3.0" z="1"/>
+		</spot_light>
+	</lights>
+  
+	<!-- Surfaces -->
+	<surfaces>
+	    <!-- Floor -->
+		<mesh name="plane_small.obj">
+			<material_textured>
+				<texture name="mramor6x6.png"/>
+				<phong ka="0.3" kd="0.9" ks="1.0" exponent="200"/>
+				<reflectance r="0.1"/>
+				<transmittance t="0"/>
+				<refraction iof="0"/>
+			</material_textured>
+<!--
+			<transform>
+				<translate x="0.0" y="-2.5" z="-10.0" />
+				<rotateX theta="-90.0"/>
+				<scale x="20" y="20" z="1.0" />
+			</transform>
+-->
+		</mesh>
+	</surfaces>
+</scene>

@@ -7,10 +7,6 @@
 #include "../lib/glm/glm.hpp"
 #include <vector>
 
-//~ #include "../lib/glm/vec3.hpp"
-//~ #include "../lib/glm/mat4x4.hpp"
-//~ using namespace glm;
-
 class Raytracer
 {
 	private:
@@ -77,11 +73,7 @@ class Raytracer
 		
 		void render();
 		
-		glm::dvec3* getImage() const { return image; }
-		
-		//~ void setupViewPlane();
-		
-		
+		glm::dvec3* getImage() const { return image; }		
 };
 
 #endif // RAYTRACER_H

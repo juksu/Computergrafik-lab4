@@ -15,16 +15,6 @@ IntersectionResult* Mesh::intersect( dvec3 point, dvec3 ray )
 	intersectionResult->setLambda( std::numeric_limits<double>::max() );
 	
 	// transform point and ray into object coordinates with inverse transformation matrix
-	// all transformations are affine, so affineInverse should work fine.
-	/// TODO, for optimization i may calculate this only once (when setting transformation maybe?)
-	//~ dmat4 inverseTransformations = affineInverse( getTransformationMatrix() );
-	
-	if( !inverseTransformationsSet )
-	{
-		inverseTransformations = affineInverse( transformations );
-		inverseTransformationsSet = true;
-	}
-	
 	dvec3 pointTransformed = dvec3( inverseTransformations * dvec4( point, 1 ) );
 	dvec3 rayTransformed = dvec3( inverseTransformations * dvec4( ray, 0 ) );
 	
@@ -32,38 +22,32 @@ IntersectionResult* Mesh::intersect( dvec3 point, dvec3 ray )
 	for( size_t i = 0; i < verticesPerFace.size()-1; i++ )
 	{
 		// polygons could be one with more than three vertices (for example quadrilaterals)
-		// however this intersection test does (only?) work for triangles
-		
+		// however for now have intersection test only for triangles	
 		if( verticesPerFace.at( i + 1 ) - verticesPerFace.at( i ) == 3 )
 		{
 			double epsilon = 1e-12;
 			
-			/// TODO, we know that the ray can only enter an object through faces which normals face toward the point
-			/// and only exit through faces which normals face away from the point
-			/// could use that information to further accellerate calculation AND OR it may be usefull for transmittance?
 			dvec3 v1 = vertices.at( faceVertices.at( verticesPerFace.at( i ) ) );
 			dvec3 v2 = vertices.at( faceVertices.at( verticesPerFace.at( i ) + 1 ) );
 			dvec3 v3 = vertices.at( faceVertices.at( verticesPerFace.at( i ) + 2 ) );
 			
 			dvec3 planeNormal = normalize(cross( v2 - v1, v3 - v1 ));
 			
-			//~ double dotPlaneNRay = -dot( planeNormal, rayTransformed );
 			double dotPlaneNRay = dot( planeNormal, rayTransformed );
 			
 			// we want the planeNormal to face towards the point where the ray is comming from
 			// check for orientation, normal and rayTransformed should have opposite orientation
 			// important for some later calculations
-			//~ if( dotPlaneNRay < 0 )	/// TODO epsilon test
-			if( dotPlaneNRay > 0 )	/// TODO epsilon test
+			if( dotPlaneNRay > 0 )
 			{
 				planeNormal = -planeNormal;	// let planeNormal face opposite direction
 				dotPlaneNRay = -dotPlaneNRay;	// dot product of opposite orrientation = -dot product of same orrientation
 			}
 			
-			if( abs(dotPlaneNRay) > epsilon )	/// TODO epsilon test
+			if( abs(dotPlaneNRay) > epsilon )
 			{
 				// calculate the distance from ray origin to plane
-				double lambda = - ( dot( planeNormal, pointTransformed - v1 ) ) / dotPlaneNRay;		// beware of + and - in scratchapixel!!!
+				double lambda = - ( dot( planeNormal, pointTransformed - v1 ) ) / dotPlaneNRay;
 				
 				// if that face is closer to other faces tested before set this as the new closest intersection
 				// if lambda is very close to zero or is even in opposite direction we do not have an interaction

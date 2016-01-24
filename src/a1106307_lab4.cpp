@@ -1,19 +1,10 @@
 #include <string>
 #include <cstddef>
 #include <iostream>
-//~ #include <vector>
-//~ #include "./lib/tinyxml2/tinyxml2.h"
-//~ #include "./lib/glm/glm.hpp"
-//~ #include "./lib/glm/gtx/string_cast.hpp"
 #include "./io/PPMWriter.hpp"
 #include "./io/XMLReader.hpp"
-//~ #include "./io/WavefrontOBJReader.hpp"
 #include "./io/PNGio.hpp"
 #include "./graphics/Raytracer.hpp"
-
-//~ #include "./graphics/surface/Surface.hpp"
-//~ #include "./graphics/Sphere.hpp"
-//~ #include "./graphics/Material.hpp"
 
 
 using namespace std;
@@ -58,8 +49,7 @@ int main( int argc, char* argv[] )
 	
 	// get all lights
 	raytracer.setLightContainer( xmlReader.getLights() );
-
-	std::cout << "all set up, lets render!" << std::endl;
+	
 	// now make some pretty pictures
 	raytracer.render();
 	

@@ -2,7 +2,6 @@
 #define PARALLELLIGHT_H
 
 #include "Light.hpp"
-#include "../../lib/glm/glm.hpp"
 
 class ParallelLight : public Light
 {

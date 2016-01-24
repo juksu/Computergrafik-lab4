@@ -14,8 +14,10 @@ class IntersectionResult
 	public:
 		void setIntersection( bool intersection ){ this->intersection = intersection; }
 		bool isIntersection() const { return intersection; }
+		
 		void setLambda( double lambda ){ this->lambda = lambda; }
 		double getLambda() const { return lambda; }
+		
 		void setIntersectionPoint( glm::dvec3 intersectionPoint ){
 			this->intersectionPoint = intersectionPoint; }
 		glm::dvec3 getIntersectionPoint() const { return intersectionPoint; }

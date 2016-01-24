@@ -5,11 +5,7 @@
 #include "PointLight.hpp"
 #include "ParallelLight.hpp"
 #include "SpotLight.hpp"
-
-
 #include <vector>
-
-
 
 class LightContainer
 {

@@ -2,7 +2,6 @@
 #define SPOTLIGHT_H
 
 #include "Light.hpp"
-//~ #include "../../lib/glm/glm.hpp"
 
 class SpotLight : public Light
 {

@@ -10,19 +10,8 @@ IntersectionResult* Sphere::intersect( dvec3 point, dvec3 ray )
 {
 	IntersectionResult* intersectionResult = new IntersectionResult();
 	intersectionResult->setIntersection( false );
-	//~ double lambda = std::numeric_limits<double>::max();
 	
 	// transform point and ray into object coordinates with inverse transformation matrix
-	// all transformations are affine, so affineInverse should work fine.
-	/// TODO, for optimization i may calculate this only once (when setting transformation maybe?)
-	if( !inverseTransformationsSet )
-	{
-		inverseTransformations = affineInverse( transformations );
-		inverseTransformationsSet = true;
-	}
-	
-	//~ dmat4 inverseTransformations = affineInverse( getTransformationMatrix() );
-	
 	dvec3 pointTransformed = dvec3( inverseTransformations * dvec4( point, 1 ) );
 	dvec3 rayTransformed = dvec3( inverseTransformations * dvec4( ray, 0 ) );
 	
@@ -40,28 +29,20 @@ IntersectionResult* Sphere::intersect( dvec3 point, dvec3 ray )
 	else
 	{	
 		double lambda = -1;
-		// lambda = ~ 0
-		//~ if( abs(t) < std::numeric_limits<double>::epsilon() )
 		if( abs(t) < epsilon )
 		{
-			// we only touche the sqhere -> we do not go through the object and therefore there is no transmittance
-			/// TODO: not clear if still needed
-			//~ intersectionResult->setTransmittance( false );
+			// we only touche the sqhere
 			lambda = (-b)/(2*a);
 		}
 		else
 		{
-			//~ intersectionResult->setTransmittance( true );
 			double sqrtT = std::sqrt(t);
 			double lambda1 = (-b+sqrtT)/(2*a);
 			double lambda2 = (-b-sqrtT)/(2*a);
 			
-			
 			// if lambda < 0 than intersection is in the other direction, if it is 0 than intersection with the own wall
 			if( lambda1 < lambda2 )
 			{
-				//~ if( lambda1 > std::numeric_limits<double>::epsilon()*lambda1 )
-				//~ if( lambda1 > std::numeric_limits<double>::epsilon()*10000 )
 				if( lambda1 > epsilon )
 					lambda = lambda1;
 				else
@@ -70,8 +51,6 @@ IntersectionResult* Sphere::intersect( dvec3 point, dvec3 ray )
 			{
 				if( lambda2 < lambda1 )
 				{
-					//~ if( lambda2 > std::numeric_limits<double>::epsilon()*lambda2 )
-					//~ if( lambda2 > std::numeric_limits<double>::epsilon()*10000 )
 					if( lambda2 > epsilon )
 						lambda = lambda2;
 					else
@@ -81,11 +60,9 @@ IntersectionResult* Sphere::intersect( dvec3 point, dvec3 ray )
 		}
 		
 		intersectionResult->setLambda( lambda );
-		//~ std::cout << lambda << std::endl;
-		//~ if( lambda > std::numeric_limits<double>::epsilon()*10000 )
+
 		if( lambda > epsilon )
 		{
-		//~ if( lambda > 1.0e-17 )
 			intersectionResult->setIntersection( true );
 			
 			// get intersection Point and normal

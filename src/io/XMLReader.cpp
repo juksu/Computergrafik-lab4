@@ -22,7 +22,6 @@ bool XMLReader::loadFile( std::string filename )
 	//~ XMLDocument xmlDocument;
 	this->filename = filename;
 	XMLError xmlResult = xmlDocument.LoadFile( filename.c_str() );
-	//~ tinyxml2::XMLError xmlResult = xmlDocument.LoadFile( "example1.xml" );
 	if( xmlResult != XML_SUCCESS )
 	{
 		std::cerr << "Error reading xml: " << xmlResult << std::endl;
@@ -42,18 +41,9 @@ std::string XMLReader::getOutputFilename()
 	XMLElement* xmlElement = xmlDocument.FirstChildElement("scene");
 	
 	if( xmlElement != nullptr )
-	{
-		//~ std::string fn = xmlElement->Attribute("output_file");
-		//~ 
-		//~ int fileExt = fn.rfind(".");
-	//~ 
-		//~ return fn.substr(0, fileExt).append(".ppm");
 		return xmlElement->Attribute("output_file");
-	}
 	else
-	{
 		std::cout << "no output name found, out.png used instead" << std::endl;
-	}
 	// if no filename can be found use standard name
 	return "out.png";
 }
@@ -165,11 +155,8 @@ int XMLReader::getSuperSampling()
  /*
   * lights
   */
-//~ std::vector<Light*> XMLReader::getLights()
 LightContainer XMLReader::getLights()
 {
-	//~ std::vector<Light*> lightArray;
-	
 	LightContainer lights;
 	
 	XMLElement* xmlLightElement = xmlDocument.FirstChildElement("scene")
@@ -191,7 +178,6 @@ LightContainer XMLReader::getLights()
 			light->setColor( color );
 			
 			lights.addAmbientLight( light );
-			//~ lightArray.push_back(light);
 		}
 		
 		if( type.compare("point_light") == 0 )
@@ -208,7 +194,6 @@ LightContainer XMLReader::getLights()
 					xmlElement->DoubleAttribute("y"), xmlElement->DoubleAttribute("z") );
 			light->setPosition( position );
 			
-			//~ lightArray.push_back(light);
 			lights.addPointLight( light );
 		}
 		
@@ -226,7 +211,6 @@ LightContainer XMLReader::getLights()
 					xmlElement->DoubleAttribute("y"), xmlElement->DoubleAttribute("z") );
 			light->setDirection( direction );
 			
-			//~ lightArray.push_back(light);
 			lights.addParallelLight( light );
 		}
 		
@@ -253,15 +237,8 @@ LightContainer XMLReader::getLights()
 			light->setFalloffAlpha1( xmlElement->DoubleAttribute("alpha1") ); 
 			light->setFalloffAlpha2( xmlElement->DoubleAttribute("alpha2") ); 
 			
-			//~ lightArray.push_back(light);
 			lights.addSpotlLight( light );
 		}
-		
-		//~ // set color
-		//~ xmlElement = xmlLightElement->FirstChildElement("color");
-		//~ glm::dvec3 color = glm::dvec3( xmlElement->DoubleAttribute("r"), 
-				//~ xmlElement->DoubleAttribute("g"), xmlElement->DoubleAttribute("b") );
-		//~ lightArray.back()->setColor( color );
 		
 		xmlLightElement = xmlLightElement->NextSiblingElement();
 	}
@@ -317,12 +294,9 @@ std::vector<Surface*> XMLReader::getSurfaces()
 			fn.append( xmlSurfaceElement->Attribute("name") );
 			
 			objReader.readOBJ( fn, mesh );
-			//~ objReader.readOBJ( "./xml/plane_small.obj", mesh );
 			std::cout << "read obj name " << fn << std::endl;
 			
 			surfaceArray.push_back( mesh );
-			
-			//~ mesh->printMesh();
 		}
 		
 		xmlElement = xmlSurfaceElement->FirstChildElement("material_solid");
@@ -337,7 +311,6 @@ std::vector<Surface*> XMLReader::getSurfaces()
 		if( xmlElement != nullptr )	// in case no transformations exist
 			getTransformations( xmlElement, surfaceArray.back() );
 		
-		//~ std::cout << xmlSurfaceElement->Value() << std::endl;
 		xmlSurfaceElement = xmlSurfaceElement->NextSiblingElement();
 	}
 	return surfaceArray;
@@ -346,7 +319,6 @@ std::vector<Surface*> XMLReader::getSurfaces()
 MaterialSolid* XMLReader::getMaterialSolid( XMLElement* xmlMaterialElement )
 {
 	MaterialSolid* material = new MaterialSolid();
-	//~ std::cout << xmlMaterialElement->Value() << std::endl;
 	
 	XMLElement* xmlElement = xmlMaterialElement->FirstChildElement("color");
 	glm::dvec3 color = glm::dvec3( xmlElement->DoubleAttribute("r"), 
@@ -382,15 +354,10 @@ MaterialTextured* XMLReader::getMaterialTextured( XMLElement* xmlMaterialElement
 	fn.erase( i+1, fn.length() );
 	fn.append( xmlElement->Attribute("name") );
 	
-	//~ objReader.readOBJ( fn, mesh );
-
 	material->setTexture( pngIo.readPNG( fn ) );
 	material->setDimension( pngIo.getWidth(), pngIo.getHeight() );
 	
 	getPhong( xmlMaterialElement, material );
-	
-	/// TODO test if texture was read correctly
-	pngIo.writePNG( "test.png", material->getTexture(), pngIo.getWidth(), pngIo.getHeight() );
 	
 	xmlElement = xmlMaterialElement->FirstChildElement("reflectance");
 	material->setReflectance( xmlElement->DoubleAttribute("r") );
@@ -404,7 +371,6 @@ MaterialTextured* XMLReader::getMaterialTextured( XMLElement* xmlMaterialElement
 	return material;
 }
 
-//~ void XMLReader::getPhong( XMLElement* xmlElement, Material* material )
 void XMLReader::getPhong( XMLElement* xmlMaterialElement, Material* material )
 {
 	XMLElement* xmlElement = xmlMaterialElement->FirstChildElement("phong");
@@ -418,8 +384,7 @@ void XMLReader::getTransformations( XMLElement* xmlTransformElement, Surface* su
 	while( xmlElement != nullptr )
 	{
 		std::string type = xmlElement->Value();
-		//~ std::cout << "I make a transformation of " << type << std::endl;
-		//~ std::string type = xmlElement->Value();
+
 		if( type.compare("translate") == 0 )
 		{
 			glm::dvec3 translate = glm::dvec3( xmlElement->DoubleAttribute("x"), 
@@ -446,20 +411,17 @@ void XMLReader::getTransformations( XMLElement* xmlTransformElement, Surface* su
 		}
 		
 		xmlElement = xmlElement->NextSiblingElement();
-		//~ xmlSurfaceElement = xmlSurfaceElement->NextSiblingElement();
 	}
-	//~ std::cout << surface->transformationMatrixString() << std::endl;
 }
 /*
  * surfaces END
  */
 
 /*
- * print xml (only part of it)
+ * print xml (only part of it) for debugging
  */
 void XMLReader::printxml()
 {
-
 	// pointer to root node
 	XMLNode* xmlRoot = xmlDocument.FirstChild();
 	// it may be that we get a nullpointer

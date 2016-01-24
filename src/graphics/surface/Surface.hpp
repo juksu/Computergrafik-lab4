@@ -15,7 +15,7 @@ class Surface
 		bool inverseTransformationsSet;
 		
 	public:
-		Surface(){ transformations = glm::dmat4(1.0); inverseTransformationsSet = false; }
+		Surface(){ transformations = glm::dmat4(1.0); inverseTransformations = glm::dmat4(1.0); }
 		
 		void setMaterial( Material* material ){ this->material = material; }
 		Material* getMaterial() const { return material; }
@@ -25,15 +25,7 @@ class Surface
 		void rotateX( double rotateX );
 		void rotateY( double rotateY );
 		void rotateZ( double rotateZ );
-		
-		//~ bool isInverseTransformationMatrixSet(){ return inverseTransformationsSet; }
-		//~ void setInverseTransformationMatrixSet( bool inverseTransformationsSet ){
-				//~ this->inverseTransformationsSet = inverseTransformationsSet; }
-		//~ glm::dmat4 getTransformationMatrix() const { return transformations; }
-		//~ glm::dmat4 getInverseTransformationMatrix() const { return inverseTransformations; }
-		//~ void setInverseTransformationMatrix( glm::dmat4 inverseTransformations ){ 
-				//~ this->inverseTransformations = inverseTransformations; }
-		
+
 		std::string transformationMatrixString() const;
 		
 		virtual IntersectionResult* intersect( glm::dvec3 point, glm::dvec3 ray ) = 0;

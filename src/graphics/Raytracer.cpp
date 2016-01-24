@@ -1,9 +1,4 @@
 #include "Raytracer.hpp"
-
-#include "../lib/glm/gtc/matrix_transform.hpp"
-//~ #include "../lib/glm/gtc/matrix_inverse.hpp"
-#include "../lib/glm/gtx/string_cast.hpp"
-
 #include <iostream>
 #include <limits>
 #include <cmath>
@@ -19,8 +14,9 @@ dvec3 Raytracer::diffuseLight( double phongKD, dvec3 lightColor,
 		dvec3 lightVector, dvec3 normalVector ) const
 {
 	double lightNormDot = dot( lightVector, normalVector );
-			
-	return phongKD * lightNormDot * lightColor;
+	
+	// having negative values screws with the color information		
+	return phongKD * max(lightNormDot, 0.0) * lightColor;
 }
 
 dvec3 Raytracer::specularLight( double phongKS, double phongExponent, dvec3 lightColor, 
@@ -39,7 +35,6 @@ dvec3 Raytracer::shade( const IntersectionResult* const intersectionResult,
 		const Surface* const surface, const dvec3* const eyeVector ) const
 {
 	// color of the material
-	//~ dvec3 color = surface->getMaterial()->getColor();
 	dvec3 color = intersectionResult->getSurfaceColor();
 	//~ std::cout << to_string(intersectionResult->getSurfaceColor()) << std::endl;
 	
@@ -149,7 +144,7 @@ dvec3 Raytracer::shade( const IntersectionResult* const intersectionResult,
 			// it may be that we have an intersection but the intersection is after the spot light source
 			// therefore, if only break if length to intersection point < length to light source
 			// else, we tread it as no intersection
-			if( shadowRayIntersection->isIntersection() )		/// this was commented out -> reason???
+			if( shadowRayIntersection->isIntersection() )
 			{
 				if( length( shadowRayIntersection->getIntersectionPoint() 
 								- intersectionResult->getIntersectionPoint() ) 
@@ -162,7 +157,7 @@ dvec3 Raytracer::shade( const IntersectionResult* const intersectionResult,
 		}
 		if( !shadowRayIntersection->isIntersection() )
 		{			
-			// what is the angle between the spotLight direction and the vector from spotLightPosition to IntersectionPoint?
+			// get the dot product between the spotLight direction and the vector from spotLightPosition to IntersectionPoint
 			double angle = dot( normalize( spotLights.at(i)->getDirection() ),
 					normalize( intersectionResult->getIntersectionPoint()
 					- spotLights.at(i)->getPosition() ) );
@@ -200,8 +195,7 @@ dvec3 Raytracer::shade( const IntersectionResult* const intersectionResult,
 											
 					spotIntensity = spotIntensity * falloff;
 				}
-			}
-			
+			}		
 			intensity = intensity + spotIntensity;
 		}
 	}

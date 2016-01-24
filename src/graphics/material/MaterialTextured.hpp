@@ -14,7 +14,7 @@ class MaterialTextured : public Material
 	public:
 		void setTexture( glm::dvec3* texture ){ this->texture = texture; }
 		glm::dvec3* getTexture(){ return texture; }
-		void setDimension( size_t width, size_t height ) { this->width =width; this->height = height; }
+		void setDimension( size_t width, size_t height ) { this->width = width; this->height = height; }
 		virtual glm::dvec3 getColor( double x, double y ) const;
 };
 

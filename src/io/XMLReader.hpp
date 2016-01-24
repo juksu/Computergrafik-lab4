@@ -50,10 +50,8 @@ class XMLReader
 		MaterialSolid* getMaterialSolid( tinyxml2::XMLElement* xmlMaterialElement );
 		MaterialTextured* getMaterialTextured( tinyxml2::XMLElement* xmlMaterialElement );
 		void getPhong( tinyxml2::XMLElement xmlMaterialElement, Material* material );
-		void getTransformations( tinyxml2::XMLElement* xmlTransformElement, Surface* surface );
-
 		// Transformation
-		
+		void getTransformations( tinyxml2::XMLElement* xmlTransformElement, Surface* surface );
 		
 		void printxml();
 };

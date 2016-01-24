@@ -2,7 +2,6 @@
 #define POINTLIGHT_H
 
 #include "Light.hpp"
-//~ #include "../../lib/glm/glm.hpp"
 
 class PointLight : public Light
 {
