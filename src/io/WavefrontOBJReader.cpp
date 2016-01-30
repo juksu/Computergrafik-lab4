@@ -86,13 +86,14 @@ void WavefrontOBJReader::readOBJ( string filename, Mesh* mesh )
 				
 				// it may be that the texture coordinates are not within [0,1] -> in that case divide by max
 				// (as once discussed in class)
-				double max = 1;
-				if( texCoordinate[0] > max )
-					max = texCoordinate[0];
-				if( texCoordinate[1] > max )
-					max = texCoordinate[1];
-				
-				texCoordinate = texCoordinate / max;
+				/// TODO: turned out that this is wrong - instead the texture should be repeated
+				//~ double max = 1;
+				//~ if( texCoordinate[0] > max )
+					//~ max = texCoordinate[0];
+				//~ if( texCoordinate[1] > max )
+					//~ max = texCoordinate[1];
+				//~ 
+				//~ texCoordinate = texCoordinate / max;
 				
 				//~ cout << "vertexTexture" << endl;
 				//~ cout << to_string(texCoordinate) << endl;

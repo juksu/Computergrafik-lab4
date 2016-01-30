@@ -46,7 +46,8 @@ dvec3 Raytracer::shade( const IntersectionResult* const intersectionResult,
 	std::vector<AmbientLight*> ambientLights = lightContainer.getAmbientLights();
 	for( size_t i = 0; i < ambientLights.size(); i++ )
 	{
-		intensity = intensity + ambientLight(
+		//~ intensity = intensity + ambientLight(
+		intensity = intensity + color * ambientLight(
 				surface->getMaterial()->getPhongKA(), ambientLights.at(i)->getColor() );
 	}
 
@@ -70,11 +71,12 @@ dvec3 Raytracer::shade( const IntersectionResult* const intersectionResult,
 		if( !shadowRayIntersection->isIntersection() )
 		{
 			// diffuse reflection
-			intensity = intensity 
-					+ diffuseLight( surface->getMaterial()->getPhongKD(), parallelLights.at(i)->getColor(),
+			intensity = intensity + color 
+					* diffuseLight( surface->getMaterial()->getPhongKD(), parallelLights.at(i)->getColor(),
 							normalize( -parallelLights.at(i)->getDirection() ), intersectionResult->getNormal() );
 
 			// specular reflection
+			// with specular reflection we do not multiply specular intensity with the surface color!
 			intensity = intensity
 					+ specularLight( surface->getMaterial()->getPhongKS(), surface->getMaterial()->getPhongExponent(),
 							parallelLights.at(i)->getColor(), normalize( -parallelLights.at(i)->getDirection() ),
@@ -113,8 +115,8 @@ dvec3 Raytracer::shade( const IntersectionResult* const intersectionResult,
 		if( !shadowRayIntersection->isIntersection() )
 		{
 			// diffuse reflection
-			intensity = intensity 
-					+ diffuseLight( surface->getMaterial()->getPhongKD(), pointLights.at(i)->getColor(),
+			intensity = intensity + color 
+					* diffuseLight( surface->getMaterial()->getPhongKD(), pointLights.at(i)->getColor(),
 							normalize( pointLights.at(i)->getPosition() - intersectionResult->getIntersectionPoint() ),
 							intersectionResult->getNormal() );
 
@@ -171,16 +173,10 @@ dvec3 Raytracer::shade( const IntersectionResult* const intersectionResult,
 				//~ spotIntensity = dvev3( 0, 0, 0 );
 			else
 			{
-				spotIntensity = spotIntensity
-						+ diffuseLight( surface->getMaterial()->getPhongKD(), spotLights.at(i)->getColor(),
+				spotIntensity = spotIntensity + color
+						* diffuseLight( surface->getMaterial()->getPhongKD(), spotLights.at(i)->getColor(),
 								normalize( spotLights.at(i)->getPosition() - intersectionResult->getIntersectionPoint() ),
 								intersectionResult->getNormal() );
-				
-				spotIntensity = spotIntensity + 
-						specularLight( surface->getMaterial()->getPhongKS(), surface->getMaterial()->getPhongExponent(),
-								spotLights.at(i)->getColor(), 
-								normalize( spotLights.at(i)->getPosition() - intersectionResult->getIntersectionPoint() ),
-								intersectionResult->getNormal(), *eyeVector );
 								
 				if( angle > spotLights.at(i)->getFalloffAlpha1() )
 				{
@@ -195,15 +191,23 @@ dvec3 Raytracer::shade( const IntersectionResult* const intersectionResult,
 											
 					spotIntensity = spotIntensity * falloff;
 				}
+				
+				// specular reflection is not affected by falloff
+				spotIntensity = spotIntensity + 
+						specularLight( surface->getMaterial()->getPhongKS(), surface->getMaterial()->getPhongExponent(),
+								spotLights.at(i)->getColor(), 
+								normalize( spotLights.at(i)->getPosition() - intersectionResult->getIntersectionPoint() ),
+								intersectionResult->getNormal(), *eyeVector );
+				
 			}		
 			intensity = intensity + spotIntensity;
 		}
 	}
 	delete shadowRayIntersection;
 	
-	color = color * intensity;
-	return color;
-	//~ return intensity;
+	//~ color = color * intensity;
+	//~ return color;
+	return intensity;
 }
 
 /// TODO: maybe good and simple idea to give also the refractionIndex of the material the ray is comming from as an argument 
@@ -225,7 +229,6 @@ dvec3 Raytracer::trace( dvec3* point, dvec3* ray, const dvec3* const eyeVector, 
 	{
 		IntersectionResult* intersect = surfaceArray.at(i)->intersect( *point, *ray );
 		
-		/// TODO here is probably room for optimization
 		if( intersect->isIntersection() )
 		{
 			//~ std::cout << "surface intersection" << std::endl;
@@ -284,7 +287,6 @@ dvec3 Raytracer::trace( dvec3* point, dvec3* ray, const dvec3* const eyeVector, 
 				n1n2 = refractionIndex / 1;
 				
 			double cosIncidence = dot( -(*ray), closestIntersection->getNormal() );	// normal and ray are normalized
-			//~ double cosIncidence = dot( *ray, closestIntersection->getNormal() );	// normal and ray are normalized
 			
 			double bla = 1 - (n1n2 * n1n2 * (1 - cosIncidence * cosIncidence));
 			if( bla >= 0 )
@@ -319,9 +321,6 @@ dvec3 Raytracer::trace( dvec3* point, dvec3* ray, const dvec3* const eyeVector, 
 				delete reflectedRay;		
 			}
 		}
-		
-		//~ if( !internalRay )
-			//~ color = color * shade( closestIntersection, surfaceArray.at(closestObject), eyeVector );
 		
 		delete closestIntersection;
 					

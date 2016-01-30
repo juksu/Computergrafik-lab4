@@ -15,6 +15,8 @@ IntersectionResult* Mesh::intersect( dvec3 point, dvec3 ray )
 	intersectionResult->setLambda( std::numeric_limits<double>::max() );
 	
 	// transform point and ray into object coordinates with inverse transformation matrix
+	if( !inverseTransformationsSet )
+		inverseTransformations = inverse( transformations );
 	dvec3 pointTransformed = dvec3( inverseTransformations * dvec4( point, 1 ) );
 	dvec3 rayTransformed = dvec3( inverseTransformations * dvec4( ray, 0 ) );
 	

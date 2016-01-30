@@ -57,7 +57,7 @@
 		</sphere>
 		<mesh name="open_room.obj">
 			<material_textured>
-				<texture name="MarbleBeige.png"/>
+				<texture name="MarbleBeige.ppm"/>
 				<phong ka="0.3" kd="0.9" ks="1.0" exponent="20"/>
 				<reflectance r="0.0"/>
 				<transmittance t="0.0"/>

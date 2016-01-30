@@ -15,7 +15,8 @@ class Surface
 		bool inverseTransformationsSet;
 		
 	public:
-		Surface(){ transformations = glm::dmat4(1.0); inverseTransformations = glm::dmat4(1.0); }
+		//~ Surface(){ transformations = glm::dmat4(1.0); inverseTransformationsSet = false; inverseTransformations = glm::dmat4(1.0); }
+		Surface(){ transformations = glm::dmat4(1.0); inverseTransformationsSet = false; }
 		
 		void setMaterial( Material* material ){ this->material = material; }
 		Material* getMaterial() const { return material; }

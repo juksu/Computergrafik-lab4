@@ -10,7 +10,7 @@
 		<horizontal_fov angle="45"/>
 		<resolution horizontal="640" vertical="480"/>
 		<max_bounces n="16"/>
-		<supersampling samplerate="4" />
+		<supersampling samplerate="0" />
 	</camera>
 	<lights>
 		<parallel_light>
