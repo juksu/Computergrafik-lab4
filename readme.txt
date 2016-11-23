@@ -49,5 +49,5 @@ IMPORTANT REFERENCES:
 - http://geomalgorithms.com/a06-_intersect-2.html
 - http://graphics.stanford.edu/courses/cs148-10-summer/docs/2006--degreve--reflection_refraction.pdf
 - https://en.wikipedia.org/wiki/Supersampling
-- cplusplus.com, stackoverflow.com and Breymann: Der c++ Programmierer 	used whenever i forgot how to programm - which was a lot
+- cplusplus.com, stackoverflow.com and Breymann: Der c++ Programmierer
 
